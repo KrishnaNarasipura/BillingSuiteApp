@@ -57,6 +57,43 @@ namespace BillingSuite.Infrastructure.Migrations
                     b.ToTable("CompanySettings");
                 });
 
+            modelBuilder.Entity("BillingSuite.Domain.Entities.Customer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BillingAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gstin")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShippingAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Customers");
+                });
+
             modelBuilder.Entity("BillingSuite.Domain.Entities.Invoice", b =>
                 {
                     b.Property<int>("Id")
@@ -64,6 +101,9 @@ namespace BillingSuite.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("DiscountAmount")
                         .HasColumnType("decimal(18,2)");
@@ -88,12 +128,9 @@ namespace BillingSuite.Infrastructure.Migrations
                     b.Property<decimal>("TaxAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("VendorId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("VendorId");
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("Invoices");
                 });
@@ -161,52 +198,15 @@ namespace BillingSuite.Infrastructure.Migrations
                     b.ToTable("TaxSettings");
                 });
 
-            modelBuilder.Entity("BillingSuite.Domain.Entities.Vendor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("BillingAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Gstin")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ShippingAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Vendors");
-                });
-
             modelBuilder.Entity("BillingSuite.Domain.Entities.Invoice", b =>
                 {
-                    b.HasOne("BillingSuite.Domain.Entities.Vendor", "Vendor")
+                    b.HasOne("BillingSuite.Domain.Entities.Customer", "Customer")
                         .WithMany("Invoices")
-                        .HasForeignKey("VendorId")
+                        .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Vendor");
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("BillingSuite.Domain.Entities.InvoiceItem", b =>
@@ -226,14 +226,14 @@ namespace BillingSuite.Infrastructure.Migrations
                     b.Navigation("TaxSettings");
                 });
 
+            modelBuilder.Entity("BillingSuite.Domain.Entities.Customer", b =>
+                {
+                    b.Navigation("Invoices");
+                });
+
             modelBuilder.Entity("BillingSuite.Domain.Entities.Invoice", b =>
                 {
                     b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("BillingSuite.Domain.Entities.Vendor", b =>
-                {
-                    b.Navigation("Invoices");
                 });
 #pragma warning restore 612, 618
         }

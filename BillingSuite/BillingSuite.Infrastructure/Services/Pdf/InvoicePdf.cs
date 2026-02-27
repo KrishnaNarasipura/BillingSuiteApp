@@ -31,7 +31,7 @@ public class InvoicePdf
                     // Company Information
                     row.RelativeItem().Column(stack =>
                     {
-                        stack.Item().Text(_settings.CompanyName).FontSize(20).SemiBold().FontColor(Colors.Blue.Medium);
+                        stack.Item().Text(_settings.CompanyName).FontSize(22).SemiBold().FontColor(Colors.Blue.Medium);
                         if (!string.IsNullOrWhiteSpace(_settings.Address))
                             stack.Item().Text(_settings.Address).FontSize(10);
                         if (!string.IsNullOrWhiteSpace(_settings.Phone))
@@ -43,16 +43,15 @@ public class InvoicePdf
                     // Invoice Information
                     row.RelativeItem().Column(stack =>
                     {
-                        stack.Item().AlignRight().Text("INVOICE").FontSize(24).SemiBold().FontColor(Colors.Blue.Medium);
+                        stack.Item().AlignRight().Text("INVOICE").FontSize(18).SemiBold().FontColor(Colors.Green.Medium);
                         stack.Item().AlignRight().Text($"Invoice #: {_invoice.InvoiceNumber}").FontSize(12).SemiBold();
                         stack.Item().AlignRight().Text($"Date: {_invoice.InvoiceDate:dd-MMM-yyyy}").FontSize(11);
-                        stack.Item().AlignRight().Text($"Status: {_invoice.Status}").FontSize(11);
                     });
                 });
 
                 page.Content().Column(stack =>
                 {
-                    // Vendor Information Section
+                    // Customer Information Section
                     stack.Item().PaddingTop(20).Row(row =>
                     {
                         // Billing Address
@@ -61,29 +60,29 @@ public class InvoicePdf
                             billCol.Item().Text("Bill To:").FontSize(12).SemiBold().FontColor(Colors.Grey.Darken3);
                             billCol.Item().PaddingTop(5).Column(billStack =>
                             {
-                                billStack.Item().Text(_invoice.Vendor.Name).FontSize(11).SemiBold();
-                                if (!string.IsNullOrWhiteSpace(_invoice.Vendor.BillingAddress))
-                                    billStack.Item().Text(_invoice.Vendor.BillingAddress).FontSize(10);
-                                if (!string.IsNullOrWhiteSpace(_invoice.Vendor.Email))
-                                    billStack.Item().Text($"Email: {_invoice.Vendor.Email}").FontSize(10);
-                                if (!string.IsNullOrWhiteSpace(_invoice.Vendor.Phone))
-                                    billStack.Item().Text($"Phone: {_invoice.Vendor.Phone}").FontSize(10);
-                                if (!string.IsNullOrWhiteSpace(_invoice.Vendor.Gstin))
-                                    billStack.Item().Text($"GSTIN: {_invoice.Vendor.Gstin}").FontSize(10);
+                                billStack.Item().Text(_invoice.Customer.Name).FontSize(11).SemiBold();
+                                if (!string.IsNullOrWhiteSpace(_invoice.Customer.BillingAddress))
+                                    billStack.Item().Text(_invoice.Customer.BillingAddress).FontSize(10);
+                                if (!string.IsNullOrWhiteSpace(_invoice.Customer.Email))
+                                    billStack.Item().Text($"Email: {_invoice.Customer.Email}").FontSize(10);
+                                if (!string.IsNullOrWhiteSpace(_invoice.Customer.Phone))
+                                    billStack.Item().Text($"Phone: {_invoice.Customer.Phone}").FontSize(10);
+                                if (!string.IsNullOrWhiteSpace(_invoice.Customer.Gstin))
+                                    billStack.Item().Text($"GSTIN: {_invoice.Customer.Gstin}").FontSize(10);
                             });
                         });
 
                         // Shipping Address (if different from billing)
-                        if (!string.IsNullOrWhiteSpace(_invoice.Vendor.ShippingAddress) &&
-                            _invoice.Vendor.ShippingAddress != _invoice.Vendor.BillingAddress)
+                        if (!string.IsNullOrWhiteSpace(_invoice.Customer.ShippingAddress) &&
+                            _invoice.Customer.ShippingAddress != _invoice.Customer.BillingAddress)
                         {
                             row.RelativeItem().Column(shipCol =>
                             {
                                 shipCol.Item().Text("Ship To:").FontSize(12).SemiBold().FontColor(Colors.Grey.Darken3);
                                 shipCol.Item().PaddingTop(5).Column(shipStack =>
                                 {
-                                    shipStack.Item().Text(_invoice.Vendor.Name).FontSize(11).SemiBold();
-                                    shipStack.Item().Text(_invoice.Vendor.ShippingAddress).FontSize(10);
+                                    shipStack.Item().Text(_invoice.Customer.Name).FontSize(11).SemiBold();
+                                    shipStack.Item().Text(_invoice.Customer.ShippingAddress).FontSize(10);
                                 });
                             });
                         }

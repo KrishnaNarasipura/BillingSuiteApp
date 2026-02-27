@@ -88,12 +88,12 @@ namespace BillingSuite.Infrastructure.Migrations
                     b.Property<decimal>("TaxAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("VendorId")
+                    b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("VendorId");
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("Invoices");
                 });
@@ -161,7 +161,7 @@ namespace BillingSuite.Infrastructure.Migrations
                     b.ToTable("TaxSettings");
                 });
 
-            modelBuilder.Entity("BillingSuite.Domain.Entities.Vendor", b =>
+            modelBuilder.Entity("BillingSuite.Domain.Entities.Customer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -192,18 +192,18 @@ namespace BillingSuite.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Vendors");
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("BillingSuite.Domain.Entities.Invoice", b =>
                 {
-                    b.HasOne("BillingSuite.Domain.Entities.Vendor", "Vendor")
+                    b.HasOne("BillingSuite.Domain.Entities.Customer", "Customer")
                         .WithMany("Invoices")
-                        .HasForeignKey("VendorId")
+                        .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Vendor");
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("BillingSuite.Domain.Entities.InvoiceItem", b =>
@@ -228,7 +228,7 @@ namespace BillingSuite.Infrastructure.Migrations
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("BillingSuite.Domain.Entities.Vendor", b =>
+            modelBuilder.Entity("BillingSuite.Domain.Entities.Customer", b =>
                 {
                     b.Navigation("Invoices");
                 });

@@ -14,8 +14,8 @@ namespace BillingSuite.Domain.Entities
         public string InvoiceNumber { get; set; } = default!;
         public DateTime InvoiceDate { get; set; } = DateTime.UtcNow;
 
-        public int VendorId { get; set; }
-        public Vendor Vendor { get; set; } = default!;
+        public int CustomerId { get; set; }
+        public Customer Customer { get; set; } = default!;
 
         public decimal Subtotal { get; set; }
         public decimal TaxAmount { get; set; }

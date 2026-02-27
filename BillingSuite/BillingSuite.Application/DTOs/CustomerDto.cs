@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BillingSuite.Application.DTOs
 {
-    public class VendorDto
+    public class CustomerDto
     {
 
         public int Id { get; set; }

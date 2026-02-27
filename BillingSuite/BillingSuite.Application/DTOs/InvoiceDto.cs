@@ -12,11 +12,12 @@ namespace BillingSuite.Application.DTOs
         public int Id { get; set; }
         public string InvoiceNumber { get; set; } = default!;
         public DateTime InvoiceDate { get; set; }
-        public VendorDto Vendor { get; set; } = default!;
+        public CustomerDto Customer { get; set; } = default!;
         public decimal Subtotal { get; set; }
         public decimal TaxAmount { get; set; }
         public decimal DiscountAmount { get; set; }
         public decimal NetAmount { get; set; }
+        public int Status { get; set; }
         public List<InvoiceItemDto> Items { get; set; } = new();
 
     }

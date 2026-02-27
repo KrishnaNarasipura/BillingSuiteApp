@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BillingSuite.Domain.Enums
+namespace BillingSuite.Application.Enums
 {
 
     public enum InvoiceStatus

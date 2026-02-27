@@ -3,6 +3,7 @@ using BillingSuite.Application.Abstractions;
 using BillingSuite.Application.DTOs;
 using BillingSuite.Application.Results;
 using BillingSuite.Domain.Entities;
+using BillingSuite.Domain.Enums;
 using BillingSuite.Infrastructure.Persistence;
 using BillingSuite.Infrastructure.Services.Pdf;
 using Microsoft.EntityFrameworkCore;
@@ -37,7 +38,7 @@ public class InvoiceService : IInvoiceService
 
         var entity = new Invoice
         {
-            VendorId = dto.VendorId,
+            CustomerId = dto.CustomerId,
             InvoiceDate = dto.InvoiceDate,
             InvoiceNumber = invoiceNumber,
             Subtotal = subtotal,
@@ -82,7 +83,7 @@ public class InvoiceService : IInvoiceService
         var totalTax = items.Sum(i => i.TaxAmount);
         var net = Math.Round(subtotal + totalTax - dto.DiscountAmount, 2);
 
-        existing.VendorId = dto.VendorId;
+        existing.CustomerId = dto.CustomerId;
         existing.InvoiceDate = dto.InvoiceDate;
         existing.Subtotal = subtotal;
         existing.TaxAmount = totalTax;
@@ -92,10 +93,23 @@ public class InvoiceService : IInvoiceService
         await _db.SaveChangesAsync(ct);
     }
 
+    public async Task UpdateStatusAsync(InvoiceUpdateStatusDto dto, CancellationToken ct = default)
+    {
+        var existing = await _db.Invoices
+            .Include(i => i.Items)
+            .FirstOrDefaultAsync(i => i.Id == dto.Id, ct);
+
+        if (existing is null) return;
+        existing.Status = (InvoiceStatus)dto.InvoiceStatus;
+      
+
+        await _db.SaveChangesAsync(ct);
+    }
+
     public async Task<InvoiceDto?> GetAsync(int id, CancellationToken ct = default)
     {
         var inv = await _db.Invoices
-            .Include(i => i.Vendor)
+            .Include(i => i.Customer)
             .Include(i => i.Items)
                 .ThenInclude(item => item.TaxSettings)
             .FirstOrDefaultAsync(i => i.Id == id, ct);
@@ -107,20 +121,21 @@ public class InvoiceService : IInvoiceService
             Id = inv.Id,
             InvoiceNumber = inv.InvoiceNumber,
             InvoiceDate = inv.InvoiceDate,
-            Vendor = new VendorDto
+            Customer = new CustomerDto
             {
-                Id = inv.Vendor.Id,
-                Name = inv.Vendor.Name,
-                BillingAddress = inv.Vendor.BillingAddress,
-                ShippingAddress = inv.Vendor.ShippingAddress,
-                Email = inv.Vendor.Email,
-                Phone = inv.Vendor.Phone,
-                Gstin = inv.Vendor.Gstin
+                Id = inv.Customer.Id,
+                Name = inv.Customer.Name,
+                BillingAddress = inv.Customer.BillingAddress,
+                ShippingAddress = inv.Customer.ShippingAddress,
+                Email = inv.Customer.Email,
+                Phone = inv.Customer.Phone,
+                Gstin = inv.Customer.Gstin
             },
             Subtotal = inv.Subtotal,
             TaxAmount = inv.TaxAmount,
             DiscountAmount = inv.DiscountAmount,
             NetAmount = inv.NetAmount,
+            Status = (int)inv.Status,
             Items = inv.Items.Select(x => new InvoiceItemDto
             {
                 Description = x.Description,
@@ -133,15 +148,17 @@ public class InvoiceService : IInvoiceService
         };
     }
 
-    public async Task<PagedResult<InvoiceDto>> SearchAsync(DateTime? from, DateTime? to, int? vendorId, int page, int pageSize, CancellationToken ct = default)
+    public async Task<PagedResult<InvoiceDto>> SearchAsync(DateTime? from, DateTime? to, int? CustomerId, string? invoiceNumber, int? status, int page, int pageSize, CancellationToken ct = default)
     {
         var q = _db.Invoices
-            .Include(i => i.Vendor)
+            .Include(i => i.Customer)
             .AsQueryable();
 
         if (from.HasValue) q = q.Where(i => i.InvoiceDate >= from.Value);
         if (to.HasValue) q = q.Where(i => i.InvoiceDate <= to.Value);
-        if (vendorId.HasValue) q = q.Where(i => i.VendorId == vendorId);
+        if (CustomerId.HasValue) q = q.Where(i => i.CustomerId == CustomerId);
+        if (!string.IsNullOrWhiteSpace(invoiceNumber)) q = q.Where(i => i.InvoiceNumber == invoiceNumber);
+        if (status.HasValue) q = q.Where(i => (int)i.Status == status.Value);
 
         var total = await q.CountAsync(ct);
 
@@ -153,11 +170,12 @@ public class InvoiceService : IInvoiceService
                 Id = inv.Id,
                 InvoiceNumber = inv.InvoiceNumber,
                 InvoiceDate = inv.InvoiceDate,
-                Vendor = new VendorDto { Id = inv.Vendor.Id, Name = inv.Vendor.Name },
+                Customer = new CustomerDto { Id = inv.Customer.Id, Name = inv.Customer.Name },
                 Subtotal = inv.Subtotal,
                 TaxAmount = inv.TaxAmount,
                 DiscountAmount = inv.DiscountAmount,
-                NetAmount = inv.NetAmount
+                NetAmount = inv.NetAmount,
+                Status = (int)inv.Status
             })
             .ToListAsync(ct);
 
@@ -167,7 +185,7 @@ public class InvoiceService : IInvoiceService
     public async Task<byte[]> GeneratePdfAsync(int id, CancellationToken ct = default)
     {
         var inv = await _db.Invoices
-            .Include(i => i.Vendor)
+            .Include(i => i.Customer)
             .Include(i => i.Items)
                 .ThenInclude(item => item.TaxSettings)
             .FirstOrDefaultAsync(i => i.Id == id, ct) ?? throw new KeyNotFoundException("Invoice not found");
@@ -176,5 +194,30 @@ public class InvoiceService : IInvoiceService
 
         var doc = new InvoicePdf(settings, inv);
         return doc.Render();
+    }
+
+    public async Task<List<InvoiceDto>> GetOverdueInvoicesAsync(int daysOverdue = 30, CancellationToken ct = default)
+    {
+        var cutoffDate = DateTime.UtcNow.AddDays(-daysOverdue);
+
+        var invoices = await _db.Invoices
+            .Include(i => i.Customer)
+            .Where(i => i.Status == InvoiceStatus.Issued && i.InvoiceDate <= cutoffDate)
+            .OrderBy(i => i.InvoiceDate)
+            .Select(inv => new InvoiceDto
+            {
+                Id = inv.Id,
+                InvoiceNumber = inv.InvoiceNumber,
+                InvoiceDate = inv.InvoiceDate,
+                Customer = new CustomerDto { Id = inv.Customer.Id, Name = inv.Customer.Name },
+                Subtotal = inv.Subtotal,
+                TaxAmount = inv.TaxAmount,
+                DiscountAmount = inv.DiscountAmount,
+                NetAmount = inv.NetAmount,
+                Status = (int)inv.Status
+            })
+            .ToListAsync(ct);
+
+        return invoices;
     }
 }

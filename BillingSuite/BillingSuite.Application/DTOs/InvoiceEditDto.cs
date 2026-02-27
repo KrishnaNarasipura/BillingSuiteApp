@@ -10,7 +10,7 @@ namespace BillingSuite.Application.DTOs
     {
         public int Id { get; set; }
         public string InvoiceNumber { get; set; } = default!;
-        public int VendorId { get; set; }
+        public int CustomerId { get; set; }
         public DateTime InvoiceDate { get; set; }
         public decimal DiscountAmount { get; set; }
         public List<InvoiceItemDto> Items { get; set; } = new();

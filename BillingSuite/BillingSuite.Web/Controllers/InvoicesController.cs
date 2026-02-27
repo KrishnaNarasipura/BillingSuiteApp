@@ -8,22 +8,22 @@ namespace BillingSuite.Web.Controllers;
 public class InvoicesController : Controller
 {
     private readonly IInvoiceService _svc;
-    private readonly IVendorService _vendors;
+    private readonly ICustomerService _customers;
     private readonly ITaxSettingsService _taxSettings;
 
-    public InvoicesController(IInvoiceService svc, IVendorService vendors, ITaxSettingsService taxSettings)
+    public InvoicesController(IInvoiceService svc, ICustomerService customers, ITaxSettingsService taxSettings)
     {
         _svc = svc;
-        _vendors = vendors;
+        _customers = customers;
         _taxSettings = taxSettings;
     }
 
-    public async Task<IActionResult> Index(DateTime? from, DateTime? to, int? vendorId, int page = 1, int pageSize = 20)
+    public async Task<IActionResult> Index(DateTime? from, DateTime? to, int? CustomerId, string? invoiceNumber, int? status, int page = 1, int pageSize = 20)
     {
-        // Get vendors for the dropdown filter
-        ViewBag.Vendors = (await _vendors.GetVendorsAsync(null, 1, 500)).Items;
+        // Get customers for the dropdown filter
+        ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
 
-        return View(await _svc.SearchAsync(from, to, vendorId, page, pageSize));
+        return View(await _svc.SearchAsync(from, to, CustomerId, invoiceNumber, status, page, pageSize));
     }
 
     public async Task<IActionResult> Preview(int id)
@@ -37,7 +37,7 @@ public class InvoicesController : Controller
 
     public async Task<IActionResult> Create()
     {
-        ViewBag.Vendors = (await _vendors.GetVendorsAsync(null, 1, 500)).Items;
+        ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
         ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
         return View(new InvoiceCreateDto { Items = new List<InvoiceItemDto> { new() { Description = "Item 1", Quantity = 1, UnitPrice = 0 } } });
     }
@@ -47,7 +47,7 @@ public class InvoicesController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Vendors = (await _vendors.GetVendorsAsync(null, 1, 500)).Items;
+            ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
             ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
             return View(dto);
         }
@@ -65,13 +65,13 @@ public class InvoicesController : Controller
         {
             Id = invoice.Id,
             InvoiceNumber = invoice.InvoiceNumber,
-            VendorId = invoice.Vendor.Id,
+            CustomerId = invoice.Customer.Id,
             InvoiceDate = invoice.InvoiceDate,
             DiscountAmount = invoice.DiscountAmount,
             Items = invoice.Items
         };
 
-        ViewBag.Vendors = (await _vendors.GetVendorsAsync(null, 1, 500)).Items;
+        ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
         ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
         return View(editDto);
     }
@@ -81,7 +81,7 @@ public class InvoicesController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Vendors = (await _vendors.GetVendorsAsync(null, 1, 500)).Items;
+            ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
             ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
             return View(dto);
         }
@@ -101,5 +101,24 @@ public class InvoicesController : Controller
     {
         var words = Utility.ConvertNumberToWords(amount);
         return Json(new { words });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateStatus([FromBody] InvoiceUpdateStatusDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return Json(new { success = false, message = "Invalid data" });
+        }
+
+        try
+        {
+            await _svc.UpdateStatusAsync(dto);
+            return Json(new { success = true, message = "Invoice status updated successfully." });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, message = $"Error: {ex.Message}" });
+        }
     }
 }

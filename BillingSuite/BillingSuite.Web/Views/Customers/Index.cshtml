@@ -1,11 +1,11 @@
 ﻿
-@model BillingSuite.Application.Results.PagedResult<BillingSuite.Application.DTOs.VendorDto>
+@model BillingSuite.Application.Results.PagedResult<BillingSuite.Application.DTOs.CustomerDto>
 @{
     Layout = "_Layout";
 }
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h3>Vendors</h3>
-    <a class="btn btn-primary" href="/Vendors/Create">Add Vendor</a>
+    <h3>Customers</h3>
+    <a class="btn btn-primary" href="/Customers/Create">Add Customer</a>
 </div>
 <table class="table table-sm table-striped">
     <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th></th></tr></thead>
@@ -17,8 +17,8 @@
                 <td>@v.Phone</td>
                 <td>@v.Email</td>
                 <td class="text-end">
-                    <a class="btn btn-sm btn-outline-secondary" href="/Vendors/Edit/@v.Id">Edit</a>
-                    <form method="post" action="/Vendors/Delete/@v.Id" class="d-inline">
+                    <a class="btn btn-sm btn-outline-secondary" href="/Customers/Edit/@v.Id">Edit</a>
+                    <form method="post" action="/Customers/Delete/@v.Id" class="d-inline">
                         <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
                     </form>
                 </td>

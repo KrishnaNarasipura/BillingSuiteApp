@@ -1,0 +1,296 @@
+# Visual Studio / Visual Studio Code
+.vs/
+.vscode/
+*.sln.iml
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.idea/
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options directory
+.vs/
+
+# Rider
+.idea/
+*.sln.iml
+*.sln.swp
+*.swp
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Test Results
+TestResults/
+*.trx
+*.coverage
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+
+# Local NuGet packages directory
+packages/
+!packages/build/
+*.nuget.props
+*.nuget.targets
+
+# NuGet v3's project.json files produces more ignorable files
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.assets.json
+launchSettings.json
+
+# Miscellaneous temp files
+*.tmp
+*.temp
+
+# Entity Framework
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE specific files
+.editorconfig
+
+# Runtime data
+appsettings.Development.json
+appsettings.*.json
+!appsettings.json
+
+# Application settings (local overrides)
+appsettings.local.json
+
+# User secrets
+secrets.json
+**/Properties/launchSettings.json
+
+# BOM files
+.bom
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# Azure
+.azure/
+
+# Coverage reports
+coverage/
+OpenCover/
+
+# Node modules (if using npm/yarn for frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Package manager lock files (optional - uncomment if you want to commit these)
+# package-lock.json
+# yarn.lock
+
+# Local environment files
+.env
+.env.local
+.env.*.local
+
+# Database files
+*.db-journal
+*.mdf
+*.ldf
+
+# Backup files
+*.bak
+*.backup
+
+# Temp folders
+temp/
+tmp/
+.temp/
+
+# Artifacts
+artifacts/
+
+# Compiled Python files (if using any Python tools)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# VirtualEnv
+venv/
+ENV/
+env/
+.venv
+
+# Publishing
+PublishProfiles/
+*.publishsettings
+*.azurePubxml
+*.pubxml
+*.publishproj
+
+# Web publish log
+*.log
+
+# FTP sync
+.ftp-credentials
+
+# Rider specific
+.idea/
+riderModule.iml
+**/.idea/modules.xml
+**/.idea/projectSettingsUpdater.xml
+**/.idea/modules/
+
+# Resharper
+_ReSharper*/
+*.DotSettings.user
+
+# Cake
+tools/
+!tools/packages.config
+
+# Python
+.python-version
+.pytype/
+.pyre/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# Mac
+.AppleDouble
+.LSOverride
+
+# Windows
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Linux
+.directory
+
+# Generated files
+*.generated.cs
+
+# Compiled DLLs and EXEs not in output folders
+*.exe
+*.dll
+!**/bin/**/
+!**/obj/**/
+
+# Certificate files
+*.pfx
+*.cer
+*.crt
+*.key
+*.pem
+
+# Docker
+.dockerignore
+Dockerfile
+
+# CI/CD
+.github/workflows/*.log
+.gitlab-ci.yml.local
+
+# Miscellaneous
+.bundle/
+vendor/
+.cache/
+.padrino-cache/
+.sass-cache/
+compass.log
+.yardoc/
+
+# Ignore IntelliJ IDEA files
+*.iml
+*.iws
+*.ipr
+
+# Ignore Mac files
+.DS_Store
+
+# Ignore VSCode settings
+.vscode/settings.json
+.vscode/extensions.json
+!.vscode/extensions.json
+
+# Ignore build artifacts from specific projects
+**/bin/
+**/obj/
+**/out/
+
+# Ignore generated edmx diagrams
+*.edmx.diagram
+
+# Ignore resgen output
+*.resgen
+
+# Custom project-specific excludes
+appsettings.Production.json
+appsettings.Staging.json
+
+# Rider
+.idea/
+
+# User session data
+.user.session

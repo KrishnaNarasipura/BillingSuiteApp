@@ -1,5 +1,371 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using BillingSuite.Application.DTOs
+@model List<BillingSuite.Application.Abstractions.SalesSummaryDto>
 @{
+    ViewData["Title"] = "Sales Summary Report";
+    var fromDate = (DateTime)ViewBag.FromDate;
+    var toDate = (DateTime)ViewBag.ToDate;
+    var selectedCustomerId = (int?)ViewBag.SelectedCustomerId;
+    var customers = (List<CustomerDto>)ViewBag.Customers;
+}
+
+<style>
+    .report-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .report-header h1 {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+
+    .filters-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .filters-card h5 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-weight: 700;
+    }
+
+    .filter-group {
+        margin-bottom: 15px;
+    }
+
+    .filter-group label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+
+    .filter-group input,
+    .filter-group select {
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        padding: 10px 12px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .filter-group input:focus,
+    .filter-group select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+        outline: none;
+    }
+
+    .btn-filter {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 30px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 24px;
+    }
+
+    .btn-filter:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-print {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 30px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-print:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .report-section {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .report-section h3 {
+        color: #2c3e50;
+        margin-bottom: 25px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .report-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .report-table thead {
+        background: #f8f9fa;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .report-table th {
+        padding: 15px;
+        text-align: right;
+        font-weight: 700;
+        color: #495057;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+
+    .report-table th:first-child {
+        text-align: left;
+    }
+
+    .report-table tbody tr {
+        border-bottom: 1px solid #e9ecef;
+        transition: background-color 0.3s ease;
+    }
+
+    .report-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .report-table td {
+        padding: 15px;
+        text-align: right;
+        color: #495057;
+    }
+
+    .report-table td:first-child {
+        text-align: left;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .report-table .total-row {
+        background: #f8f9fa;
+        border-top: 2px solid #667eea;
+        border-bottom: 2px solid #667eea;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+
+    .report-table .total-row td {
+        padding: 18px 15px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        opacity: 0.5;
+    }
+
+    .date-range-display {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 10px 15px;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        margin-top: 10px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .summary-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .stat-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        opacity: 0.9;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-top: 10px;
+    }
+</style>
+
+<!-- Report Header -->
+<div class="report-header">
+    <h1>
+        <i class="fas fa-chart-bar me-3"></i>Sales Summary Report
+    </h1>
+    <p>View detailed sales information for your selected period</p>
+</div>
+
+<!-- Filters Section -->
+<div class="filters-card">
+    <h5>
+        <i class="fas fa-filter me-2"></i>Report Filters
+    </h5>
+
+    <form method="get" action="/Reports/Sales" id="filterForm">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="filter-group">
+                    <label for="from">From Date</label>
+                    <input type="date" id="from" name="from" class="form-control" value="@fromDate.ToString("yyyy-MM-dd")" required />
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="filter-group">
+                    <label for="to">To Date</label>
+                    <input type="date" id="to" name="to" class="form-control" value="@toDate.ToString("yyyy-MM-dd")" required />
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="filter-group">
+                    <label for="CustomerId">Customer (Optional)</label>
+                    <select id="CustomerId" name="CustomerId" class="form-select">
+                        <option value="">All Customers</option>
+                        @if (customers != null)
+                        {
+                            @foreach (var customer in customers.Distinct())
+                            {
+                                <option value="@customer.Id" selected="@(selectedCustomerId == customer.Id)">@customer.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-filter" style="width: 100%; margin-bottom: 15px;">
+                    <i class="fas fa-search me-2"></i>Generate Report
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Report Results -->
+@if (Model != null && Model.Count > 0)
+{
+    <!-- Summary Statistics -->
+    <div class="summary-stats">
+        <div class="stat-box">
+            <div class="stat-label">Total Invoices</div>
+            <div class="stat-value">@Model.Sum(x => x.Count)</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Subtotal</div>
+            <div class="stat-value">₹@Model.Sum(x => x.Subtotal).ToString("0.00")</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Total Tax</div>
+            <div class="stat-value">₹@Model.Sum(x => x.Tax).ToString("0.00")</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Net Amount</div>
+            <div class="stat-value">₹@Model.Sum(x => x.Net).ToString("0.00")</div>
+        </div>
+    </div>
+
+    <!-- Print Button -->
+    <div class="action-buttons">
+        <form method="post" action="/Reports/PrintSalesSummary" style="display: inline;">
+            <input type="hidden" name="from" value="@fromDate.ToString("yyyy-MM-dd")" />
+            <input type="hidden" name="to" value="@toDate.ToString("yyyy-MM-dd")" />
+            <input type="hidden" name="CustomerId" value="@selectedCustomerId" />
+            <button type="submit" class="btn btn-print">
+                <i class="fas fa-print me-2"></i>Print as PDF
+            </button>
+        </form>
+    </div>
+
+    <!-- Sales Summary Table -->
+    <div class="report-section" style="margin-top: 30px;">
+        <h3>
+            <i class="fas fa-table"></i>Sales Summary by Month
+        </h3>
+
+        <table class="report-table">
+            <thead>
+                <tr>
+                    <th>Period</th>
+                    <th>Invoices</th>
+                    <th>Subtotal</th>
+                    <th>Tax</th>
+                    <th>Net Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model)
+                {
+                    <tr>
+                        <td>@row.Period.ToString("MMM yyyy")</td>
+                        <td>@row.Count</td>
+                        <td>₹@row.Subtotal.ToString("0.00")</td>
+                        <td>₹@row.Tax.ToString("0.00")</td>
+                        <td>₹@row.Net.ToString("0.00")</td>
+                    </tr>
+                }
+                <tr class="total-row">
+                    <td>TOTAL</td>
+                    <td>@Model.Sum(x => x.Count)</td>
+                    <td>₹@Model.Sum(x => x.Subtotal).ToString("0.00")</td>
+                    <td>₹@Model.Sum(x => x.Tax).ToString("0.00")</td>
+                    <td>₹@Model.Sum(x => x.Net).ToString("0.00")</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="report-section">
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-inbox"></i>
+            </div>
+            <h4>No Data Available</h4>
+            <p>No sales data found for the selected date range and filters.</p>
+        </div>
+    </div>
 }

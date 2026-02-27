@@ -19,7 +19,7 @@ namespace BillingSuite.Infrastructure.DependencyInjection
             services.AddDbContext<BillingDbContext>(opt =>
                 opt.UseSqlServer(connectionString));
 
-            services.AddScoped<IVendorService, VendorService>();
+            services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IInvoiceService, InvoiceService>();
             services.AddScoped<ICompanySettingsService, CompanySettingsService>();
             services.AddScoped<IReportService, ReportService>();

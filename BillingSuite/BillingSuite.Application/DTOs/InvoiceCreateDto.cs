@@ -9,7 +9,7 @@ namespace BillingSuite.Application.DTOs
     public class InvoiceCreateDto
     {
 
-        public int VendorId { get; set; }
+        public int CustomerId { get; set; }
         public DateTime InvoiceDate { get; set; } = DateTime.UtcNow;
         public decimal DiscountAmount { get; set; }
         public decimal TaxPercent { get; set; } // simple tax

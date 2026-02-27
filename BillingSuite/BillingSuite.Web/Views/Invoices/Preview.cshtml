@@ -45,46 +45,46 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header bg-light">
-                    <h5 class="mb-0">Vendor Information</h5>
+                    <h5 class="mb-0">Customer Information</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-sm-4"><strong>Name:</strong></div>
-                        <div class="col-sm-8">@Model.Vendor.Name</div>
+                        <div class="col-sm-8">@Model.Customer.Name</div>
                     </div>
-                    @if (!string.IsNullOrEmpty(Model.Vendor.BillingAddress))
+                    @if (!string.IsNullOrEmpty(Model.Customer.BillingAddress))
                     {
                         <div class="row">
                             <div class="col-sm-4"><strong>Billing Address:</strong></div>
-                            <div class="col-sm-8">@Model.Vendor.BillingAddress</div>
+                            <div class="col-sm-8">@Model.Customer.BillingAddress</div>
                         </div>
                     }
-                    @if (!string.IsNullOrEmpty(Model.Vendor.ShippingAddress))
+                    @if (!string.IsNullOrEmpty(Model.Customer.ShippingAddress))
                     {
                         <div class="row">
                             <div class="col-sm-4"><strong>Shipping Address:</strong></div>
-                            <div class="col-sm-8">@Model.Vendor.ShippingAddress</div>
+                            <div class="col-sm-8">@Model.Customer.ShippingAddress</div>
                         </div>
                     }
-                    @if (!string.IsNullOrEmpty(Model.Vendor.Email))
+                    @if (!string.IsNullOrEmpty(Model.Customer.Email))
                     {
                         <div class="row">
                             <div class="col-sm-4"><strong>Email:</strong></div>
-                            <div class="col-sm-8">@Model.Vendor.Email</div>
+                            <div class="col-sm-8">@Model.Customer.Email</div>
                         </div>
                     }
-                    @if (!string.IsNullOrEmpty(Model.Vendor.Phone))
+                    @if (!string.IsNullOrEmpty(Model.Customer.Phone))
                     {
                         <div class="row">
                             <div class="col-sm-4"><strong>Phone:</strong></div>
-                            <div class="col-sm-8">@Model.Vendor.Phone</div>
+                            <div class="col-sm-8">@Model.Customer.Phone</div>
                         </div>
                     }
-                    @if (!string.IsNullOrEmpty(Model.Vendor.Gstin))
+                    @if (!string.IsNullOrEmpty(Model.Customer.Gstin))
                     {
                         <div class="row">
                             <div class="col-sm-4"><strong>GSTIN:</strong></div>
-                            <div class="col-sm-8">@Model.Vendor.Gstin</div>
+                            <div class="col-sm-8">@Model.Customer.Gstin</div>
                         </div>
                     }
                 </div>

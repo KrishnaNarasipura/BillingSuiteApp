@@ -1,6 +1,6 @@
 ﻿namespace BillingSuite.Domain.Entities;
 
-public class Vendor
+public class Customer
 {
 
     public int Id { get; set; }

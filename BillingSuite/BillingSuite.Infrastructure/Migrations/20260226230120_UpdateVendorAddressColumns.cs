@@ -5,7 +5,7 @@
 namespace BillingSuite.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateVendorAddressColumns : Migration
+    public partial class UpdateCustomerAddressColumns : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -13,13 +13,13 @@ namespace BillingSuite.Infrastructure.Migrations
             // Rename Address column to BillingAddress
             migrationBuilder.RenameColumn(
                 name: "Address",
-                table: "Vendors",
+                table: "Customers",
                 newName: "BillingAddress");
 
             // Add new ShippingAddress column
             migrationBuilder.AddColumn<string>(
                 name: "ShippingAddress",
-                table: "Vendors",
+                table: "Customers",
                 type: "nvarchar(max)",
                 nullable: true);
         }
@@ -30,12 +30,12 @@ namespace BillingSuite.Infrastructure.Migrations
             // Remove ShippingAddress column
             migrationBuilder.DropColumn(
                 name: "ShippingAddress",
-                table: "Vendors");
+                table: "Customers");
 
             // Rename BillingAddress back to Address
             migrationBuilder.RenameColumn(
                 name: "BillingAddress",
-                table: "Vendors",
+                table: "Customers",
                 newName: "Address");
         }
     }

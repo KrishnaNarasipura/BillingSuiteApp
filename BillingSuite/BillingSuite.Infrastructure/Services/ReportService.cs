@@ -13,23 +13,45 @@ public class ReportService : IReportService
     private readonly BillingDbContext _db;
     public ReportService(BillingDbContext db) => _db = db;
 
-    public async Task<byte[]> SalesSummaryPdfAsync(DateTime from, DateTime to, int? vendorId, CancellationToken ct = default)
+    public async Task<List<SalesSummaryDto>> GetSalesSummaryAsync(DateTime from, DateTime to, int? CustomerId, CancellationToken ct = default)
     {
         var q = _db.Invoices.Where(i => i.InvoiceDate >= from && i.InvoiceDate <= to);
-        if (vendorId.HasValue) q = q.Where(i => i.VendorId == vendorId.Value);
-
+        if (CustomerId.HasValue) q = q.Where(i => i.CustomerId == CustomerId.Value);
+        if (q == null || q.Count() == 0 )
+        {
+            return null;
+        }
         var data = await q
             .GroupBy(i => new { i.InvoiceDate.Year, i.InvoiceDate.Month })
             .Select(g => new
             {
-                Period = new DateTime(g.Key.Year, g.Key.Month, 1),
+                g.Key.Year,
+                g.Key.Month,
                 Subtotal = g.Sum(x => x.Subtotal),
                 Tax = g.Sum(x => x.TaxAmount),
                 Net = g.Sum(x => x.NetAmount),
                 Count = g.Count()
             })
-            .OrderBy(x => x.Period)
+            .OrderBy(x => x.Year)
+            .ThenBy(x => x.Month)
             .ToListAsync(ct);
+
+        // Convert to SalesSummaryDto after materializing data
+        var result = data.Select(d => new SalesSummaryDto
+        {
+            Period = new DateTime(d.Year, d.Month, 1),
+            Subtotal = d.Subtotal,
+            Tax = d.Tax,
+            Net = d.Net,
+            Count = d.Count
+        }).ToList();
+
+        return result;
+    }
+
+    public async Task<byte[]> SalesSummaryPdfAsync(DateTime from, DateTime to, int? CustomerId, CancellationToken ct = default)
+    {
+        var data = await GetSalesSummaryAsync(from, to, CustomerId, ct);
 
         QuestPDF.Settings.License = LicenseType.Community;
 
@@ -68,6 +90,18 @@ public class ReportService : IReportService
                         t.Cell().Text(row.Tax.ToString("0.00"));
                         t.Cell().Text(row.Net.ToString("0.00"));
                     }
+
+                    // Footer with totals
+                    var totalSubtotal = data.Sum(x => x.Subtotal);
+                    var totalTax = data.Sum(x => x.Tax);
+                    var totalNet = data.Sum(x => x.Net);
+                    var totalCount = data.Sum(x => x.Count);
+
+                    t.Cell().Text("TOTAL").SemiBold();
+                    t.Cell().Text(totalCount.ToString()).SemiBold();
+                    t.Cell().Text(totalSubtotal.ToString("0.00")).SemiBold();
+                    t.Cell().Text(totalTax.ToString("0.00")).SemiBold();
+                    t.Cell().Text(totalNet.ToString("0.00")).SemiBold();
                 });
             });
         }).GeneratePdf();

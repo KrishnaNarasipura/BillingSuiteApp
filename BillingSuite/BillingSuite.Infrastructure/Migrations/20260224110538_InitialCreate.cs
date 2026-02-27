@@ -30,7 +30,7 @@ namespace BillingSuite.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Vendors",
+                name: "Customers",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -44,7 +44,7 @@ namespace BillingSuite.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Vendors", x => x.Id);
+                    table.PrimaryKey("PK_Customers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -55,7 +55,7 @@ namespace BillingSuite.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     InvoiceNumber = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     InvoiceDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    VendorId = table.Column<int>(type: "int", nullable: false),
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
                     Subtotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TaxAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -66,9 +66,9 @@ namespace BillingSuite.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Invoices", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Invoices_Vendors_VendorId",
-                        column: x => x.VendorId,
-                        principalTable: "Vendors",
+                        name: "FK_Invoices_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -102,9 +102,9 @@ namespace BillingSuite.Infrastructure.Migrations
                 column: "InvoiceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Invoices_VendorId",
+                name: "IX_Invoices_CustomerId",
                 table: "Invoices",
-                column: "VendorId");
+                column: "CustomerId");
         }
 
         /// <inheritdoc />
@@ -120,7 +120,7 @@ namespace BillingSuite.Infrastructure.Migrations
                 name: "Invoices");
 
             migrationBuilder.DropTable(
-                name: "Vendors");
+                name: "Customers");
         }
     }
 }

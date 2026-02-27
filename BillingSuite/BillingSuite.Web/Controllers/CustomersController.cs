@@ -1,22 +1,21 @@
-﻿// Controllers/VendorsController.cs
-using BillingSuite.Application.Abstractions;
+﻿using BillingSuite.Application.Abstractions;
 using BillingSuite.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BillingSuite.Web.Controllers;
 
-public class VendorsController : Controller
+public class CustomersController : Controller
 {
-    private readonly IVendorService _svc;
-    public VendorsController(IVendorService svc) => _svc = svc;
+    private readonly ICustomerService _svc;
+    public CustomersController(ICustomerService svc) => _svc = svc;
 
     public async Task<IActionResult> Index(string? q, int page = 1, int pageSize = 20)
-        => View(await _svc.GetVendorsAsync(q, page, pageSize));
+        => View(await _svc.GetCustomersAsync(q, page, pageSize));
 
-    public IActionResult Create() => View(new VendorDto());
+    public IActionResult Create() => View(new CustomerDto());
 
     [HttpPost]
-    public async Task<IActionResult> Create(VendorDto dto)
+    public async Task<IActionResult> Create(CustomerDto dto)
     {
         if (!ModelState.IsValid) return View(dto);
         await _svc.CreateAsync(dto);
@@ -31,7 +30,7 @@ public class VendorsController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(int id, VendorDto dto)
+    public async Task<IActionResult> Edit(int id, CustomerDto dto)
     {
         if (!ModelState.IsValid) return View(dto);
         await _svc.UpdateAsync(id, dto);

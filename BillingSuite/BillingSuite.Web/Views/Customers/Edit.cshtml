@@ -1,7 +1,7 @@
-﻿@model BillingSuite.Application.DTOs.VendorDto
+﻿@model BillingSuite.Application.DTOs.CustomerDto
 
 @{
-    ViewData["Title"] = "Edit Vendor";
+    ViewData["Title"] = "Edit Customer";
 }
 
 <div class="container-fluid">
@@ -11,15 +11,15 @@
             <div class="d-flex align-items-center justify-content-between">
                 <div>
                     <h1 class="h2 text-primary mb-0">
-                        <i class="fas fa-user-edit me-2"></i>Edit Vendor
+                        <i class="fas fa-user-edit me-2"></i>Edit Customer
                     </h1>
-                    <p class="text-muted mb-0">Update vendor information</p>
+                    <p class="text-muted mb-0">Update customer information</p>
                 </div>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0">
                         <li class="breadcrumb-item">
-                            <a href="@Url.Action("Index", "Vendors")" class="text-decoration-none">
-                                <i class="fas fa-users me-1"></i>Vendors
+                            <a href="@Url.Action("Index", "Customers")" class="text-decoration-none">
+                                <i class="fas fa-users me-1"></i>Customers
                             </a>
                         </li>
                         <li class="breadcrumb-item active">Edit - @Model.Name</li>
@@ -35,25 +35,25 @@
             <div class="card shadow-lg border-0">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">
-                        <i class="fas fa-building me-2"></i>Vendor Information
+                        <i class="fas fa-building me-2"></i>Customer Information
                     </h5>
                     <small class="opacity-75">ID: @Model.Id</small>
                 </div>
                 <div class="card-body p-4">
-                    <form asp-action="Edit" method="post" id="vendorForm">
+                    <form asp-action="Edit" method="post" id="customerForm">
                         <input type="hidden" asp-for="Id" />
 
                         <div class="row g-4">
-                            <!-- Vendor Name -->
+                            <!-- Customer Name -->
                             <div class="col-12">
                                 <label asp-for="Name" class="form-label fw-semibold required">
-                                    <i class="fas fa-user text-primary me-1"></i>Vendor Name
+                                    <i class="fas fa-user text-primary me-1"></i>Customer Name
                                 </label>
                                 <input asp-for="Name" class="form-control form-control-lg"
-                                       placeholder="Enter vendor company name"
+                                       placeholder="Enter customer company name"
                                        required />
                                 <span asp-validation-for="Name" class="text-danger small"></span>
-                                <div class="form-text">The official name of the vendor company</div>
+                                <div class="form-text">The official name of the customer company</div>
                             </div>
 
                             <!-- Contact Information Section -->
@@ -70,7 +70,7 @@
                                     <i class="fas fa-envelope text-primary me-1"></i>Email Address
                                 </label>
                                 <input asp-for="Email" class="form-control" type="email"
-                                       placeholder="vendor@example.com" />
+                                       placeholder="customer@example.com" />
                                 <div class="form-text">Primary contact email address</div>
                             </div>
 
@@ -138,7 +138,7 @@
                             <div class="col-12">
                                 <div class="alert alert-info">
                                     <i class="fas fa-info-circle me-2"></i>
-                                    <strong>Note:</strong> Changes to vendor information will be reflected in future invoices and reports.
+                                    <strong>Note:</strong> Changes to customer information will be reflected in future invoices and reports.
                                 </div>
                             </div>
                         </div>
@@ -154,7 +154,7 @@
                                         <i class="fas fa-undo me-2"></i>Reset Changes
                                     </button>
                                     <button type="submit" class="btn btn-primary btn-lg px-4">
-                                        <i class="fas fa-save me-2"></i>Update Vendor
+                                        <i class="fas fa-save me-2"></i>Update Customer
                                     </button>
                                 </div>
                             </div>
@@ -274,7 +274,7 @@
         const originalFormValues = {};
 
         document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('vendorForm');
+            const form = document.getElementById('customerForm');
             const formData = new FormData(form);
 
             for (let [key, value] of formData.entries()) {
@@ -304,7 +304,7 @@
 
         function resetForm() {
             if (confirm('Are you sure you want to reset all changes? This will restore the original values.')) {
-                const form = document.getElementById('vendorForm');
+                const form = document.getElementById('customerForm');
 
                 for (let [key, value] of Object.entries(originalFormValues)) {
                     const field = form.querySelector(`[name="${key}"]`);
@@ -317,7 +317,7 @@
         }
 
         // Form validation enhancement
-        document.getElementById('vendorForm').addEventListener('submit', function(e) {
+        document.getElementById('customerForm').addEventListener('submit', function(e) {
             const requiredFields = this.querySelectorAll('input[required], textarea[required]');
             let isValid = true;
 

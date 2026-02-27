@@ -16,8 +16,8 @@ public class IndexModel : PageModel
 
     public PagedResult<InvoiceDto> Invoices { get; set; } = new();
 
-    public async Task OnGetAsync(DateTime? from, DateTime? to, int? vendorId, int page = 1, int pageSize = 20)
+    public async Task OnGetAsync(DateTime? from, DateTime? to, int? CustomerId, string? invoiceNumber, int? status, int page = 1, int pageSize = 20)
     {
-        Invoices = await _invoiceService.SearchAsync(from, to, vendorId, page, pageSize);
+        Invoices = await _invoiceService.SearchAsync(from, to, CustomerId, invoiceNumber, status, page, pageSize);
     }
 }

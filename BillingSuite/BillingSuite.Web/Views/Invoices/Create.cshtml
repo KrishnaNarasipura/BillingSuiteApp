@@ -1,7 +1,7 @@
 ﻿@model BillingSuite.Application.DTOs.InvoiceCreateDto
 @{
     Layout = "_Layout";
-    var vendors = (IEnumerable<BillingSuite.Application.DTOs.VendorDto>)ViewBag.Vendors;
+    var customers = (IEnumerable<BillingSuite.Application.DTOs.CustomerDto>)ViewBag.Customers;
     var taxSettings = (IEnumerable<BillingSuite.Application.DTOs.TaxSettingsDto>)ViewBag.TaxSettings;
     string netAmountWords = "";
 }
@@ -10,9 +10,9 @@
 <form method="post" id="invoiceForm">
     <div class="row mb-2">
         <div class="col-6">
-            <label class="form-label">Vendor</label>
-            <select name="VendorId" class="form-select" required>
-                @foreach (var v in vendors)
+            <label class="form-label">Customer</label>
+            <select name="CustomerId" class="form-select" required>
+                @foreach (var v in customers)
                 {
                     <option value="@v.Id">@v.Name</option>
                 }
