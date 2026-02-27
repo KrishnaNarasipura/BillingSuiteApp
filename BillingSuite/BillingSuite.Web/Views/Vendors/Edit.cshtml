@@ -1,0 +1,368 @@
+﻿@model BillingSuite.Application.DTOs.VendorDto
+
+@{
+    ViewData["Title"] = "Edit Vendor";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h1 class="h2 text-primary mb-0">
+                        <i class="fas fa-user-edit me-2"></i>Edit Vendor
+                    </h1>
+                    <p class="text-muted mb-0">Update vendor information</p>
+                </div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item">
+                            <a href="@Url.Action("Index", "Vendors")" class="text-decoration-none">
+                                <i class="fas fa-users me-1"></i>Vendors
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active">Edit - @Model.Name</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Form Card -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-building me-2"></i>Vendor Information
+                    </h5>
+                    <small class="opacity-75">ID: @Model.Id</small>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Edit" method="post" id="vendorForm">
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="row g-4">
+                            <!-- Vendor Name -->
+                            <div class="col-12">
+                                <label asp-for="Name" class="form-label fw-semibold required">
+                                    <i class="fas fa-user text-primary me-1"></i>Vendor Name
+                                </label>
+                                <input asp-for="Name" class="form-control form-control-lg"
+                                       placeholder="Enter vendor company name"
+                                       required />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                                <div class="form-text">The official name of the vendor company</div>
+                            </div>
+
+                            <!-- Contact Information Section -->
+                            <div class="col-12">
+                                <hr class="my-3">
+                                <h6 class="text-muted mb-3">
+                                    <i class="fas fa-address-card me-1"></i>Contact Information
+                                </h6>
+                            </div>
+
+                            <!-- Email and Phone -->
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label fw-semibold">
+                                    <i class="fas fa-envelope text-primary me-1"></i>Email Address
+                                </label>
+                                <input asp-for="Email" class="form-control" type="email"
+                                       placeholder="vendor@example.com" />
+                                <div class="form-text">Primary contact email address</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Phone" class="form-label fw-semibold">
+                                    <i class="fas fa-phone text-primary me-1"></i>Phone Number
+                                </label>
+                                <input asp-for="Phone" class="form-control" type="tel"
+                                       placeholder="+1 (555) 123-4567" />
+                                <div class="form-text">Primary contact phone number</div>
+                            </div>
+
+                            <!-- GSTIN -->
+                            <div class="col-md-6">
+                                <label asp-for="Gstin" class="form-label fw-semibold">
+                                    <i class="fas fa-file-invoice text-primary me-1"></i>GSTIN
+                                </label>
+                                <input asp-for="Gstin" class="form-control"
+                                       placeholder="Enter GST identification number" />
+                                <div class="form-text">Goods and Services Tax Identification Number</div>
+                            </div>
+
+                            <!-- Address Section -->
+                            <div class="col-12">
+                                <hr class="my-3">
+                                <h6 class="text-muted mb-3">
+                                    <i class="fas fa-map-marker-alt me-1"></i>Address Information
+                                </h6>
+                            </div>
+
+                            <!-- Billing Address -->
+                            <div class="col-12">
+                                <label asp-for="BillingAddress" class="form-label fw-semibold">
+                                    <i class="fas fa-building text-primary me-1"></i>Billing Address
+                                </label>
+                                <textarea asp-for="BillingAddress" class="form-control" rows="3"
+                                          placeholder="Enter complete billing address&#10;Street, City, State&#10;Postal Code, Country"></textarea>
+                                <div class="form-text">Complete address for billing purposes</div>
+                            </div>
+
+                            <!-- Shipping Address -->
+                            <div class="col-12">
+                                <div class="d-flex align-items-center mb-2">
+                                    <label asp-for="ShippingAddress" class="form-label fw-semibold mb-0">
+                                        <i class="fas fa-shipping-fast text-primary me-1"></i>Shipping Address
+                                    </label>
+                                    <button type="button" class="btn btn-link btn-sm ms-2 p-0"
+                                            onclick="copyBillingAddress()" title="Copy from billing address">
+                                        <i class="fas fa-copy me-1"></i>Copy Billing
+                                    </button>
+                                    @if (!string.IsNullOrEmpty(Model.ShippingAddress) && Model.ShippingAddress != Model.BillingAddress)
+                                    {
+                                        <button type="button" class="btn btn-link btn-sm ms-1 p-0"
+                                                onclick="clearShippingAddress()" title="Clear shipping address">
+                                            <i class="fas fa-times me-1"></i>Clear
+                                        </button>
+                                    }
+                                </div>
+                                <textarea asp-for="ShippingAddress" class="form-control" rows="3"
+                                          placeholder="Enter shipping address (leave blank if same as billing)&#10;Street, City, State&#10;Postal Code, Country"></textarea>
+                                <div class="form-text">Delivery address (if different from billing address)</div>
+                            </div>
+
+                            <!-- Last Updated Info -->
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Note:</strong> Changes to vendor information will be reflected in future invoices and reports.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-lg px-4">
+                                        <i class="fas fa-arrow-left me-2"></i>Back to List
+                                    </a>
+                                    <button type="button" class="btn btn-outline-warning btn-lg px-4" onclick="resetForm()">
+                                        <i class="fas fa-undo me-2"></i>Reset Changes
+                                    </button>
+                                    <button type="submit" class="btn btn-primary btn-lg px-4">
+                                        <i class="fas fa-save me-2"></i>Update Vendor
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .card {
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+            .card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 30px rgba(0,0,0,0.15) !important;
+            }
+
+        .form-control {
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            padding: 12px 16px;
+        }
+
+            .form-control:focus {
+                border-color: #0d6efd;
+                box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+            }
+
+        .form-control-lg {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 10px 20px;
+        }
+
+            .btn:hover {
+                transform: translateY(-1px);
+            }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+            border: none;
+        }
+
+            .btn-primary:hover {
+                background: linear-gradient(135deg, #0b5ed7, #0a58ca);
+            }
+
+        .card-header {
+            border-radius: 12px 12px 0 0 !important;
+            border: none;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .required::after {
+            content: " *";
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .form-text {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+
+        .breadcrumb {
+            background: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .breadcrumb-item a {
+            color: #6c757d;
+        }
+
+        hr {
+            border-color: #e9ecef;
+            opacity: 1;
+        }
+
+        .form-label {
+            margin-bottom: 0.75rem;
+            color: #495057;
+        }
+
+        .btn-link {
+            color: #0d6efd;
+            text-decoration: none;
+        }
+
+            .btn-link:hover {
+                color: #0b5ed7;
+            }
+
+        .alert {
+            border-radius: 8px;
+            border: none;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // Store original form values for reset functionality
+        const originalFormValues = {};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('vendorForm');
+            const formData = new FormData(form);
+
+            for (let [key, value] of formData.entries()) {
+                originalFormValues[key] = value;
+            }
+        });
+
+        function copyBillingAddress() {
+            const billingAddress = document.querySelector('textarea[name="BillingAddress"]').value;
+            document.querySelector('textarea[name="ShippingAddress"]').value = billingAddress;
+
+            // Show a brief success feedback
+            const button = event.target.closest('button');
+            const originalContent = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+            button.classList.add('text-success');
+
+            setTimeout(() => {
+                button.innerHTML = originalContent;
+                button.classList.remove('text-success');
+            }, 2000);
+        }
+
+        function clearShippingAddress() {
+            document.querySelector('textarea[name="ShippingAddress"]').value = '';
+        }
+
+        function resetForm() {
+            if (confirm('Are you sure you want to reset all changes? This will restore the original values.')) {
+                const form = document.getElementById('vendorForm');
+
+                for (let [key, value] of Object.entries(originalFormValues)) {
+                    const field = form.querySelector(`[name="${key}"]`);
+                    if (field) {
+                        field.value = value;
+                        field.classList.remove('is-valid', 'is-invalid');
+                    }
+                }
+            }
+        }
+
+        // Form validation enhancement
+        document.getElementById('vendorForm').addEventListener('submit', function(e) {
+            const requiredFields = this.querySelectorAll('input[required], textarea[required]');
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                alert('Please fill in all required fields.');
+            }
+        });
+
+        // Real-time validation feedback
+        document.querySelectorAll('input[required], textarea[required]').forEach(field => {
+            field.addEventListener('blur', function() {
+                if (this.value.trim()) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.add('is-invalid');
+                    this.classList.remove('is-valid');
+                }
+            });
+        });
+
+        // Track form changes
+        let hasChanges = false;
+        document.querySelectorAll('input, textarea, select').forEach(field => {
+            field.addEventListener('input', function() {
+                hasChanges = true;
+            });
+        });
+
+        // Warn user about unsaved changes
+        window.addEventListener('beforeunload', function(e) {
+            if (hasChanges) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+}

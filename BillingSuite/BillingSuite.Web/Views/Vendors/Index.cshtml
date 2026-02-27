@@ -1,0 +1,28 @@
+﻿
+@model BillingSuite.Application.Results.PagedResult<BillingSuite.Application.DTOs.VendorDto>
+@{
+    Layout = "_Layout";
+}
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <h3>Vendors</h3>
+    <a class="btn btn-primary" href="/Vendors/Create">Add Vendor</a>
+</div>
+<table class="table table-sm table-striped">
+    <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var v in Model.Items)
+        {
+            <tr>
+                <td>@v.Name</td>
+                <td>@v.Phone</td>
+                <td>@v.Email</td>
+                <td class="text-end">
+                    <a class="btn btn-sm btn-outline-secondary" href="/Vendors/Edit/@v.Id">Edit</a>
+                    <form method="post" action="/Vendors/Delete/@v.Id" class="d-inline">
+                        <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

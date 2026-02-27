@@ -1,0 +1,191 @@
+﻿@using BillingSuite.Application.DTOs
+@model BillingSuite.Application.Results.PagedResult<InvoiceDto>
+@{
+    Layout = "_Layout";
+    var currentPage = ViewContext.HttpContext.Request.Query["page"].ToString();
+    var currentFrom = ViewContext.HttpContext.Request.Query["from"].ToString();
+    var currentTo = ViewContext.HttpContext.Request.Query["to"].ToString();
+    var currentVendorId = ViewContext.HttpContext.Request.Query["vendorId"].ToString();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3>Invoices</h3>
+    <a class="btn btn-primary" href="/Invoices/Create">Create</a>
+</div>
+
+<!-- Filters Section -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Filters</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" action="/Invoices" class="row g-3">
+            <div class="col-md-3">
+                <label for="from" class="form-label">From Date</label>
+                <input type="date" class="form-control" id="from" name="from" value="@currentFrom" />
+            </div>
+            <div class="col-md-3">
+                <label for="to" class="form-label">To Date</label>
+                <input type="date" class="form-control" id="to" name="to" value="@currentTo" />
+            </div>
+            <div class="col-md-4">
+                <label for="vendorId" class="form-label">Vendor</label>
+                <select class="form-select" id="vendorId" name="vendorId">
+                    <option value="">All Vendors</option>
+                    @if (ViewBag.Vendors != null)
+                    {
+                        @foreach (var vendor in (IEnumerable<VendorDto>)ViewBag.Vendors)
+                        {
+                            <option value="@vendor.Id" selected="@(currentVendorId == vendor.Id.ToString())">@vendor.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-outline-primary me-2">Filter</button>
+                <a href="/Invoices" class="btn btn-outline-secondary">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results Summary -->
+@if (Model.TotalCount > 0)
+{
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <small class="text-muted">
+            Showing @((Model.Page - 1) * Model.PageSize + 1) to @Math.Min(Model.Page * Model.PageSize, Model.TotalCount) of @Model.TotalCount invoices
+        </small>
+    </div>
+}
+
+<!-- Invoices Table -->
+<table class="table table-sm table-striped">
+    <thead>
+        <tr>
+            <th>Invoice #</th>
+            <th>Date</th>
+            <th>Vendor</th>
+            <th>Net Amount</th>
+            <th class="text-end">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Items.Any())
+        {
+            @foreach (var invoice in Model.Items)
+            {
+                <tr>
+                    <td>@invoice.InvoiceNumber</td>
+                    <td>@invoice.InvoiceDate.ToString("dd-MM-yyyy")</td>
+                    <td>@invoice.Vendor?.Name</td>
+                    <td>@invoice.NetAmount.ToString("")</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" href="@Url.Action("Preview", "Invoices", new { id = invoice.Id })">Preview</a>
+                        <a class="btn btn-sm btn-outline-success" target="_blank" href="@Url.Action("Print", "Invoices", new { id = invoice.Id })">Print</a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5" class="text-center text-muted py-4">No invoices found matching your criteria.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Pagination -->
+@if (Model.TotalCount > Model.PageSize)
+{
+    <nav aria-label="Invoices pagination">
+        <ul class="pagination justify-content-center">
+            @{
+                var totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
+                var startPage = Math.Max(1, Model.Page - 2);
+                var endPage = Math.Min(totalPages, Model.Page + 2);
+
+                var routeValues = new Dictionary<string, string?>();
+                if (!string.IsNullOrEmpty(currentFrom)) routeValues["from"] = currentFrom;
+                if (!string.IsNullOrEmpty(currentTo)) routeValues["to"] = currentTo;
+                if (!string.IsNullOrEmpty(currentVendorId)) routeValues["vendorId"] = currentVendorId;
+            }
+
+            <!-- Previous Button -->
+            <li class="page-item @(Model.Page <= 1 ? "disabled" : "")">
+                @if (Model.Page > 1)
+                {
+
+                    routeValues["page"] = (Model.Page - 1).ToString();
+
+                    <a class="page-link" href="@Url.Action("Index", routeValues)">Previous</a>
+                }
+                else
+                {
+                    <span class="page-link">Previous</span>
+                }
+            </li>
+
+            <!-- First Page -->
+            @if (startPage > 1)
+            {
+
+                routeValues["page"] = "1";
+
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", routeValues)">1</a>
+                </li>
+                @if (startPage > 2)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+            }
+
+            <!-- Page Numbers -->
+            @for (int i = startPage; i <= endPage; i++)
+            {
+
+                routeValues["page"] = i.ToString();
+
+                <li class="page-item @(i == Model.Page ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", routeValues)">@i</a>
+                </li>
+            }
+
+            <!-- Last Page -->
+            @if (endPage < totalPages)
+            {
+                @if (endPage < totalPages - 1)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+
+                routeValues["page"] = totalPages.ToString();
+
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", routeValues)">@totalPages</a>
+                </li>
+            }
+
+            <!-- Next Button -->
+            <li class="page-item @(Model.Page >= totalPages ? "disabled" : "")">
+                @if (Model.Page < totalPages)
+                {
+
+                    routeValues["page"] = (Model.Page + 1).ToString();
+
+                    <a class="page-link" href="@Url.Action("Index", routeValues)">Next</a>
+                }
+                else
+                {
+                    <span class="page-link">Next</span>
+                }
+            </li>
+        </ul>
+    </nav>
+}

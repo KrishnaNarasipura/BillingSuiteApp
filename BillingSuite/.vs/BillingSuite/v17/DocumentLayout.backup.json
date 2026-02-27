@@ -1,0 +1,646 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Work\\MyWorks\\BillingSuite\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.web\\views\\invoices\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|solutionrelative:billingsuite.web\\views\\invoices\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.web\\controllers\\invoicescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|solutionrelative:billingsuite.web\\controllers\\invoicescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.web\\views\\vendors\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|solutionrelative:billingsuite.web\\views\\vendors\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.web\\views\\vendors\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|solutionrelative:billingsuite.web\\views\\vendors\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.web\\controllers\\settingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|solutionrelative:billingsuite.web\\controllers\\settingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.infrastructure\\services\\pdf\\invoicepdf.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|solutionrelative:billingsuite.infrastructure\\services\\pdf\\invoicepdf.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.infrastructure\\services\\taxsettingsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|solutionrelative:billingsuite.infrastructure\\services\\taxsettingsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.web\\views\\settings\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|solutionrelative:billingsuite.web\\views\\settings\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.infrastructure\\migrations\\20260226233649_updatecompanysettingscolumns.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|solutionrelative:billingsuite.infrastructure\\migrations\\20260226233649_updatecompanysettingscolumns.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4DB21F75-0A2E-4F45-A0D0-1AD41FE401DA}|BillingSuite.Domain\\BillingSuite.Domain.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.domain\\entities\\companysettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4DB21F75-0A2E-4F45-A0D0-1AD41FE401DA}|BillingSuite.Domain\\BillingSuite.Domain.csproj|solutionrelative:billingsuite.domain\\entities\\companysettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.infrastructure\\services\\companysettingsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|solutionrelative:billingsuite.infrastructure\\services\\companysettingsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.infrastructure\\services\\invoiceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|solutionrelative:billingsuite.infrastructure\\services\\invoiceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.web\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|solutionrelative:billingsuite.web\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.web\\views\\invoices\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|solutionrelative:billingsuite.web\\views\\invoices\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.web\\views\\invoices\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|solutionrelative:billingsuite.web\\views\\invoices\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.web\\views\\invoices\\preview.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|solutionrelative:billingsuite.web\\views\\invoices\\preview.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.infrastructure\\persistence\\billingdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|solutionrelative:billingsuite.infrastructure\\persistence\\billingdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.infrastructure\\migrations\\20260226230120_updatevendoraddresscolumns.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|solutionrelative:billingsuite.infrastructure\\migrations\\20260226230120_updatevendoraddresscolumns.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4DB21F75-0A2E-4F45-A0D0-1AD41FE401DA}|BillingSuite.Domain\\BillingSuite.Domain.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.domain\\entities\\vendor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4DB21F75-0A2E-4F45-A0D0-1AD41FE401DA}|BillingSuite.Domain\\BillingSuite.Domain.csproj|solutionrelative:billingsuite.domain\\entities\\vendor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.web\\views\\vendors\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{FE853602-C851-4631-A5AB-463EAE20A888}|BillingSuite.Web\\BillingSuite.Web.csproj|solutionrelative:billingsuite.web\\views\\vendors\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.infrastructure\\persistence\\configurations\\config.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|solutionrelative:billingsuite.infrastructure\\persistence\\configurations\\config.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.infrastructure\\persistence\\dbinitializer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|solutionrelative:billingsuite.infrastructure\\persistence\\dbinitializer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.infrastructure\\dependencyinjection\\servicecollectionextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|solutionrelative:billingsuite.infrastructure\\dependencyinjection\\servicecollectionextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.infrastructure\\services\\vendorservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|solutionrelative:billingsuite.infrastructure\\services\\vendorservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{30002F2D-C5D3-4CFF-8804-1E0FE9874040}|BillingSuite.Application\\BillingSuite.Application.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.application\\dtos\\vendordto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{30002F2D-C5D3-4CFF-8804-1E0FE9874040}|BillingSuite.Application\\BillingSuite.Application.csproj|solutionrelative:billingsuite.application\\dtos\\vendordto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.infrastructure\\migrations\\20260226072238_addtaxcolumnstoinvoiceitems.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|solutionrelative:billingsuite.infrastructure\\migrations\\20260226072238_addtaxcolumnstoinvoiceitems.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{30002F2D-C5D3-4CFF-8804-1E0FE9874040}|BillingSuite.Application\\BillingSuite.Application.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.application\\dtos\\invoiceeditdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{30002F2D-C5D3-4CFF-8804-1E0FE9874040}|BillingSuite.Application\\BillingSuite.Application.csproj|solutionrelative:billingsuite.application\\dtos\\invoiceeditdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.infrastructure\\migrations\\20260226072238_addtaxcolumnstoinvoiceitems.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{328A8F8C-C7FA-41D4-94B9-C0FB5A05C2F3}|BillingSuite.Infrastructure\\BillingSuite.Infrastructure.csproj|solutionrelative:billingsuite.infrastructure\\migrations\\20260226072238_addtaxcolumnstoinvoiceitems.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{30002F2D-C5D3-4CFF-8804-1E0FE9874040}|BillingSuite.Application\\BillingSuite.Application.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.application\\dtos\\invoicedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{30002F2D-C5D3-4CFF-8804-1E0FE9874040}|BillingSuite.Application\\BillingSuite.Application.csproj|solutionrelative:billingsuite.application\\dtos\\invoicedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{30002F2D-C5D3-4CFF-8804-1E0FE9874040}|BillingSuite.Application\\BillingSuite.Application.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.application\\dtos\\invoicecreatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{30002F2D-C5D3-4CFF-8804-1E0FE9874040}|BillingSuite.Application\\BillingSuite.Application.csproj|solutionrelative:billingsuite.application\\dtos\\invoicecreatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{30002F2D-C5D3-4CFF-8804-1E0FE9874040}|BillingSuite.Application\\BillingSuite.Application.csproj|c:\\work\\myworks\\billingsuite\\billingsuite.application\\dtos\\taxsettingsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{30002F2D-C5D3-4CFF-8804-1E0FE9874040}|BillingSuite.Application\\BillingSuite.Application.csproj|solutionrelative:billingsuite.application\\dtos\\taxsettingsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 27,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "BillingSuite.Web\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "BillingSuite.Web\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAABFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-24T09:57:58.268Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{6324226f-61b6-4f28-92ee-18d4b5fe1e48}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:134:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:136:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:137:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:139:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:140:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:141:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:142:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:143:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:144:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:145:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:146:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:133:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:135:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:138:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:148:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:147:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:149:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:150:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Views\\Invoices\\Index.cshtml",
+              "RelativeDocumentMoniker": "BillingSuite.Web\\Views\\Invoices\\Index.cshtml",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Views\\Invoices\\Index.cshtml",
+              "RelativeToolTip": "BillingSuite.Web\\Views\\Invoices\\Index.cshtml",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAABUAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-26T23:57:34.561Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "20260226233649_UpdateCompanySettingsColumns.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Migrations\\20260226233649_UpdateCompanySettingsColumns.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Infrastructure\\Migrations\\20260226233649_UpdateCompanySettingsColumns.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Migrations\\20260226233649_UpdateCompanySettingsColumns.cs",
+              "RelativeToolTip": "BillingSuite.Infrastructure\\Migrations\\20260226233649_UpdateCompanySettingsColumns.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAAwBAAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T23:36:56.802Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Views\\Settings\\Index.cshtml",
+              "RelativeDocumentMoniker": "BillingSuite.Web\\Views\\Settings\\Index.cshtml",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Views\\Settings\\Index.cshtml",
+              "RelativeToolTip": "BillingSuite.Web\\Views\\Settings\\Index.cshtml",
+              "ViewState": "AgIAAL0BAAAAAAAAAAAwwMsBAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-26T23:32:09.592Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "CompanySettingsService.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Services\\CompanySettingsService.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Infrastructure\\Services\\CompanySettingsService.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Services\\CompanySettingsService.cs",
+              "RelativeToolTip": "BillingSuite.Infrastructure\\Services\\CompanySettingsService.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAA4wBYAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T23:31:16.613Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "CompanySettings.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Domain\\Entities\\CompanySettings.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Domain\\Entities\\CompanySettings.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Domain\\Entities\\CompanySettings.cs",
+              "RelativeToolTip": "BillingSuite.Domain\\Entities\\CompanySettings.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAAgAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T23:30:39.956Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "InvoicePdf.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Services\\Pdf\\InvoicePdf.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Infrastructure\\Services\\Pdf\\InvoicePdf.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Services\\Pdf\\InvoicePdf.cs",
+              "RelativeToolTip": "BillingSuite.Infrastructure\\Services\\Pdf\\InvoicePdf.cs",
+              "ViewState": "AgIAAN4AAAAAAAAAAADwv+oAAABhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T23:21:15.878Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "InvoicesController.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Controllers\\InvoicesController.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Web\\Controllers\\InvoicesController.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Controllers\\InvoicesController.cs",
+              "RelativeToolTip": "BillingSuite.Web\\Controllers\\InvoicesController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T23:20:51.994Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Views\\Invoices\\Edit.cshtml",
+              "RelativeDocumentMoniker": "BillingSuite.Web\\Views\\Invoices\\Edit.cshtml",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Views\\Invoices\\Edit.cshtml",
+              "RelativeToolTip": "BillingSuite.Web\\Views\\Invoices\\Edit.cshtml",
+              "ViewState": "AgIAAGwAAAAAAAAAAADwv3YAAABsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-26T23:13:18.536Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Preview.cshtml",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Views\\Invoices\\Preview.cshtml",
+              "RelativeDocumentMoniker": "BillingSuite.Web\\Views\\Invoices\\Preview.cshtml",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Views\\Invoices\\Preview.cshtml",
+              "RelativeToolTip": "BillingSuite.Web\\Views\\Invoices\\Preview.cshtml",
+              "ViewState": "AgIAADkAAAAAAAAAAAD4vwoAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-26T23:04:30.238Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "InvoiceService.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Services\\InvoiceService.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Infrastructure\\Services\\InvoiceService.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Services\\InvoiceService.cs",
+              "RelativeToolTip": "BillingSuite.Infrastructure\\Services\\InvoiceService.cs",
+              "ViewState": "AgIAAKMAAAAAAAAAAAAQwLAAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T23:03:53.609Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "20260226230120_UpdateVendorAddressColumns.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Migrations\\20260226230120_UpdateVendorAddressColumns.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Infrastructure\\Migrations\\20260226230120_UpdateVendorAddressColumns.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Migrations\\20260226230120_UpdateVendorAddressColumns.cs",
+              "RelativeToolTip": "BillingSuite.Infrastructure\\Migrations\\20260226230120_UpdateVendorAddressColumns.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAswCkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T23:01:31.525Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "SettingsController.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Controllers\\SettingsController.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Web\\Controllers\\SettingsController.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Controllers\\SettingsController.cs",
+              "RelativeToolTip": "BillingSuite.Web\\Controllers\\SettingsController.cs",
+              "ViewState": "AgIAABcAAAAAAAAAAAAWwCQAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T22:57:55.374Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "TaxSettingsService.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Services\\TaxSettingsService.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Infrastructure\\Services\\TaxSettingsService.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Services\\TaxSettingsService.cs",
+              "RelativeToolTip": "BillingSuite.Infrastructure\\Services\\TaxSettingsService.cs",
+              "ViewState": "AgIAABwAAAAAAAAAAAAewCcAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T22:57:55.395Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Views\\Vendors\\Index.cshtml",
+              "RelativeDocumentMoniker": "BillingSuite.Web\\Views\\Vendors\\Index.cshtml",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Views\\Vendors\\Index.cshtml",
+              "RelativeToolTip": "BillingSuite.Web\\Views\\Vendors\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-26T22:57:21.011Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Views\\Vendors\\Edit.cshtml",
+              "RelativeDocumentMoniker": "BillingSuite.Web\\Views\\Vendors\\Edit.cshtml",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Views\\Vendors\\Edit.cshtml",
+              "RelativeToolTip": "BillingSuite.Web\\Views\\Vendors\\Edit.cshtml",
+              "ViewState": "AgIAAGYAAAAAAAAAAAAAAG0BAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-26T22:57:07.03Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Views\\Vendors\\Create.cshtml",
+              "RelativeDocumentMoniker": "BillingSuite.Web\\Views\\Vendors\\Create.cshtml",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Views\\Vendors\\Create.cshtml",
+              "RelativeToolTip": "BillingSuite.Web\\Views\\Vendors\\Create.cshtml",
+              "ViewState": "AgIAABMBAAAAAAAAAADwvycBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-26T22:56:22.253Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "Config.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Persistence\\Configurations\\Config.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Infrastructure\\Persistence\\Configurations\\Config.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Persistence\\Configurations\\Config.cs",
+              "RelativeToolTip": "BillingSuite.Infrastructure\\Persistence\\Configurations\\Config.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T22:55:48.728Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "DbInitializer.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Persistence\\DbInitializer.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Infrastructure\\Persistence\\DbInitializer.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Persistence\\DbInitializer.cs",
+              "RelativeToolTip": "BillingSuite.Infrastructure\\Persistence\\DbInitializer.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T22:55:46.092Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "BillingDbContext.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Persistence\\BillingDbContext.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Infrastructure\\Persistence\\BillingDbContext.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Persistence\\BillingDbContext.cs",
+              "RelativeToolTip": "BillingSuite.Infrastructure\\Persistence\\BillingDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T22:55:40.959Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "ServiceCollectionExtensions.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\DependencyInjection\\ServiceCollectionExtensions.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Infrastructure\\DependencyInjection\\ServiceCollectionExtensions.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\DependencyInjection\\ServiceCollectionExtensions.cs",
+              "RelativeToolTip": "BillingSuite.Infrastructure\\DependencyInjection\\ServiceCollectionExtensions.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T22:55:34.65Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "VendorDto.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Application\\DTOs\\VendorDto.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Application\\DTOs\\VendorDto.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Application\\DTOs\\VendorDto.cs",
+              "RelativeToolTip": "BillingSuite.Application\\DTOs\\VendorDto.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABAAAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T22:54:10.367Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "VendorService.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Services\\VendorService.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Infrastructure\\Services\\VendorService.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Services\\VendorService.cs",
+              "RelativeToolTip": "BillingSuite.Infrastructure\\Services\\VendorService.cs",
+              "ViewState": "AgIAAEoAAAAAAAAAAAAvwE0AAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T22:54:04.637Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "Vendor.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Domain\\Entities\\Vendor.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Domain\\Entities\\Vendor.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Domain\\Entities\\Vendor.cs",
+              "RelativeToolTip": "BillingSuite.Domain\\Entities\\Vendor.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T22:52:58.603Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Views\\Invoices\\Create.cshtml",
+              "RelativeDocumentMoniker": "BillingSuite.Web\\Views\\Invoices\\Create.cshtml",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Web\\Views\\Invoices\\Create.cshtml",
+              "RelativeToolTip": "BillingSuite.Web\\Views\\Invoices\\Create.cshtml",
+              "ViewState": "AgIAALwAAAAAAAAAAADwv+QAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-26T08:32:13.903Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "20260226072238_AddTaxColumnsToInvoiceItems.Designer.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Migrations\\20260226072238_AddTaxColumnsToInvoiceItems.Designer.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Infrastructure\\Migrations\\20260226072238_AddTaxColumnsToInvoiceItems.Designer.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Migrations\\20260226072238_AddTaxColumnsToInvoiceItems.Designer.cs",
+              "RelativeToolTip": "BillingSuite.Infrastructure\\Migrations\\20260226072238_AddTaxColumnsToInvoiceItems.Designer.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAAB0AAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T07:30:08.222Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "20260226072238_AddTaxColumnsToInvoiceItems.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Migrations\\20260226072238_AddTaxColumnsToInvoiceItems.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Infrastructure\\Migrations\\20260226072238_AddTaxColumnsToInvoiceItems.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Infrastructure\\Migrations\\20260226072238_AddTaxColumnsToInvoiceItems.cs",
+              "RelativeToolTip": "BillingSuite.Infrastructure\\Migrations\\20260226072238_AddTaxColumnsToInvoiceItems.cs",
+              "ViewState": "AgIAAC4AAAAAAAAAAAAQwDMAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T07:23:29.967Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "InvoiceDto.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Application\\DTOs\\InvoiceDto.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Application\\DTOs\\InvoiceDto.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Application\\DTOs\\InvoiceDto.cs",
+              "RelativeToolTip": "BillingSuite.Application\\DTOs\\InvoiceDto.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABAAAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T07:17:23.86Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "InvoiceCreateDto.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Application\\DTOs\\InvoiceCreateDto.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Application\\DTOs\\InvoiceCreateDto.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Application\\DTOs\\InvoiceCreateDto.cs",
+              "RelativeToolTip": "BillingSuite.Application\\DTOs\\InvoiceCreateDto.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAA4AAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-24T09:05:19.506Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "InvoiceEditDto.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Application\\DTOs\\InvoiceEditDto.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Application\\DTOs\\InvoiceEditDto.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Application\\DTOs\\InvoiceEditDto.cs",
+              "RelativeToolTip": "BillingSuite.Application\\DTOs\\InvoiceEditDto.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAuwAgAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T07:06:35.671Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "TaxSettingsDto.cs",
+              "DocumentMoniker": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Application\\DTOs\\TaxSettingsDto.cs",
+              "RelativeDocumentMoniker": "BillingSuite.Application\\DTOs\\TaxSettingsDto.cs",
+              "ToolTip": "C:\\Work\\MyWorks\\BillingSuite\\BillingSuite.Application\\DTOs\\TaxSettingsDto.cs",
+              "RelativeToolTip": "BillingSuite.Application\\DTOs\\TaxSettingsDto.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAA0AAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-25T13:50:58.417Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

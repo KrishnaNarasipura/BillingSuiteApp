@@ -1,0 +1,237 @@
+﻿@model BillingSuite.Application.DTOs.InvoiceCreateDto
+@{
+    Layout = "_Layout";
+    var vendors = (IEnumerable<BillingSuite.Application.DTOs.VendorDto>)ViewBag.Vendors;
+    var taxSettings = (IEnumerable<BillingSuite.Application.DTOs.TaxSettingsDto>)ViewBag.TaxSettings;
+    string netAmountWords = "";
+}
+
+<h3>New Invoice</h3>
+<form method="post" id="invoiceForm">
+    <div class="row mb-2">
+        <div class="col-6">
+            <label class="form-label">Vendor</label>
+            <select name="VendorId" class="form-select" required>
+                @foreach (var v in vendors)
+                {
+                    <option value="@v.Id">@v.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-3">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" name="InvoiceDate" value="@Model.InvoiceDate.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-3">
+            <label class="form-label">Discount</label>
+            <input type="number" step="0.01" class="form-control" name="DiscountAmount" id="discountAmount" value="@Model.DiscountAmount" />
+        </div>
+    </div>
+
+    <table class="table table-sm" id="itemsTable">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Tax Type</th>
+                <th>Line Total</th>
+                <th>Tax Amount</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Items.Count; i++)
+            {
+                <tr>
+                    <td>
+                        <input class="form-control" name="Items[@i].Description" value="@Model.Items[i].Description" />
+                    </td>
+                    <td>
+                        <input class="form-control qty" name="Items[@i].Quantity" type="number" step="0.01" value="@Model.Items[i].Quantity" />
+                    </td>
+                    <td>
+                        <input class="form-control unitprice" name="Items[@i].UnitPrice" type="number" step="0.01" value="@Model.Items[i].UnitPrice" />
+                    </td>
+                    <td>
+                        <select class="form-select tax-select" name="Items[@i].TaxSettingsId">
+                            <option value="">No Tax</option>
+                            @foreach (var tax in taxSettings)
+                            {
+                                var isSelected = Model.Items[i].TaxSettingsId.HasValue && Model.Items[i].TaxSettingsId == tax.Id;
+                                <option value="@tax.Id" data-percent="@tax.TaxPercent" data-taxtype="@tax.TaxType" selected="@isSelected">
+                                    @tax.TaxType (@tax.TaxPercent%)
+                                </option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <input class="form-control linetotal" name="Items[@i].LineTotal" type="number" step="0.01" value="@Model.Items[i].LineTotal" readonly />
+                    </td>
+                    <td>
+                        <input class="form-control taxamount" name="Items[@i].TaxAmount" type="number" step="0.01" value="@Model.Items[i].TaxAmount" readonly />
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm remove-item">Remove</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="button" class="btn btn-secondary mb-3" id="addItem">Add Item</button>
+
+    <div class="row">
+        <div class="col-6 offset-6">
+            <table class="table table-borderless">
+                <tr>
+                    <th class="text-end">Subtotal:</th>
+                    <td class="text-end" id="subtotal">0.00</td>
+                </tr>
+                <tbody id="taxBreakdown">
+                    <!-- Tax breakdown will be inserted here -->
+                </tbody>
+                <tr>
+                    <th class="text-end">Total Tax:</th>
+                    <td class="text-end fw-bold" id="totalTax">0.00</td>
+                </tr>
+                <tr>
+                    <th class="text-end">Discount:</th>
+                    <td class="text-end" id="discountDisplay">0.00</td>
+                </tr>
+                <tr class="border-top">
+                    <th class="text-end">Net Amount:</th>
+                    <td class="text-end fw-bold" id="netAmount">0.00</td>
+                </tr>
+            </table>
+            <div class="text-end mt-2">
+                <span class="fw-bold">Amount in words:</span>
+                <span class="amount-in-words">@netAmountWords</span>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-primary">Save</button>
+</form>
+
+@section Scripts {
+    <script>
+        function recalculateTotals() {
+            let subtotal = 0;
+            let taxBreakdown = {};
+
+            $('#itemsTable tbody tr').each(function () {
+                let qty = parseFloat($(this).find('.qty').val()) || 0;
+                let unitPrice = parseFloat($(this).find('.unitprice').val()) || 0;
+                let lineTotal = qty * unitPrice;
+                $(this).find('.linetotal').val(lineTotal.toFixed(2));
+                subtotal += lineTotal;
+
+                // Calculate tax for this line item
+                let taxSelect = $(this).find('.tax-select');
+                let selectedOption = taxSelect.find('option:selected');
+                let taxId = selectedOption.val();
+                let taxPercent = parseFloat(selectedOption.data('percent')) || 0;
+                let taxType = selectedOption.data('taxtype') || '';
+                let taxAmount = lineTotal * taxPercent / 100;
+                $(this).find('.taxamount').val(taxAmount.toFixed(2));
+
+                // Add to tax breakdown by tax ID to ensure uniqueness
+                if (taxPercent > 0 && taxId) {
+                    if (!taxBreakdown[taxId]) {
+                        taxBreakdown[taxId] = {
+                            type: taxType,
+                            percent: taxPercent,
+                            amount: 0
+                        };
+                    }
+                    taxBreakdown[taxId].amount += taxAmount;
+                }
+            });
+
+            let discount = parseFloat($('#discountAmount').val()) || 0;
+            let totalTax = Object.values(taxBreakdown).reduce((sum, tax) => sum + tax.amount, 0);
+            let netAmount = subtotal + totalTax - discount;
+
+            $('#subtotal').text(subtotal.toFixed(2));
+            $('#totalTax').text(totalTax.toFixed(2));
+            $('#discountDisplay').text(discount.toFixed(2));
+            $('#netAmount').text(netAmount.toFixed(2));
+
+            // Update tax breakdown display
+            let taxBreakdownHtml = '';
+            for (let [taxId, taxInfo] of Object.entries(taxBreakdown)) {
+                if (taxInfo.amount > 0) {
+                    taxBreakdownHtml += `<tr><th class="text-end">${taxInfo.type} (${taxInfo.percent}%):</th><td class="text-end">${taxInfo.amount.toFixed(2)}</td></tr>`;
+                }
+            }
+            $('#taxBreakdown').html(taxBreakdownHtml);
+
+            // Convert amount to words
+            $.ajax({
+                url: '/Invoices/ConvertNumberToWords',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(netAmount),
+                success: function (response) {
+                    $('.amount-in-words').text(response.words);
+                }
+            });
+        }
+
+        function updateNames() {
+            $('#itemsTable tbody tr').each(function (i) {
+                $(this).find('input, select, textarea').each(function () {
+                    let name = $(this).attr('name');
+                    if (name) {
+                        let newName = name.replace(/Items\[\d+\]/, 'Items[' + i + ']');
+                        $(this).attr('name', newName);
+                    }
+                });
+            });
+        }
+
+        function createTaxOptions() {
+            let options = '<option value="">No Tax</option>';
+            @foreach (var tax in taxSettings)
+            {
+                    <text>
+                    options += '<option value="@tax.Id" data-percent="@tax.TaxPercent" data-taxtype="@tax.TaxType">@tax.TaxType (@tax.TaxPercent%)</option>';
+                    </text>
+            }
+            return options;
+        }
+
+        $(document).ready(function () {
+            recalculateTotals();
+
+            $('#itemsTable').on('input change', '.qty, .unitprice, .tax-select', function () {
+                recalculateTotals();
+            });
+
+            $('#discountAmount').on('input', recalculateTotals);
+
+            $('#addItem').click(function () {
+                let rowCount = $('#itemsTable tbody tr').length;
+                let taxOptions = createTaxOptions();
+                let newRow = `<tr>
+                    <td><input class="form-control" name="Items[${rowCount}].Description" /></td>
+                    <td><input class="form-control qty" name="Items[${rowCount}].Quantity" type="number" step="0.01" value="1" /></td>
+                    <td><input class="form-control unitprice" name="Items[${rowCount}].UnitPrice" type="number" step="0.01" value="0" /></td>
+                    <td><select class="form-select tax-select" name="Items[${rowCount}].TaxSettingsId">${taxOptions}</select></td>
+                    <td><input class="form-control linetotal" name="Items[${rowCount}].LineTotal" type="number" step="0.01" value="0" readonly /></td>
+                    <td><input class="form-control taxamount" name="Items[${rowCount}].TaxAmount" type="number" step="0.01" value="0" readonly /></td>
+                    <td><button type="button" class="btn btn-danger btn-sm remove-item">Remove</button></td>
+                </tr>`;
+                $('#itemsTable tbody').append(newRow);
+                updateNames();
+                recalculateTotals();
+            });
+
+            $('#itemsTable').on('click', '.remove-item', function () {
+                $(this).closest('tr').remove();
+                updateNames();
+                recalculateTotals();
+            });
+        });
+    </script>
+}

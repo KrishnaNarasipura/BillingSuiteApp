@@ -1,0 +1,238 @@
+﻿@model BillingSuite.Application.DTOs.InvoiceDto
+@{
+    ViewData["Title"] = "Invoice Preview";
+    var taxSettings = (IEnumerable<BillingSuite.Application.DTOs.TaxSettingsDto>)ViewBag.TaxSettings ?? new List<BillingSuite.Application.DTOs.TaxSettingsDto>();
+    string netAmountWords = BillingSuite.Domain.Utility.ConvertNumberToWords(Model.NetAmount);
+}
+
+<div class="container-fluid">
+    <!-- Invoice Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="text-primary">Invoice Preview</h2>
+                <div>
+                    <a class="btn btn-success me-2" target="_blank" href="@Url.Action("Print", "Invoices", new { id = Model.Id })">
+                        <i class="fas fa-print"></i> Print
+                    </a>
+                    <a class="btn btn-outline-secondary" href="@Url.Action("Edit", "Invoices", new { id = Model.Id })">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoice Details -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Invoice Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-4"><strong>Invoice #:</strong></div>
+                        <div class="col-sm-8">@Model.InvoiceNumber</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4"><strong>Date:</strong></div>
+                        <div class="col-sm-8">@Model.InvoiceDate.ToString("MMM dd, yyyy")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Vendor Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-4"><strong>Name:</strong></div>
+                        <div class="col-sm-8">@Model.Vendor.Name</div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Vendor.BillingAddress))
+                    {
+                        <div class="row">
+                            <div class="col-sm-4"><strong>Billing Address:</strong></div>
+                            <div class="col-sm-8">@Model.Vendor.BillingAddress</div>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Vendor.ShippingAddress))
+                    {
+                        <div class="row">
+                            <div class="col-sm-4"><strong>Shipping Address:</strong></div>
+                            <div class="col-sm-8">@Model.Vendor.ShippingAddress</div>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Vendor.Email))
+                    {
+                        <div class="row">
+                            <div class="col-sm-4"><strong>Email:</strong></div>
+                            <div class="col-sm-8">@Model.Vendor.Email</div>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Vendor.Phone))
+                    {
+                        <div class="row">
+                            <div class="col-sm-4"><strong>Phone:</strong></div>
+                            <div class="col-sm-8">@Model.Vendor.Phone</div>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Vendor.Gstin))
+                    {
+                        <div class="row">
+                            <div class="col-sm-4"><strong>GSTIN:</strong></div>
+                            <div class="col-sm-8">@Model.Vendor.Gstin</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoice Items -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Invoice Items</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="border-0">Description</th>
+                                    <th class="border-0 text-center">Qty</th>
+                                    <th class="border-0 text-end">Unit Price</th>
+                                    <th class="border-0 text-center">Tax Type</th>
+                                    <th class="border-0 text-end">Line Total</th>
+                                    <th class="border-0 text-end">Tax Amount</th>
+                                    <th class="border-0 text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    var taxSetting = taxSettings.FirstOrDefault(t => t.Id == item.TaxSettingsId);
+                                    var itemTotal = item.LineTotal + item.TaxAmount;
+
+                                    <tr>
+                                        <td class="border-0">@item.Description</td>
+                                        <td class="border-0 text-center">@item.Quantity.ToString("F2")</td>
+                                        <td class="border-0 text-end">@item.UnitPrice.ToString()</td>
+                                        <td class="border-0 text-center">
+                                            @if (taxSetting != null)
+                                            {
+                                                <span class="badge bg-info">@taxSetting.TaxType (@taxSetting.TaxPercent%)</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">No Tax</span>
+                                            }
+                                        </td>
+                                        <td class="border-0 text-end">@item.LineTotal.ToString()</td>
+                                        <td class="border-0 text-end">@item.TaxAmount.ToString()</td>
+                                        <td class="border-0 text-end fw-bold">@itemTotal.ToString()</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoice Summary -->
+    <div class="row">
+        <div class="col-md-8"></div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Invoice Summary</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Calculate tax breakdown -->
+                    @{
+                        var taxBreakdown = Model.Items
+                        .Where(item => item.TaxSettingsId.HasValue && item.TaxAmount > 0)
+                        .GroupBy(item => item.TaxSettingsId)
+                        .Select(group => new
+                        {
+                            TaxSetting = taxSettings.FirstOrDefault(t => t.Id == group.Key),
+                            TotalAmount = group.Sum(item => item.TaxAmount)
+                        })
+                        .Where(x => x.TaxSetting != null)
+                        .ToList();
+                    }
+
+                    <div class="row mb-2">
+                        <div class="col-7"><strong>Subtotal:</strong></div>
+                        <div class="col-5 text-end">@Model.Subtotal.ToString()</div>
+                    </div>
+
+                    @foreach (var taxItem in taxBreakdown)
+                    {
+                        <div class="row mb-1">
+                            <div class="col-7">@taxItem.TaxSetting!.TaxType (@taxItem.TaxSetting.TaxPercent%):</div>
+                            <div class="col-5 text-end">@taxItem.TotalAmount.ToString()</div>
+                        </div>
+                    }
+
+                    <div class="row mb-2">
+                        <div class="col-7"><strong>Total Tax:</strong></div>
+                        <div class="col-5 text-end"><strong>@Model.TaxAmount.ToString()</strong></div>
+                    </div>
+
+                    @if (Model.DiscountAmount > 0)
+                    {
+                        <div class="row mb-2">
+                            <div class="col-7"><strong>Discount:</strong></div>
+                            <div class="col-5 text-end text-danger">-@Model.DiscountAmount.ToString()</div>
+                        </div>
+                    }
+
+                    <hr>
+                    <div class="row mb-3">
+                        <div class="col-7"><h5><strong>Net Amount:</strong></h5></div>
+                        <div class="col-5 text-end"><h5><strong>@Model.NetAmount.ToString()</strong></h5></div>
+                    </div>
+
+                    <div class="alert alert-light">
+                        <small>
+                            <strong>Amount in words:</strong><br />
+                            <em>@netAmountWords</em>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .card {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: none;
+        }
+
+        .table th {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .row {
+            margin-bottom: 0.5rem;
+        }
+
+        @@media print {
+            .btn {
+                display: none !important;
+            }
+        }
+    </style>
+}
