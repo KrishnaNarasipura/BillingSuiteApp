@@ -21,6 +21,7 @@ namespace BillingSuite.Domain.Entities
         public decimal TaxAmount { get; set; }
         public decimal DiscountAmount { get; set; }
         public decimal NetAmount { get; set; }
+        public decimal AdvanceReceived { get; set; } = 0;
 
         public InvoiceStatus Status { get; set; } = InvoiceStatus.Issued;
 

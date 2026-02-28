@@ -12,6 +12,7 @@ namespace BillingSuite.Application.Abstractions
     public interface IInvoiceService
     {
         Task<int> CreateAsync(InvoiceCreateDto dto, CancellationToken ct = default);
+        Task<int> CreateDraftAsync(InvoiceCreateDto dto, CancellationToken ct = default);
         Task<InvoiceDto?> GetAsync(int id, CancellationToken ct = default);
         Task<PagedResult<InvoiceDto>> SearchAsync(DateTime? from, DateTime? to, int? CustomerId, string? invoiceNumber, int? status, int page, int pageSize, CancellationToken ct = default);
         Task<List<InvoiceDto>> GetOverdueInvoicesAsync(int daysOverdue = 30, CancellationToken ct = default);

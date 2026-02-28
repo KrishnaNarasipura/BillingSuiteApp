@@ -84,6 +84,8 @@
             <th>Date</th>
             <th>Customer</th>
             <th>Net Amount</th>
+            <th>Advance Received</th>
+            <th>Order Balance</th>
             <th>Status</th>
             <th class="text-end">Actions</th>
         </tr>
@@ -102,19 +104,37 @@
                     _ => "dark"
                 };
                 var statusText = ((InvoiceStatus)invoice.Status).ToString();
+                var orderBalance = invoice.NetAmount - invoice.AdvanceReceived;
 
                 <tr>
                     <td>@invoice.InvoiceNumber</td>
                     <td>@invoice.InvoiceDate.ToString("dd-MM-yyyy")</td>
                     <td>@invoice.Customer?.Name</td>
-                    <td>@invoice.NetAmount.ToString("")</td>
+                    <td>@invoice.NetAmount.ToString("N2")</td>
+                    <td>@invoice.AdvanceReceived.ToString("N2")</td>
+                    <td>@orderBalance.ToString("N2")</td>
                     <td>
                         <span class="badge bg-@statusBadgeColor">@statusText</span>
                     </td>
                     <td class="text-end">
-                        <a class="btn btn-sm btn-outline-secondary" href="@Url.Action("Preview", "Invoices", new { id = invoice.Id })">Preview</a>
-                        <a class="btn btn-sm btn-outline-success" target="_blank" href="@Url.Action("Print", "Invoices", new { id = invoice.Id })">Print</a>
-                        <button type="button" class="btn btn-sm btn-outline-warning update-status-btn" data-invoice-id="@invoice.Id" data-invoice-number="@invoice.InvoiceNumber" data-current-status="@invoice.Status" data-bs-toggle="modal" data-bs-target="#statusModal">Update Status</button>
+                        @if (invoice.Status == 0) // Draft status
+                        {
+                            <a class="btn btn-sm btn-outline-primary" href="@Url.Action("Edit", "Invoices", new { id = invoice.Id })">
+                                <i class="fas fa-edit me-1"></i>Edit
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-sm btn-outline-secondary" href="@Url.Action("Preview", "Invoices", new { id = invoice.Id })">
+                                <i class="fas fa-eye me-1"></i>Preview
+                            </a>
+                            <a class="btn btn-sm btn-outline-success" target="_blank" href="@Url.Action("Print", "Invoices", new { id = invoice.Id })">
+                                <i class="fas fa-print me-1"></i>Print
+                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-warning update-status-btn" data-invoice-id="@invoice.Id" data-invoice-number="@invoice.InvoiceNumber" data-current-status="@invoice.Status" data-bs-toggle="modal" data-bs-target="#statusModal">
+                                <i class="fas fa-sync me-1"></i>Update Status
+                            </button>
+                        }
                     </td>
                 </tr>
             }
@@ -122,7 +142,7 @@
         else
         {
             <tr>
-                <td colspan="6" class="text-center text-muted py-4">No invoices found matching your criteria.</td>
+                <td colspan="8" class="text-center text-muted py-4">No invoices found matching your criteria.</td>
             </tr>
         }
     </tbody>

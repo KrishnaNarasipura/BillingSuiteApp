@@ -1,7 +1,10 @@
 ﻿using BillingSuite.Application.Abstractions;
 using BillingSuite.Application.DTOs;
+using BillingSuite.Application.Enums;
 using BillingSuite.Domain;
+using BillingSuite.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BillingSuite.Web.Controllers;
 
@@ -10,12 +13,14 @@ public class InvoicesController : Controller
     private readonly IInvoiceService _svc;
     private readonly ICustomerService _customers;
     private readonly ITaxSettingsService _taxSettings;
+    private readonly BillingDbContext _db;
 
-    public InvoicesController(IInvoiceService svc, ICustomerService customers, ITaxSettingsService taxSettings)
+    public InvoicesController(IInvoiceService svc, ICustomerService customers, ITaxSettingsService taxSettings, BillingDbContext db)
     {
         _svc = svc;
         _customers = customers;
         _taxSettings = taxSettings;
+        _db = db;
     }
 
     public async Task<IActionResult> Index(DateTime? from, DateTime? to, int? CustomerId, string? invoiceNumber, int? status, int page = 1, int pageSize = 20)
@@ -43,7 +48,7 @@ public class InvoicesController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(InvoiceCreateDto dto)
+    public async Task<IActionResult> Create(InvoiceCreateDto dto, string? submitButton)
     {
         if (!ModelState.IsValid)
         {
@@ -51,8 +56,40 @@ public class InvoicesController : Controller
             ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
             return View(dto);
         }
-        var id = await _svc.CreateAsync(dto);
-        return RedirectToAction(nameof(Preview), new { id });
+
+        try
+        {
+            int id;
+
+            // Check which button was clicked
+            if (submitButton == "SaveDraft")
+            {
+                // Save as draft with D- prefix
+                id = await _svc.CreateDraftAsync(dto);
+            }
+            else
+            {
+                // Save as issued invoice (default Generate button)
+                id = await _svc.CreateAsync(dto);
+            }
+
+            // If saved as draft, redirect to invoice list; otherwise to preview
+            if (submitButton == "SaveDraft")
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return RedirectToAction(nameof(Preview), new { id });
+            }
+        }
+        catch (Exception ex)
+        {
+            ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
+            ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
+            ModelState.AddModelError("", $"Error saving invoice: {ex.Message}");
+            return View(dto);
+        }
     }
 
     public async Task<IActionResult> Edit(int id)
@@ -73,11 +110,13 @@ public class InvoicesController : Controller
 
         ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
         ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
+        ViewBag.IsDraft = invoice.Status == 0; // Draft status is 0
+        
         return View(editDto);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(InvoiceEditDto dto)
+    public async Task<IActionResult> Edit(InvoiceEditDto dto, string? submitButton)
     {
         if (!ModelState.IsValid)
         {
@@ -86,8 +125,45 @@ public class InvoicesController : Controller
             return View(dto);
         }
 
-        await _svc.UpdateAsync(dto);
-        return RedirectToAction(nameof(Preview), new { id = dto.Id });
+        try
+        {
+            // Check which button was clicked
+            if (submitButton == "UpdateAndGenerate")
+            {
+                // Generate new invoice number for this draft (same logic as CreateAsync)
+                var datePrefix = DateTime.UtcNow.ToString("yyyyMM");
+                var countThisMonth = await _db.Invoices.CountAsync(i => 
+                    i.InvoiceDate.Year == DateTime.UtcNow.Year && 
+                    i.InvoiceDate.Month == DateTime.UtcNow.Month &&
+                    (int)i.Status != 0); // Status != Draft (0)
+                var newInvoiceNumber = $"{datePrefix}-{countThisMonth + 1:0000}";
+                
+                dto.InvoiceNumber = newInvoiceNumber;
+                
+            }
+
+            await _svc.UpdateAsync(dto);
+
+            // If UpdateAndGenerate, also update status to Issued
+            if (submitButton == "UpdateAndGenerate")
+            {
+                await _svc.UpdateStatusAsync(new InvoiceUpdateStatusDto 
+                { 
+                    Id = dto.Id, 
+                    InvoiceStatus = InvoiceStatus.Issued
+                });
+                return RedirectToAction(nameof(Preview), new { id = dto.Id });
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
+        {
+            ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
+            ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
+            ModelState.AddModelError("", $"Error updating invoice: {ex.Message}");
+            return View(dto);
+        }
     }
 
     public async Task<IActionResult> Print(int id)

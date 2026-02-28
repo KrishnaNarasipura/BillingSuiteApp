@@ -44,6 +44,7 @@ public class InvoiceService : IInvoiceService
             Subtotal = subtotal,
             TaxAmount = totalTax,
             DiscountAmount = dto.DiscountAmount,
+            AdvanceReceived = dto.AdvanceReceived,
             NetAmount = net,
             Items = items
         };
@@ -84,10 +85,12 @@ public class InvoiceService : IInvoiceService
         var net = Math.Round(subtotal + totalTax - dto.DiscountAmount, 2);
 
         existing.CustomerId = dto.CustomerId;
+        existing.InvoiceNumber = dto.InvoiceNumber;
         existing.InvoiceDate = dto.InvoiceDate;
         existing.Subtotal = subtotal;
         existing.TaxAmount = totalTax;
         existing.DiscountAmount = dto.DiscountAmount;
+        existing.AdvanceReceived = dto.AdvanceReceived;
         existing.NetAmount = net;
 
         await _db.SaveChangesAsync(ct);
@@ -134,6 +137,7 @@ public class InvoiceService : IInvoiceService
             Subtotal = inv.Subtotal,
             TaxAmount = inv.TaxAmount,
             DiscountAmount = inv.DiscountAmount,
+            AdvanceReceived = inv.AdvanceReceived,
             NetAmount = inv.NetAmount,
             Status = (int)inv.Status,
             Items = inv.Items.Select(x => new InvoiceItemDto
@@ -174,6 +178,7 @@ public class InvoiceService : IInvoiceService
                 Subtotal = inv.Subtotal,
                 TaxAmount = inv.TaxAmount,
                 DiscountAmount = inv.DiscountAmount,
+                AdvanceReceived = inv.AdvanceReceived,
                 NetAmount = inv.NetAmount,
                 Status = (int)inv.Status
             })
@@ -213,11 +218,51 @@ public class InvoiceService : IInvoiceService
                 Subtotal = inv.Subtotal,
                 TaxAmount = inv.TaxAmount,
                 DiscountAmount = inv.DiscountAmount,
+                AdvanceReceived = inv.AdvanceReceived,
                 NetAmount = inv.NetAmount,
                 Status = (int)inv.Status
             })
             .ToListAsync(ct);
 
         return invoices;
+    }
+
+    public async Task<int> CreateDraftAsync(InvoiceCreateDto dto, CancellationToken ct = default)
+    {
+        // Draft invoice number generator D-#### (sequential)
+        var draftCount = await _db.Invoices.Where(i => i.Status == InvoiceStatus.Draft).CountAsync(ct);
+        var invoiceNumber = $"D-{draftCount + 1:0000}";
+
+        var items = dto.Items.Select(i => new InvoiceItem
+        {
+            Description = i.Description,
+            Quantity = i.Quantity,
+            UnitPrice = i.UnitPrice,
+            LineTotal = Math.Round(i.Quantity * i.UnitPrice, 2),
+            TaxSettingsId = i.TaxSettingsId,
+            TaxAmount = i.TaxAmount
+        }).ToList();
+
+        var subtotal = items.Sum(i => i.LineTotal);
+        var totalTax = items.Sum(i => i.TaxAmount);
+        var net = Math.Round(subtotal + totalTax - dto.DiscountAmount, 2);
+
+        var entity = new Invoice
+        {
+            CustomerId = dto.CustomerId,
+            InvoiceDate = dto.InvoiceDate,
+            InvoiceNumber = invoiceNumber,
+            Subtotal = subtotal,
+            TaxAmount = totalTax,
+            DiscountAmount = dto.DiscountAmount,
+            AdvanceReceived = dto.AdvanceReceived,
+            NetAmount = net,
+            Status = InvoiceStatus.Draft,
+            Items = items
+        };
+
+        _db.Invoices.Add(entity);
+        await _db.SaveChangesAsync(ct);
+        return entity.Id;
     }
 }

@@ -17,6 +17,7 @@ namespace BillingSuite.Application.DTOs
         public decimal TaxAmount { get; set; }
         public decimal DiscountAmount { get; set; }
         public decimal NetAmount { get; set; }
+        public decimal AdvanceReceived { get; set; }
         public int Status { get; set; }
         public List<InvoiceItemDto> Items { get; set; } = new();
 
