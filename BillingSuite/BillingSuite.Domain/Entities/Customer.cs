@@ -13,5 +13,6 @@ public class Customer
     public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
     public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+    public ICollection<Order> Orders { get; set; } = new List<Order>();
 
 }

@@ -13,6 +13,8 @@ public class BillingDbContext : DbContext
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<InvoiceItem> InvoiceItems => Set<InvoiceItem>();
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<CompanySettings> CompanySettings => Set<CompanySettings>();
     public DbSet<TaxSettings> TaxSettings => Set<TaxSettings>();
 
@@ -55,6 +57,28 @@ public class BillingDbContext : DbContext
             b.Property(x => x.UnitPrice).HasColumnType("decimal(18,2)");
             b.Property(x => x.LineTotal).HasColumnType("decimal(18,2)");
             b.HasOne(x => x.Invoice).WithMany(i => i.Items).HasForeignKey(x => x.InvoiceId);
+        });
+
+        modelBuilder.Entity<Order>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.OrderNumber).HasMaxLength(30).IsRequired();
+            b.Property(x => x.Subtotal).HasColumnType("decimal(18,2)");
+            b.Property(x => x.TaxAmount).HasColumnType("decimal(18,2)");
+            b.Property(x => x.DiscountAmount).HasColumnType("decimal(18,2)");
+            b.Property(x => x.NetAmount).HasColumnType("decimal(18,2)");
+            b.Property(x => x.AdvanceReceived).HasColumnType("decimal(18,2)");
+            b.HasOne(x => x.Customer).WithMany(v => v.Orders).HasForeignKey(x => x.CustomerId);
+        });
+
+        modelBuilder.Entity<OrderItem>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Description).HasMaxLength(500).IsRequired();
+            b.Property(x => x.Quantity).HasColumnType("decimal(18,2)");
+            b.Property(x => x.UnitPrice).HasColumnType("decimal(18,2)");
+            b.Property(x => x.LineTotal).HasColumnType("decimal(18,2)");
+            b.HasOne(x => x.Order).WithMany(o => o.Items).HasForeignKey(x => x.OrderId);
         });
     }
 }
