@@ -20,7 +20,8 @@ namespace BillingSuite.Domain
                     OutputFormat = OutputFormat.English
                 });
 
-            string words = currencyConverter.ToWords(number);
+            string words = "Rupees "+currencyConverter.ToWords(number).Replace("rupees","");
+
             return words;
 
         }

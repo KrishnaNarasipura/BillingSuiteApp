@@ -104,6 +104,7 @@ public class InvoicesController : Controller
             InvoiceNumber = invoice.InvoiceNumber,
             CustomerId = invoice.Customer.Id,
             InvoiceDate = invoice.InvoiceDate,
+            AdvanceReceived = invoice.AdvanceReceived,
             DiscountAmount = invoice.DiscountAmount,
             Items = invoice.Items
         };

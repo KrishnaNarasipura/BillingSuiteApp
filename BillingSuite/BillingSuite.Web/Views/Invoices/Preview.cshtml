@@ -201,10 +201,44 @@
                         <div class="col-5 text-end"><h5><strong>@Model.NetAmount.ToString()</strong></h5></div>
                     </div>
 
+                    @if (Model.AdvanceReceived > 0)
+                    {
+                        <div class="row mb-2">
+                            <div class="col-7"><strong>Advance Received:</strong></div>
+                            <div class="col-5 text-end text-success">-@Model.AdvanceReceived.ToString()</div>
+                        </div>
+                    }
+
+                    @{
+                        var orderBalance = Model.NetAmount - Model.AdvanceReceived;
+                    }
+                    
+                    @if (orderBalance > 0)
+                    {
+                        <div class="row mb-3">
+                            <div class="col-7"><h5><strong>Order Balance:</strong></h5></div>
+                            <div class="col-5 text-end"><h5><strong>@orderBalance.ToString()</strong></h5></div>
+                        </div>
+                    }
+                    else if (orderBalance == 0)
+                    {
+                        <div class="row mb-3">
+                            <div class="col-7"><h5><strong>Order Balance:</strong></h5></div>
+                            <div class="col-5 text-end"><h5><strong class="text-success">@orderBalance.ToString()</strong></h5></div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row mb-3">
+                            <div class="col-7"><h5><strong>Order Balance:</strong></h5></div>
+                            <div class="col-5 text-end"><h5><strong class="text-info">@orderBalance.ToString()</strong></h5></div>
+                        </div>
+                    }
+
                     <div class="alert alert-light">
                         <small>
                             <strong>Amount in words:</strong><br />
-                            <em>@netAmountWords</em>
+                            <strong>@netAmountWords</strong>
                         </small>
                     </div>
                 </div>

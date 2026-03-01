@@ -182,6 +182,8 @@ public class InvoiceService : IInvoiceService
                 NetAmount = inv.NetAmount,
                 Status = (int)inv.Status
             })
+            .OrderByDescending(x=>x.InvoiceDate)
+            .ThenBy(x=>x.InvoiceNumber)
             .ToListAsync(ct);
 
         return new PagedResult<InvoiceDto> { Items = items, TotalCount = total, Page = page, PageSize = pageSize };
