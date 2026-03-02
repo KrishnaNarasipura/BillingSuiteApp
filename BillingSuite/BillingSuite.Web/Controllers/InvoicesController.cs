@@ -102,6 +102,8 @@ public class InvoicesController : Controller
         {
             Id = invoice.Id,
             InvoiceNumber = invoice.InvoiceNumber,
+            OurOrderReference = invoice.OurOrderReference,
+            YourOrderReference = invoice.YourOrderReference,
             CustomerId = invoice.Customer.Id,
             InvoiceDate = invoice.InvoiceDate,
             AdvanceReceived = invoice.AdvanceReceived,

@@ -16,11 +16,11 @@
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     }
 
-    .invoice-header h3 {
-        font-size: 1.8rem;
-        margin: 0;
-        font-weight: 700;
-    }
+        .invoice-header h3 {
+            font-size: 1.8rem;
+            margin: 0;
+            font-weight: 700;
+        }
 
     .form-section {
         background: white;
@@ -48,20 +48,20 @@
         color: white;
     }
 
-    .btn-generate:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
-    }
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
 
     .btn-draft {
         background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
         color: white;
     }
 
-    .btn-draft:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(108, 117, 125, 0.4);
-    }
+        .btn-draft:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(108, 117, 125, 0.4);
+        }
 
     .summary-box {
         background: #f8f9fa;
@@ -70,9 +70,9 @@
         margin-top: 20px;
     }
 
-    .summary-box table {
-        margin: 0;
-    }
+        .summary-box table {
+            margin: 0;
+        }
 
     .form-label {
         font-weight: 600;
@@ -89,7 +89,7 @@
 </div>
 
 <div class="form-section">
-    <form method="post" id="invoiceForm">
+    <form method="post" action="@Url.Action("Create", "Invoices")" id="invoiceForm">
         <div class="row mb-4">
             <div class="col-md-6">
                 <label class="form-label">
@@ -99,7 +99,8 @@
                     <option value="">-- Select Customer --</option>
                     @foreach (var v in customers)
                     {
-                        <option value="@v.Id">@v.Name</option>
+                        var isSelected = Model.CustomerId == v.Id;
+                        <option value="@v.Id" selected="@isSelected">@v.Name</option>
                     }
                 </select>
             </div>
@@ -120,6 +121,22 @@
                     <i class="fas fa-money-bill-wave me-2"></i>Advance Received
                 </label>
                 <input type="number" step="0.01" class="form-control" name="AdvanceReceived" id="advanceReceived" value="@Model.AdvanceReceived" />
+            </div>
+        </div>
+
+        <!-- Order References Row -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label class="form-label">
+                    <i class="fas fa-hashtag me-2"></i>Your Order Reference
+                </label>
+                <input type="text" class="form-control" name="YourOrderReference" value="@Model.YourOrderReference" placeholder="Customer's order reference number" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">
+                    <i class="fas fa-hashtag me-2"></i>Our Order Reference
+                </label>
+                <input type="text" class="form-control" name="OurOrderReference" value="@Model.OurOrderReference" placeholder="Internal order reference number" />
             </div>
         </div>
 
@@ -241,6 +258,7 @@
 </div>
 
 @section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         function recalculateTotals() {
             let subtotal = 0;
@@ -305,6 +323,9 @@
                 data: JSON.stringify(netAmount),
                 success: function (response) {
                     $('.amount-in-words').text(response.words);
+                },
+                error: function() {
+                    $('.amount-in-words').text('');
                 }
             });
         }
@@ -325,14 +346,16 @@
             let options = '<option value="">No Tax</option>';
             @foreach (var tax in taxSettings)
             {
-                    <text>
-                    options += '<option value="@tax.Id" data-percent="@tax.TaxPercent" data-taxtype="@tax.TaxType">@tax.TaxType (@tax.TaxPercent%)</option>';
-                    </text>
+                        <text>
+                        options += '<option value="@tax.Id" data-percent="@tax.TaxPercent" data-taxtype="@tax.TaxType">@tax.TaxType (@tax.TaxPercent%)</option>';
+                        </text>
             }
             return options;
         }
 
         $(document).ready(function () {
+            console.log('Invoice form loaded'); // Debug log
+
             recalculateTotals();
 
             $('#itemsTable').on('input change', '.qty, .unitprice, .tax-select', function () {
@@ -340,7 +363,6 @@
             });
 
             $('#discountAmount').on('input', recalculateTotals);
-
             $('#advanceReceived').on('input', recalculateTotals);
 
             $('#addItem').click(function () {
@@ -366,14 +388,31 @@
                 recalculateTotals();
             });
 
-            // Form submission validation
+            // Form submission validation and debugging
             $('#invoiceForm').on('submit', function (e) {
+                console.log('Form submit event triggered'); // Debug log
+
                 let hasItems = $('#itemsTable tbody tr').length > 0;
                 if (!hasItems) {
                     e.preventDefault();
                     alert('Please add at least one item to the invoice.');
                     return false;
                 }
+
+                let customerId = $('select[name="CustomerId"]').val();
+                if (!customerId || customerId === '') {
+                    e.preventDefault();
+                    alert('Please select a customer.');
+                    return false;
+                }
+
+                console.log('Form validation passed, submitting...'); // Debug log
+                return true;
+            });
+
+            // Add click event listeners to submit buttons for debugging
+            $('.btn-generate, .btn-draft').on('click', function() {
+                console.log('Submit button clicked:', $(this).attr('value')); // Debug log
             });
         });
     </script>

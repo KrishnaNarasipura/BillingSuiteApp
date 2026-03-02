@@ -11,6 +11,8 @@ namespace BillingSuite.Application.DTOs
 
         public int Id { get; set; }
         public string InvoiceNumber { get; set; } = default!;
+        public string OurOrderReference { get; set; }
+        public string YourOrderReference { get; set; }
         public DateTime InvoiceDate { get; set; }
         public CustomerDto Customer { get; set; } = default!;
         public decimal Subtotal { get; set; }

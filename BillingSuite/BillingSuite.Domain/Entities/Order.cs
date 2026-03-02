@@ -11,6 +11,7 @@ namespace BillingSuite.Domain.Entities
     {
         public int Id { get; set; }
         public string OrderNumber { get; set; } = default!;
+        public string? YourOrderReference { get; set; }
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
 
         public int CustomerId { get; set; }

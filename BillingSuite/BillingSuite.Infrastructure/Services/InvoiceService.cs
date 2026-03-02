@@ -41,6 +41,8 @@ public class InvoiceService : IInvoiceService
             CustomerId = dto.CustomerId,
             InvoiceDate = dto.InvoiceDate,
             InvoiceNumber = invoiceNumber,
+            OurOrderReference = dto.OurOrderReference,
+            YourOrderReference = dto.YourOrderReference,
             Subtotal = subtotal,
             TaxAmount = totalTax,
             DiscountAmount = dto.DiscountAmount,
@@ -86,6 +88,8 @@ public class InvoiceService : IInvoiceService
 
         existing.CustomerId = dto.CustomerId;
         existing.InvoiceNumber = dto.InvoiceNumber;
+        existing.OurOrderReference = dto.OurOrderReference;
+        existing.YourOrderReference = dto.YourOrderReference;
         existing.InvoiceDate = dto.InvoiceDate;
         existing.Subtotal = subtotal;
         existing.TaxAmount = totalTax;
@@ -123,6 +127,8 @@ public class InvoiceService : IInvoiceService
         {
             Id = inv.Id,
             InvoiceNumber = inv.InvoiceNumber,
+            OurOrderReference = inv.OurOrderReference,
+            YourOrderReference = inv.YourOrderReference,
             InvoiceDate = inv.InvoiceDate,
             Customer = new CustomerDto
             {
@@ -173,6 +179,8 @@ public class InvoiceService : IInvoiceService
             {
                 Id = inv.Id,
                 InvoiceNumber = inv.InvoiceNumber,
+                OurOrderReference = inv.OurOrderReference,
+                YourOrderReference = inv.YourOrderReference,
                 InvoiceDate = inv.InvoiceDate,
                 Customer = new CustomerDto { Id = inv.Customer.Id, Name = inv.Customer.Name },
                 Subtotal = inv.Subtotal,
@@ -215,6 +223,8 @@ public class InvoiceService : IInvoiceService
             {
                 Id = inv.Id,
                 InvoiceNumber = inv.InvoiceNumber,
+                OurOrderReference = inv.OurOrderReference,
+                YourOrderReference = inv.YourOrderReference,
                 InvoiceDate = inv.InvoiceDate,
                 Customer = new CustomerDto { Id = inv.Customer.Id, Name = inv.Customer.Name },
                 Subtotal = inv.Subtotal,
@@ -254,6 +264,8 @@ public class InvoiceService : IInvoiceService
             CustomerId = dto.CustomerId,
             InvoiceDate = dto.InvoiceDate,
             InvoiceNumber = invoiceNumber,
+            OurOrderReference = dto.OurOrderReference,
+            YourOrderReference = dto.YourOrderReference,
             Subtotal = subtotal,
             TaxAmount = totalTax,
             DiscountAmount = dto.DiscountAmount,

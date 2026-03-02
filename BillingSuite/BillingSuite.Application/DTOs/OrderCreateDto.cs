@@ -12,6 +12,7 @@ namespace BillingSuite.Application.DTOs
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
         public decimal DiscountAmount { get; set; }
         public decimal AdvanceReceived { get; set; }
+        public string? YourOrderReference { get; set; }
         public List<OrderItemDto> Items { get; set; } = new();
     }
 }

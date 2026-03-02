@@ -117,6 +117,9 @@
                         <span class="badge bg-@statusBadgeColor">@statusText</span>
                     </td>
                     <td class="text-end">
+                        <a class="btn btn-sm btn-outline-info" href="@Url.Action("Preview", "Orders", new { id = order.Id })">
+                            <i class="fas fa-eye me-1"></i>View
+                        </a>
                         @if (order.Status == 0) // Draft status
                         {
                             <a class="btn btn-sm btn-outline-primary" href="@Url.Action("Edit", "Orders", new { id = order.Id })">

@@ -39,6 +39,7 @@ public class OrderService : IOrderService
             CustomerId = dto.CustomerId,
             OrderDate = dto.OrderDate,
             OrderNumber = orderNumber,
+            YourOrderReference = dto.YourOrderReference,
             Subtotal = subtotal,
             Status = OrderStatus.Confirmed,
             TaxAmount = totalTax,
@@ -90,6 +91,7 @@ public class OrderService : IOrderService
         existing.TaxAmount = totalTax;
         existing.DiscountAmount = dto.DiscountAmount;
         existing.AdvanceReceived = dto.AdvanceReceived;
+        existing.YourOrderReference = dto.YourOrderReference;
         existing.NetAmount = net;
 
         await _db.SaveChangesAsync(ct);
@@ -136,6 +138,7 @@ public class OrderService : IOrderService
             TaxAmount = order.TaxAmount,
             DiscountAmount = order.DiscountAmount,
             AdvanceReceived = order.AdvanceReceived,
+            YourOrderReference = order.YourOrderReference,
             NetAmount = order.NetAmount,
             Status = (int)order.Status,
             Items = order.Items.Select(x => new OrderItemDto
@@ -177,6 +180,7 @@ public class OrderService : IOrderService
                 TaxAmount = order.TaxAmount,
                 DiscountAmount = order.DiscountAmount,
                 AdvanceReceived = order.AdvanceReceived,
+                YourOrderReference = order.YourOrderReference,
                 NetAmount = order.NetAmount,
                 Status = (int)order.Status
             })

@@ -4,6 +4,7 @@ using BillingSuite.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BillingSuite.Infrastructure.Migrations
 {
     [DbContext(typeof(BillingDbContext))]
-    partial class BillingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260302090854_AddOrderReferenceColumns")]
+    partial class AddOrderReferenceColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -136,6 +139,7 @@ namespace BillingSuite.Infrastructure.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("YourOrderReference")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -221,9 +225,6 @@ namespace BillingSuite.Infrastructure.Migrations
 
                     b.Property<decimal>("TaxAmount")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("YourOrderReference")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

@@ -17,6 +17,7 @@ namespace BillingSuite.Application.DTOs
         public decimal DiscountAmount { get; set; }
         public decimal NetAmount { get; set; }
         public decimal AdvanceReceived { get; set; }
+        public string? YourOrderReference { get; set; }
         public int Status { get; set; }
         public List<OrderItemDto> Items { get; set; } = new();
     }

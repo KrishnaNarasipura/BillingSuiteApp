@@ -23,6 +23,8 @@ namespace BillingSuite.Domain.Entities
         public decimal NetAmount { get; set; }
         public decimal AdvanceReceived { get; set; } = 0;
 
+        public string OurOrderReference { get; set; } = default!;
+        public string? YourOrderReference { get; set; }
         public InvoiceStatus Status { get; set; } = InvoiceStatus.Issued;
 
         public ICollection<InvoiceItem> Items { get; set; } = new List<InvoiceItem>();

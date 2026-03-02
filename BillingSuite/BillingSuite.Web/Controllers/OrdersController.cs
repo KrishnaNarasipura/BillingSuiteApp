@@ -88,6 +88,7 @@ public class OrdersController : Controller
             OrderNumber = order.OrderNumber,
             CustomerId = order.Customer.Id,
             OrderDate = order.OrderDate,
+            YourOrderReference = order.YourOrderReference,
             DiscountAmount = order.DiscountAmount,
             AdvanceReceived = order.AdvanceReceived,
             Items = order.Items
@@ -169,4 +170,54 @@ public class OrdersController : Controller
             return Json(new { success = false, message = $"Error: {ex.Message}" });
         }
     }
+
+    public async Task<IActionResult> Preview(int id)
+    {
+        var dto = await _svc.GetAsync(id);
+        if (dto is null) return NotFound();
+
+        ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
+        return View(dto);
+    }
+
+    public async Task<IActionResult> GenerateInvoice(int id)
+    {
+        var order = await _svc.GetAsync(id);
+        if (order == null) return NotFound();
+
+        // Create InvoiceCreateDto from OrderDto
+        var invoiceDto = new InvoiceCreateDto
+        {
+            InvoiceDate = DateTime.UtcNow,
+            CustomerId = order.Customer.Id,
+            DiscountAmount = order.DiscountAmount,
+            AdvanceReceived = order.AdvanceReceived,
+            OurOrderReference = order.OrderNumber,
+            YourOrderReference = order.YourOrderReference,
+            Items = order.Items.Select(item => new InvoiceItemDto
+            {
+                Description = item.Description,
+                Quantity = item.Quantity,
+                UnitPrice = item.UnitPrice,
+                LineTotal = item.LineTotal,
+                TaxSettingsId = item.TaxSettingsId,
+                TaxAmount = item.TaxAmount
+            }).ToList()
+        };
+
+        ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
+        ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
+        ViewBag.OrderId = order.Id;
+        ViewBag.OrderNumber = order.OrderNumber;
+
+        return View("~/Views/Invoices/Create.cshtml", invoiceDto);
+    }
+
+    [HttpPost]
+    public IActionResult ConvertNumberToWords([FromBody] decimal amount)
+    {
+        var words = Utility.ConvertNumberToWords(amount);
+        return Json(new { words });
+    }
+
 }
