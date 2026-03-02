@@ -18,7 +18,7 @@ public class OrderService : IOrderService
         // Generate order number YYYYMM-#### (for demo)
         var datePrefix = dto.OrderDate.ToString("yyyyMM");
         var countThisMonth = await _db.Orders.CountAsync(o => o.OrderDate.Year == dto.OrderDate.Year && o.OrderDate.Month == dto.OrderDate.Month, ct);
-        var orderNumber = $"{datePrefix}-{countThisMonth + 1:0000}";
+        var orderNumber = $"VC-{datePrefix}-{countThisMonth + 1:0000}";
 
         var items = dto.Items.Select(i => new OrderItem
         {
@@ -30,7 +30,7 @@ public class OrderService : IOrderService
             TaxAmount = i.TaxAmount
         }).ToList();
 
-        var subtotal = items.Sum(i => i.LineTotal);
+        var subtotal = items.Sum(i => i.LineTotal); 
         var totalTax = items.Sum(i => i.TaxAmount);
         var net = Math.Round(subtotal + totalTax - dto.DiscountAmount, 2);
 
@@ -40,6 +40,7 @@ public class OrderService : IOrderService
             OrderDate = dto.OrderDate,
             OrderNumber = orderNumber,
             Subtotal = subtotal,
+            Status = OrderStatus.Confirmed,
             TaxAmount = totalTax,
             DiscountAmount = dto.DiscountAmount,
             AdvanceReceived = dto.AdvanceReceived,
@@ -212,7 +213,7 @@ public class OrderService : IOrderService
     {
         // Draft order number generator D-#### (sequential)
         var draftCount = await _db.Orders.Where(o => o.Status == OrderStatus.Draft).CountAsync(ct);
-        var orderNumber = $"D-{draftCount + 1:0000}";
+        var orderNumber = $"DO-{draftCount + 1:0000}";
 
         var items = dto.Items.Select(i => new OrderItem
         {

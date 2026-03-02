@@ -292,7 +292,7 @@
             let taxBreakdownHtml = '';
             for (let [taxId, taxInfo] of Object.entries(taxBreakdown)) {
                 if (taxInfo.amount > 0) {
-                    taxBreakdownHtml += `<tr><th class="text-end">${taxInfo.type} (${taxInfo.percent}%):</th><td class="text-end">?${taxInfo.amount.toFixed(2)}</td></tr>`;
+                    taxBreakdownHtml += `<tr><th class="text-end">${taxInfo.type} (${taxInfo.percent}%):</th><td class="text-end">${taxInfo.amount.toFixed(2)}</td></tr>`;
                 }
             }
             $('#taxBreakdown').html(taxBreakdownHtml);

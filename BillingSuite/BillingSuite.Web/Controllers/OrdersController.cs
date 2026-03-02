@@ -112,7 +112,34 @@ public class OrdersController : Controller
 
         try
         {
-            await _svc.UpdateAsync(dto);
+            // Check which button was clicked
+            if (submitButton == "UpdateAndConfirm")
+            {
+                // Generate new order number with YYYYMM-#### format
+                var datePrefix = dto.OrderDate.ToString("yyyyMM");
+                var countThisMonth = await _db.Orders.CountAsync(o =>
+                    o.OrderDate.Year == dto.OrderDate.Year &&
+                    o.OrderDate.Month == dto.OrderDate.Month);
+                var newOrderNumber = $"VC-{datePrefix}-{countThisMonth + 1:0000}";
+
+                dto.OrderNumber = newOrderNumber;
+
+                // Update the order
+                await _svc.UpdateAsync(dto);
+
+                // Update status to Confirmed (status 1)
+                await _svc.UpdateStatusAsync(new OrderUpdateStatusDto
+                {
+                    Id = dto.Id,
+                    OrderStatus = 1 // Confirmed status
+                });
+            }
+            else
+            {
+                // Just update without changing status
+                await _svc.UpdateAsync(dto);
+            }
+
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
