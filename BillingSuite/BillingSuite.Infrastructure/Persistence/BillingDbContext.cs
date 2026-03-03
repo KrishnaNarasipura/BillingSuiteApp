@@ -13,6 +13,7 @@ public class BillingDbContext : DbContext
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<InvoiceItem> InvoiceItems => Set<InvoiceItem>();
+    public DbSet<InvoicePayment> InvoicePayments => Set<InvoicePayment>();
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<CompanySettings> CompanySettings => Set<CompanySettings>();
@@ -57,6 +58,15 @@ public class BillingDbContext : DbContext
             b.Property(x => x.UnitPrice).HasColumnType("decimal(18,2)");
             b.Property(x => x.LineTotal).HasColumnType("decimal(18,2)");
             b.HasOne(x => x.Invoice).WithMany(i => i.Items).HasForeignKey(x => x.InvoiceId);
+        });
+
+        modelBuilder.Entity<InvoicePayment>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Amount).HasColumnType("decimal(18,2)");
+            b.Property(x => x.PaymentDate).HasColumnType("datetime2");
+            b.Property(x => x.CreatedAt).HasColumnType("datetime2");
+            b.HasOne(x => x.Invoice).WithMany(i => i.Payments).HasForeignKey(x => x.InvoiceId);
         });
 
         modelBuilder.Entity<Order>(b =>

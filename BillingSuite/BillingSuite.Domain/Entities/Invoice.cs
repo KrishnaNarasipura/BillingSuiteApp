@@ -28,6 +28,6 @@ namespace BillingSuite.Domain.Entities
         public InvoiceStatus Status { get; set; } = InvoiceStatus.Issued;
 
         public ICollection<InvoiceItem> Items { get; set; } = new List<InvoiceItem>();
-
+        public ICollection<InvoicePayment> Payments { get; set; } = new List<InvoicePayment>();
     }
 }

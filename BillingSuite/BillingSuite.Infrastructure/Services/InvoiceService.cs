@@ -113,12 +113,48 @@ public class InvoiceService : IInvoiceService
         await _db.SaveChangesAsync(ct);
     }
 
+    public async Task AddPaymentAsync(InvoicePaymentDto dto, CancellationToken ct = default)
+    {
+        var existing = await _db.Invoices
+            .FirstOrDefaultAsync(i => i.Id == dto.Id, ct);
+
+        if (existing is null) return;
+
+        // Create a new payment record
+        var payment = new InvoicePayment
+        {
+            InvoiceId = dto.Id,
+            Amount = dto.Amount,
+            PaymentDate = dto.PaymentDate,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _db.InvoicePayments.Add(payment);
+
+        // Add the payment to advance received
+        var newAdvanceReceived = existing.AdvanceReceived + dto.Amount;
+        existing.AdvanceReceived = newAdvanceReceived;
+
+        // Determine the status based on payment
+        if (newAdvanceReceived >= existing.NetAmount)
+        {
+            existing.Status = InvoiceStatus.Paid;
+        }
+        else if (newAdvanceReceived > 0)
+        {
+            existing.Status = InvoiceStatus.PartiallyPaid;
+        }
+
+        await _db.SaveChangesAsync(ct);
+    }
+
     public async Task<InvoiceDto?> GetAsync(int id, CancellationToken ct = default)
     {
         var inv = await _db.Invoices
             .Include(i => i.Customer)
             .Include(i => i.Items)
                 .ThenInclude(item => item.TaxSettings)
+            .Include(i => i.Payments)
             .FirstOrDefaultAsync(i => i.Id == id, ct);
 
         if (inv is null) return null;
@@ -154,6 +190,13 @@ public class InvoiceService : IInvoiceService
                 LineTotal = x.LineTotal,
                 TaxSettingsId = x.TaxSettingsId,
                 TaxAmount = x.TaxAmount
+            }).ToList(),
+            Payments = inv.Payments.OrderByDescending(p => p.PaymentDate).Select(p => new PaymentHistoryDto
+            {
+                Id = p.Id,
+                Amount = p.Amount,
+                PaymentDate = p.PaymentDate,
+                CreatedAt = p.CreatedAt
             }).ToList()
         };
     }

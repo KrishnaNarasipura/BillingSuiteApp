@@ -19,6 +19,7 @@ namespace BillingSuite.Application.Abstractions
         Task<byte[]> GeneratePdfAsync(int id, CancellationToken ct = default); // printing/reprint
         Task UpdateAsync(InvoiceEditDto dto, CancellationToken ct = default);
         Task UpdateStatusAsync(InvoiceUpdateStatusDto dto, CancellationToken ct = default);
+        Task AddPaymentAsync(InvoicePaymentDto dto, CancellationToken ct = default);
     }
 
 }

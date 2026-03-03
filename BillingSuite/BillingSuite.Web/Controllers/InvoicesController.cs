@@ -200,4 +200,23 @@ public class InvoicesController : Controller
             return Json(new { success = false, message = $"Error: {ex.Message}" });
         }
     }
+
+    [HttpPost]
+    public async Task<IActionResult> AddPayment([FromBody] InvoicePaymentDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return Json(new { success = false, message = "Invalid data" });
+        }
+
+        try
+        {
+            await _svc.AddPaymentAsync(dto);
+            return Json(new { success = true, message = "Payment added successfully." });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, message = $"Error: {ex.Message}" });
+        }
+    }
 }

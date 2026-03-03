@@ -160,6 +160,43 @@
         </div>
     </div>
 
+    <!-- Payment History -->
+    @if (Model.Payments.Any())
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Payment History</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="border-0">Payment Date</th>
+                                        <th class="border-0 text-end">Amount</th>
+                                        <th class="border-0">Created At</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var payment in Model.Payments)
+                                    {
+                                        <tr>
+                                            <td class="border-0">@payment.PaymentDate.ToString("MMM dd, yyyy")</td>
+                                            <td class="border-0 text-end fw-bold text-success">@payment.Amount.ToString("N2")</td>
+                                            <td class="border-0">@payment.CreatedAt.ToString("MMM dd, yyyy HH:mm")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
     <!-- Invoice Summary -->
     <div class="row">
         <div class="col-md-8"></div>

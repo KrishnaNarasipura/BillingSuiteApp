@@ -12,7 +12,8 @@ namespace BillingSuite.Application.Enums
         Draft = 0,
         Issued = 1,
         Cancelled = 2,
-        Paid = 3
+        Paid = 3,
+        PartiallyPaid = 4
     }
 
 

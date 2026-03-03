@@ -22,6 +22,7 @@ namespace BillingSuite.Application.DTOs
         public decimal AdvanceReceived { get; set; }
         public int Status { get; set; }
         public List<InvoiceItemDto> Items { get; set; } = new();
+        public List<PaymentHistoryDto> Payments { get; set; } = new();
 
     }
 }
