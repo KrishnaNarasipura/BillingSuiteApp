@@ -133,7 +133,7 @@
                             <a class="btn btn-sm btn-outline-success" target="_blank" href="@Url.Action("Print", "Invoices", new { id = invoice.Id })">
                                 <i class="fas fa-print me-1"></i>Print
                             </a>
-                            <button type="button" class="btn btn-sm btn-outline-info add-payment-btn" data-invoice-id="@invoice.Id" data-invoice-number="@invoice.InvoiceNumber" data-net-amount="@invoice.NetAmount" data-advance-received="@invoice.AdvanceReceived" data-bs-toggle="modal" data-bs-target="#paymentModal">
+                            <button type="button" class="btn btn-sm btn-outline-info add-payment-btn" data-invoice-id="@invoice.Id" data-invoice-number="@invoice.InvoiceNumber" data-net-amount="@invoice.NetAmount" data-advance-received="@invoice.AdvanceReceived" data-our-order-reference="@invoice.OurOrderReference" data-bs-toggle="modal" data-bs-target="#paymentModal">
                                 <i class="fas fa-credit-card me-1"></i>Add Payment
                             </button>
                         }
@@ -299,6 +299,7 @@
                 const invoiceNumber = $(this).data('invoice-number');
                 const netAmount = $(this).data('net-amount');
                 const advanceReceived = $(this).data('advance-received');
+                selectedOrderReference = $(this).data('our-order-reference');
 
                 // Populate modal fields
                 $('#paymentInvoiceId').val(invoiceId);
@@ -336,7 +337,7 @@
                 }
 
                 // Call AddPayment action
-                addPayment(invoiceId, parseFloat(amount), paymentDate);
+                addPayment(invoiceId, parseFloat(amount), paymentDate,selectedOrderReference);
             });
 
             // Handle Delete button click
@@ -349,7 +350,7 @@
                 }
             });
 
-            function addPayment(invoiceId, amount, paymentDate) {
+            function addPayment(invoiceId, amount, paymentDate,orderReference) {
                 $.ajax({
                     type: 'POST',
                     url: '/Invoices/AddPayment',
@@ -357,7 +358,8 @@
                     data: JSON.stringify({
                         id: parseInt(invoiceId),
                         amount: amount,
-                        paymentDate: paymentDate
+                        paymentDate: paymentDate,
+                        ourOrderReference: orderReference
                     }),
                     success: function (response) {
                         if (response.success) {

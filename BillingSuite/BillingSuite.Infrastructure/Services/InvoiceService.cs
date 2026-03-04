@@ -13,7 +13,14 @@ namespace BillingSuite.Infrastructure.Services;
 public class InvoiceService : IInvoiceService
 {
     private readonly BillingDbContext _db;
-    public InvoiceService(BillingDbContext db) => _db = db;
+    private readonly IOrderService _orderService;
+
+    public InvoiceService(BillingDbContext db, IOrderService orderService)
+    {
+        _db = db;
+        _orderService = orderService;
+    }
+
 
     public async Task<int> CreateAsync(InvoiceCreateDto dto, CancellationToken ct = default)
     {
@@ -53,6 +60,22 @@ public class InvoiceService : IInvoiceService
 
         _db.Invoices.Add(entity);
         await _db.SaveChangesAsync(ct);
+
+        // Update related order status to InvoiceIssued if OurOrderReference is provided
+        if (!string.IsNullOrWhiteSpace(dto.OurOrderReference))
+        {
+            var relatedOrder = await _db.Orders
+                .FirstOrDefaultAsync(o => o.OrderNumber == dto.OurOrderReference, ct);
+
+            if (relatedOrder != null)
+            {
+                await _orderService.UpdateStatusAsync(new OrderUpdateStatusDto
+                {
+                    Id = relatedOrder.Id,
+                    OrderStatus = (int)OrderStatus.InvoiceIssued
+                }, ct);
+            }
+        }
         return entity.Id;
     }
 
@@ -98,6 +121,22 @@ public class InvoiceService : IInvoiceService
         existing.NetAmount = net;
 
         await _db.SaveChangesAsync(ct);
+
+        // Update related order status to InvoiceIssued if OurOrderReference is provided
+        if (!string.IsNullOrWhiteSpace(dto.OurOrderReference))
+        {
+            var relatedOrder = await _db.Orders
+                .FirstOrDefaultAsync(o => o.OrderNumber == dto.OurOrderReference, ct);
+
+            if (relatedOrder != null)
+            {
+                await _orderService.UpdateStatusAsync(new OrderUpdateStatusDto
+                {
+                    Id = relatedOrder.Id,
+                    OrderStatus = (int)OrderStatus.InvoiceIssued
+                }, ct);
+            }
+        }
     }
 
     public async Task UpdateStatusAsync(InvoiceUpdateStatusDto dto, CancellationToken ct = default)
@@ -139,6 +178,21 @@ public class InvoiceService : IInvoiceService
         if (newAdvanceReceived >= existing.NetAmount)
         {
             existing.Status = InvoiceStatus.Paid;
+            // Update related order status to Completed if OurOrderReference is provided
+            if (!string.IsNullOrWhiteSpace(dto.OurOrderReference))
+            {
+                var relatedOrder = await _db.Orders
+                    .FirstOrDefaultAsync(o => o.OrderNumber == dto.OurOrderReference, ct);
+
+                if (relatedOrder != null)
+                {
+                    await _orderService.UpdateStatusAsync(new OrderUpdateStatusDto
+                    {
+                        Id = relatedOrder.Id,
+                        OrderStatus = (int)OrderStatus.Completed,
+                    }, ct);
+                }
+            }
         }
         else if (newAdvanceReceived > 0)
         {
