@@ -20,6 +20,7 @@ namespace BillingSuite.Application.Abstractions
         Task UpdateAsync(InvoiceEditDto dto, CancellationToken ct = default);
         Task UpdateStatusAsync(InvoiceUpdateStatusDto dto, CancellationToken ct = default);
         Task AddPaymentAsync(InvoicePaymentDto dto, CancellationToken ct = default);
+        Task DeleteAsync(int id, CancellationToken ct = default);
     }
 
 }

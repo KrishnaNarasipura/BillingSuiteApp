@@ -1,6 +1,10 @@
 using BillingSuite.Infrastructure.DependencyInjection;
+using BillingSuite.Application.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Register InvoiceSettings from configuration
+builder.Services.Configure<InvoiceSettings>(builder.Configuration.GetSection("InvoiceSettings"));
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? "Server=(localdb)\\MSSQLLocalDB;Database=BillingSuiteDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True";

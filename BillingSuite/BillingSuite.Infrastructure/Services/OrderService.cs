@@ -251,4 +251,27 @@ public class OrderService : IOrderService
         await _db.SaveChangesAsync(ct);
         return entity.Id;
     }
+
+    public async Task DeleteAsync(int id, CancellationToken ct = default)
+    {
+        var order = await _db.Orders
+            .Include(o => o.Items)
+            .FirstOrDefaultAsync(o => o.Id == id, ct);
+
+        if (order is null) return;
+
+        // Only allow deletion of draft orders
+        if (order.Status != OrderStatus.Draft)
+        {
+            throw new InvalidOperationException("Only draft orders can be deleted.");
+        }
+
+        // Remove items first
+        _db.OrderItems.RemoveRange(order.Items);
+
+        // Remove the order
+        _db.Orders.Remove(order);
+
+        await _db.SaveChangesAsync(ct);
+    }
 }

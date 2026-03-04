@@ -11,9 +11,12 @@ namespace BillingSuite.Domain.Entities
 
         public int Id { get; set; }
         public string CompanyName { get; set; } = default!;
-        public string? Address { get; set; }
-        public string? Phone { get; set; }
-        public string? Gstin { get; set; }
+        public string Address { get; set; }
+        public string Phone { get; set; }
+        public string Gstin { get; set; }
+        public string HsnCodeService { get; set; }
+        public string HsnCode { get; set; }
+
         public byte[]? LogoBytes { get; set; }
 
         public string? TermsAndConditions { get; set; }

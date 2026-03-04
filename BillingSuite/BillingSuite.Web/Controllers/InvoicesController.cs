@@ -1,10 +1,12 @@
 ﻿using BillingSuite.Application.Abstractions;
+using BillingSuite.Application.Configuration;
 using BillingSuite.Application.DTOs;
 using BillingSuite.Application.Enums;
 using BillingSuite.Domain;
 using BillingSuite.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace BillingSuite.Web.Controllers;
 
@@ -14,13 +16,15 @@ public class InvoicesController : Controller
     private readonly ICustomerService _customers;
     private readonly ITaxSettingsService _taxSettings;
     private readonly BillingDbContext _db;
+    private readonly InvoiceSettings _invoiceSettings;
 
-    public InvoicesController(IInvoiceService svc, ICustomerService customers, ITaxSettingsService taxSettings, BillingDbContext db)
+    public InvoicesController(IInvoiceService svc, ICustomerService customers, ITaxSettingsService taxSettings, BillingDbContext db, IOptions<InvoiceSettings> invoiceSettings)
     {
         _svc = svc;
         _customers = customers;
         _taxSettings = taxSettings;
         _db = db;
+        _invoiceSettings = invoiceSettings.Value;
     }
 
     public async Task<IActionResult> Index(DateTime? from, DateTime? to, int? CustomerId, string? invoiceNumber, int? status, int page = 1, int pageSize = 20)
@@ -37,6 +41,7 @@ public class InvoicesController : Controller
         if (dto is null) return NotFound();
 
         ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
+        ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
         return View(dto);
     }
 
@@ -44,16 +49,25 @@ public class InvoicesController : Controller
     {
         ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
         ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
+        ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
         return View(new InvoiceCreateDto { Items = new List<InvoiceItemDto> { new() { Description = "Item 1", Quantity = 1, UnitPrice = 0 } } });
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(InvoiceCreateDto dto, string? submitButton)
     {
+        // Clear model state for dynamic items to avoid validation issues
+        // when items are added/removed dynamically via JavaScript
+        if (ModelState.ContainsKey("Items"))
+        {
+            ModelState.Remove("Items");
+        }
+
         if (!ModelState.IsValid)
         {
             ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
             ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
+            ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
             return View(dto);
         }
 
@@ -87,6 +101,7 @@ public class InvoicesController : Controller
         {
             ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
             ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
+            ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
             ModelState.AddModelError("", $"Error saving invoice: {ex.Message}");
             return View(dto);
         }
@@ -114,6 +129,7 @@ public class InvoicesController : Controller
         ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
         ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
         ViewBag.IsDraft = invoice.Status == 0; // Draft status is 0
+        ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
         
         return View(editDto);
     }
@@ -121,10 +137,18 @@ public class InvoicesController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(InvoiceEditDto dto, string? submitButton)
     {
+        // Clear model state for dynamic items to avoid validation issues
+        // when items are added/removed dynamically via JavaScript
+        if (ModelState.ContainsKey("Items"))
+        {
+            ModelState.Remove("Items");
+        }
+
         if (!ModelState.IsValid)
         {
             ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
             ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
+            ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
             return View(dto);
         }
 
@@ -164,6 +188,7 @@ public class InvoicesController : Controller
         {
             ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
             ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
+            ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
             ModelState.AddModelError("", $"Error updating invoice: {ex.Message}");
             return View(dto);
         }
@@ -213,6 +238,24 @@ public class InvoicesController : Controller
         {
             await _svc.AddPaymentAsync(dto);
             return Json(new { success = true, message = "Payment added successfully." });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, message = $"Error: {ex.Message}" });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete([FromRoute] int id) 
+    {
+        try
+        {
+            await _svc.DeleteAsync(id);
+            return Json(new { success = true, message = "Invoice deleted successfully." });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Json(new { success = false, message = ex.Message });
         }
         catch (Exception ex)
         {

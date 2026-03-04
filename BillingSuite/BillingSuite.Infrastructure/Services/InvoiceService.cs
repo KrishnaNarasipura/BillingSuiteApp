@@ -322,4 +322,31 @@ public class InvoiceService : IInvoiceService
         await _db.SaveChangesAsync(ct);
         return entity.Id;
     }
+
+    public async Task DeleteAsync(int id, CancellationToken ct = default)
+    {
+        var existing = await _db.Invoices
+            .Include(i => i.Items)
+            .Include(i => i.Payments)
+            .FirstOrDefaultAsync(i => i.Id == id, ct);
+
+        if (existing is null) return;
+
+        // Only allow deletion of draft invoices
+        if (existing.Status != InvoiceStatus.Draft)
+        {
+            throw new InvalidOperationException("Only draft invoices can be deleted.");
+        }
+
+        // Remove payments first
+        _db.InvoicePayments.RemoveRange(existing.Payments);
+
+        // Remove items
+        _db.InvoiceItems.RemoveRange(existing.Items);
+
+        // Remove the invoice
+        _db.Invoices.Remove(existing);
+
+        await _db.SaveChangesAsync(ct);
+    }
 }

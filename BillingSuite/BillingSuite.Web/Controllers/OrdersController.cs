@@ -1,10 +1,12 @@
 using BillingSuite.Application.Abstractions;
+using BillingSuite.Application.Configuration;
 using BillingSuite.Application.DTOs;
 using BillingSuite.Application.Enums;
 using BillingSuite.Domain;
 using BillingSuite.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace BillingSuite.Web.Controllers;
 
@@ -14,13 +16,15 @@ public class OrdersController : Controller
     private readonly ICustomerService _customers;
     private readonly ITaxSettingsService _taxSettings;
     private readonly BillingDbContext _db;
+    private readonly InvoiceSettings _invoiceSettings;
 
-    public OrdersController(IOrderService svc, ICustomerService customers, ITaxSettingsService taxSettings, BillingDbContext db)
+    public OrdersController(IOrderService svc, ICustomerService customers, ITaxSettingsService taxSettings, BillingDbContext db, IOptions<InvoiceSettings> invoiceSettings)
     {
         _svc = svc;
         _customers = customers;
         _taxSettings = taxSettings;
         _db = db;
+        _invoiceSettings = invoiceSettings.Value;
     }
 
     public async Task<IActionResult> Index(DateTime? from, DateTime? to, int? CustomerId, string? orderNumber, int? status, int page = 1, int pageSize = 20)
@@ -207,6 +211,7 @@ public class OrdersController : Controller
 
         ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
         ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
+        ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
         ViewBag.OrderId = order.Id;
         ViewBag.OrderNumber = order.OrderNumber;
 
@@ -218,6 +223,24 @@ public class OrdersController : Controller
     {
         var words = Utility.ConvertNumberToWords(amount);
         return Json(new { words });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete([FromRoute] int id)
+    {
+        try
+        {
+            await _svc.DeleteAsync(id);
+            return Json(new { success = true, message = "Order deleted successfully." });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Json(new { success = false, message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, message = $"Error: {ex.Message}" });
+        }
     }
 
 }

@@ -25,6 +25,8 @@ public class CompanySettingsService : ICompanySettingsService
             existing.Address = settings.Address;
             existing.Phone = settings.Phone;
             existing.Gstin = settings.Gstin;
+            existing.HsnCode = settings.HsnCode;
+            existing.HsnCodeService = settings.HsnCodeService;
             existing.LogoBytes = settings.LogoBytes;
             existing.TermsAndConditions = settings.TermsAndConditions;
             existing.UpdatedOn = DateTime.UtcNow;
