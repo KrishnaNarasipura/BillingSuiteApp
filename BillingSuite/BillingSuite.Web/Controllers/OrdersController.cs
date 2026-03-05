@@ -201,6 +201,7 @@ public class OrdersController : Controller
             Items = order.Items.Select(item => new InvoiceItemDto
             {
                 Description = item.Description,
+                HsnCode = item.HsnCode,
                 Quantity = item.Quantity,
                 UnitPrice = item.UnitPrice,
                 LineTotal = item.LineTotal,

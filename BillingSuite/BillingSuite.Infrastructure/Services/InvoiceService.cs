@@ -32,6 +32,7 @@ public class InvoiceService : IInvoiceService
         var items = dto.Items.Select(i => new InvoiceItem
         {
             Description = i.Description,
+            HsnCode = i.HsnCode,
             Quantity = i.Quantity,
             UnitPrice = i.UnitPrice,
             LineTotal = Math.Round(i.Quantity * i.UnitPrice, 2),
@@ -95,6 +96,7 @@ public class InvoiceService : IInvoiceService
         {
             InvoiceId = dto.Id,
             Description = i.Description,
+            HsnCode = i.HsnCode,
             Quantity = i.Quantity,
             UnitPrice = i.UnitPrice,
             LineTotal = Math.Round(i.Quantity * i.UnitPrice, 2),
@@ -239,6 +241,7 @@ public class InvoiceService : IInvoiceService
             Items = inv.Items.Select(x => new InvoiceItemDto
             {
                 Description = x.Description,
+                HsnCode = x.HsnCode,
                 Quantity = x.Quantity,
                 UnitPrice = x.UnitPrice,
                 LineTotal = x.LineTotal,
@@ -345,6 +348,7 @@ public class InvoiceService : IInvoiceService
         var items = dto.Items.Select(i => new InvoiceItem
         {
             Description = i.Description,
+            HsnCode = i.HsnCode,
             Quantity = i.Quantity,
             UnitPrice = i.UnitPrice,
             LineTotal = Math.Round(i.Quantity * i.UnitPrice, 2),

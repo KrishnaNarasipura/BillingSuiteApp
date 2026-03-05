@@ -125,9 +125,9 @@ public class InvoicePdf
                     {
                         table.ColumnsDefinition(cols =>
                         {
-                            cols.RelativeColumn(0.7f); // S.No
+                            cols.RelativeColumn(0.5f); // S.No
                             cols.RelativeColumn(4); // Description
-                            //cols.RelativeColumn(1.5f); // HSN Code
+                            cols.RelativeColumn(1.5f); // HSN Code
                             cols.RelativeColumn(1); // Qty
                             cols.RelativeColumn(2); // Unit Price
                             cols.RelativeColumn(1.5f); // Tax Type
@@ -140,7 +140,7 @@ public class InvoicePdf
                         {
                             h.Cell().Element(CellHeader).AlignCenter().Text("Sl.No");
                             h.Cell().Element(CellHeader).Text("Description");
-                            //h.Cell().Element(CellHeader).AlignCenter().Text("HSN Code");
+                            h.Cell().Element(CellHeader).AlignCenter().Text("HSN Code");
                             h.Cell().Element(CellHeader).AlignCenter().Text("Qty");
                             h.Cell().Element(CellHeader).AlignRight().Text("Unit Price");
                             h.Cell().Element(CellHeader).AlignCenter().Text("Tax Type");
@@ -159,7 +159,7 @@ public class InvoicePdf
 
                             table.Cell().Element(Cell).AlignCenter().Text(serialNo.ToString());
                             table.Cell().Element(Cell).Text(item.Description);
-                            //table.Cell().Element(Cell).AlignCenter().Text(_settings.HsnCode ?? "N/A").FontSize(8);
+                            table.Cell().Element(Cell).AlignCenter().Text(item.HsnCode ?? "N/A").FontSize(8);
                             table.Cell().Element(Cell).AlignCenter().Text(item.Quantity.ToString("0.##"));
                             table.Cell().Element(Cell).AlignRight().Text(item.UnitPrice.ToString("N2"));
                             table.Cell().Element(Cell).AlignCenter().Text(taxDisplay).FontSize(8);

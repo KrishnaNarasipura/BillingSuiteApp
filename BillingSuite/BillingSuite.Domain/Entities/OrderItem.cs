@@ -13,6 +13,7 @@ namespace BillingSuite.Domain.Entities
         public Order Order { get; set; } = default!;
 
         public string Description { get; set; } = default!;
+        public string HsnCode { get; set; } = default!;
         public decimal Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal LineTotal { get; set; }

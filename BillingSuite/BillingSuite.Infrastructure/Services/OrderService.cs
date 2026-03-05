@@ -23,6 +23,7 @@ public class OrderService : IOrderService
         var items = dto.Items.Select(i => new OrderItem
         {
             Description = i.Description,
+            HsnCode = i.HsnCode,
             Quantity = i.Quantity,
             UnitPrice = i.UnitPrice,
             LineTotal = Math.Round(i.Quantity * i.UnitPrice, 2),
@@ -70,6 +71,7 @@ public class OrderService : IOrderService
         {
             OrderId = dto.Id,
             Description = i.Description,
+            HsnCode = i.HsnCode,
             Quantity = i.Quantity,
             UnitPrice = i.UnitPrice,
             LineTotal = Math.Round(i.Quantity * i.UnitPrice, 2),
@@ -144,6 +146,7 @@ public class OrderService : IOrderService
             Items = order.Items.Select(x => new OrderItemDto
             {
                 Description = x.Description,
+                HsnCode = x.HsnCode,
                 Quantity = x.Quantity,
                 UnitPrice = x.UnitPrice,
                 LineTotal = x.LineTotal,
@@ -222,6 +225,7 @@ public class OrderService : IOrderService
         var items = dto.Items.Select(i => new OrderItem
         {
             Description = i.Description,
+            HsnCode = i.HsnCode,
             Quantity = i.Quantity,
             UnitPrice = i.UnitPrice,
             LineTotal = Math.Round(i.Quantity * i.UnitPrice, 2),

@@ -112,18 +112,18 @@
             </div>
             @if (ViewBag.ShowDiscountAndAdvance ?? true)
             {
-            <div class="col-md-2">
-                <label class="form-label">
-                    <i class="fas fa-percent me-2"></i>Discount
-                </label>
-                <input type="number" step="0.01" class="form-control" name="DiscountAmount" id="discountAmount" value="@Model.DiscountAmount" />
-            </div>
-            <div class="col-md-2">
-                <label class="form-label">
-                    <i class="fas fa-money-bill-wave me-2"></i>Advance Received
-                </label>
-                <input type="number" step="0.01" class="form-control" name="AdvanceReceived" id="advanceReceived" value="@Model.AdvanceReceived" />
-            </div>
+                <div class="col-md-2">
+                    <label class="form-label">
+                        <i class="fas fa-percent me-2"></i>Discount
+                    </label>
+                    <input type="number" step="0.01" class="form-control" name="DiscountAmount" id="discountAmount" value="@Model.DiscountAmount" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">
+                        <i class="fas fa-money-bill-wave me-2"></i>Advance Received
+                    </label>
+                    <input type="number" step="0.01" class="form-control" name="AdvanceReceived" id="advanceReceived" value="@Model.AdvanceReceived" />
+                </div>
             }
         </div>
 
@@ -149,6 +149,7 @@
                 <thead class="table-light">
                     <tr>
                         <th>Description</th>
+                        <th>HSN Code</th>
                         <th>Qty</th>
                         <th>Unit Price</th>
                         <th>Tax Type</th>
@@ -163,6 +164,9 @@
                         <tr>
                             <td>
                                 <input class="form-control form-control-sm" name="Items[@i].Description" value="@Model.Items[i].Description" />
+                            </td>
+                            <td>
+                                <input class="form-control form-control-sm" name="Items[@i].HsnCode" value="@Model.Items[i].HsnCode" placeholder="HSN Code" />
                             </td>
                             <td>
                                 <input class="form-control form-control-sm qty" name="Items[@i].Quantity" type="number" step="0.01" value="@Model.Items[i].Quantity" />
@@ -362,9 +366,9 @@
             let options = '<option value="">No Tax</option>';
             @foreach (var tax in taxSettings)
             {
-                        <text>
-                        options += '<option value="@tax.Id" data-percent="@tax.TaxPercent" data-taxtype="@tax.TaxType">@tax.TaxType (@tax.TaxPercent%)</option>';
-                        </text>
+                            <text>
+                            options += '<option value="@tax.Id" data-percent="@tax.TaxPercent" data-taxtype="@tax.TaxType">@tax.TaxType (@tax.TaxPercent%)</option>';
+                            </text>
             }
             return options;
         }
@@ -386,6 +390,7 @@
                 let taxOptions = createTaxOptions();
                 let newRow = `<tr>
                     <td><input class="form-control form-control-sm" name="Items[${rowCount}].Description" /></td>
+                    <td><input class="form-control form-control-sm" name="Items[${rowCount}].HsnCode" placeholder="HSN Code" /></td>
                     <td><input class="form-control form-control-sm qty" name="Items[${rowCount}].Quantity" type="number" step="0.01" value="1" /></td>
                     <td><input class="form-control form-control-sm unitprice" name="Items[${rowCount}].UnitPrice" type="number" step="0.01" value="0" /></td>
                     <td><select class="form-select form-select-sm tax-select" name="Items[${rowCount}].TaxSettingsId">${taxOptions}</select></td>
@@ -428,4 +433,4 @@
             });
         });
     </script>
-}}
+}

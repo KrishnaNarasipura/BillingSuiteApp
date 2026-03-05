@@ -153,7 +153,7 @@
                                     <tr>
                                         <td class="border-0">@item.Description</td>
                                         <td class="border-0 text-center">@item.Quantity.ToString("F2")</td>
-                                        <td class="border-0 text-end">@item.UnitPrice.ToString("C")</td>
+                                        <td class="border-0 text-end">@item.UnitPrice.ToString()</td>
                                         <td class="border-0 text-center">
                                             @if (taxSetting != null)
                                             {
@@ -164,9 +164,9 @@
                                                 <span class="text-muted">No Tax</span>
                                             }
                                         </td>
-                                        <td class="border-0 text-end">@item.LineTotal.ToString("C")</td>
-                                        <td class="border-0 text-end">@item.TaxAmount.ToString("C")</td>
-                                        <td class="border-0 text-end fw-bold">@itemTotal.ToString("C")</td>
+                                        <td class="border-0 text-end">@item.LineTotal.ToString()</td>
+                                        <td class="border-0 text-end">@item.TaxAmount.ToString()</td>
+                                        <td class="border-0 text-end fw-bold">@itemTotal.ToString()</td>
                                     </tr>
                                 }
                             </tbody>
@@ -202,41 +202,41 @@
 
                     <div class="row mb-2">
                         <div class="col-7"><strong>Subtotal:</strong></div>
-                        <div class="col-5 text-end">@Model.Subtotal.ToString("C")</div>
+                        <div class="col-5 text-end">@Model.Subtotal.ToString()</div>
                     </div>
 
                     @foreach (var taxItem in taxBreakdown)
                     {
                         <div class="row mb-1">
                             <div class="col-7">@taxItem.TaxSetting!.TaxType (@taxItem.TaxSetting.TaxPercent%):</div>
-                            <div class="col-5 text-end">@taxItem.TotalAmount.ToString("C")</div>
+                            <div class="col-5 text-end">@taxItem.TotalAmount.ToString()</div>
                         </div>
                     }
 
                     <div class="row mb-2">
                         <div class="col-7"><strong>Total Tax:</strong></div>
-                        <div class="col-5 text-end"><strong>@Model.TaxAmount.ToString("C")</strong></div>
+                        <div class="col-5 text-end"><strong>@Model.TaxAmount.ToString()</strong></div>
                     </div>
 
                     @if (Model.DiscountAmount > 0)
                     {
                         <div class="row mb-2">
                             <div class="col-7"><strong>Discount:</strong></div>
-                            <div class="col-5 text-end text-danger">-@Model.DiscountAmount.ToString("C")</div>
+                            <div class="col-5 text-end text-danger">-@Model.DiscountAmount.ToString()</div>
                         </div>
                     }
 
                     <hr>
                     <div class="row mb-3">
                         <div class="col-7"><h5><strong>Net Amount:</strong></h5></div>
-                        <div class="col-5 text-end"><h5><strong>@Model.NetAmount.ToString("C")</strong></h5></div>
+                        <div class="col-5 text-end"><h5><strong>@Model.NetAmount.ToString()</strong></h5></div>
                     </div>
 
                     @if (Model.AdvanceReceived > 0)
                     {
                         <div class="row mb-2">
                             <div class="col-7"><strong>Advance Received:</strong></div>
-                            <div class="col-5 text-end text-success">-@Model.AdvanceReceived.ToString("C")</div>
+                            <div class="col-5 text-end text-success">-@Model.AdvanceReceived.ToString()</div>
                         </div>
                     }
 
@@ -248,21 +248,21 @@
                     {
                         <div class="row mb-3">
                             <div class="col-7"><h5><strong>Order Balance:</strong></h5></div>
-                            <div class="col-5 text-end"><h5><strong>@orderBalance.ToString("C")</strong></h5></div>
+                            <div class="col-5 text-end"><h5><strong>@orderBalance.ToString()</strong></h5></div>
                         </div>
                     }
                     else if (orderBalance == 0)
                     {
                         <div class="row mb-3">
                             <div class="col-7"><h5><strong>Order Balance:</strong></h5></div>
-                            <div class="col-5 text-end"><h5><strong class="text-success">@orderBalance.ToString("C")</strong></h5></div>
+                            <div class="col-5 text-end"><h5><strong class="text-success">@orderBalance.ToString()</strong></h5></div>
                         </div>
                     }
                     else
                     {
                         <div class="row mb-3">
                             <div class="col-7"><h5><strong>Order Balance:</strong></h5></div>
-                            <div class="col-5 text-end"><h5><strong class="text-info">@orderBalance.ToString("C")</strong></h5></div>
+                            <div class="col-5 text-end"><h5><strong class="text-info">@orderBalance.ToString()</strong></h5></div>
                         </div>
                     }
 

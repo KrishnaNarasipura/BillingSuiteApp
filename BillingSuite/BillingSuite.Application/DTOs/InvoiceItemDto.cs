@@ -9,6 +9,7 @@ namespace BillingSuite.Application.DTOs
     public class InvoiceItemDto
     {
         public string Description { get; set; } = default!;
+        public string HsnCode { get; set; } = default!;
         public decimal Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal LineTotal { get; set; }
