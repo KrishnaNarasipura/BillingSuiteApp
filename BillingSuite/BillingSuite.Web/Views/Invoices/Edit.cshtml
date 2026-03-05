@@ -369,6 +369,8 @@
         }
 
         $(document).ready(function () {
+            console.log('Invoice edit form loaded'); // Debug log
+
             recalculateTotals();
 
             $('#itemsTable').on('input change', '.qty, .unitprice, .tax-select', function () {
@@ -403,14 +405,49 @@
                 recalculateTotals();
             });
 
-            // Form submission validation
+            // Form submission validation with Our Order Reference check
             $('#invoiceForm').on('submit', function (e) {
+                console.log('Form submit event triggered'); // Debug log
+
+                // Get the clicked button
+                let submitButton = $(document.activeElement).val();
+                console.log('Submit button clicked:', submitButton); // Debug log
+
                 let hasItems = $('#itemsTable tbody tr').length > 0;
                 if (!hasItems) {
                     e.preventDefault();
                     alert('Please add at least one item to the invoice.');
                     return false;
                 }
+
+                let customerId = $('select[name="CustomerId"]').val();
+                if (!customerId || customerId === '') {
+                    e.preventDefault();
+                    alert('Please select a customer.');
+                    return false;
+                }
+
+                // Check Our Order Reference only when UpdateAndGenerate button is clicked
+                if (submitButton === 'UpdateAndGenerate') {
+                    let ourOrderReference = $('input[name="OurOrderReference"]').val();
+                    let yourOrderReference = $('input[name="YourOrderReference"]').val();
+                    if (!ourOrderReference || ourOrderReference.trim() === '') {
+                        e.preventDefault();
+                        alert('Please fill in the "Our Order Reference" field before generating the invoice.');
+                        $('input[name="OurOrderReference"]').focus();
+                        return false;
+                    }
+                    if (!yourOrderReference || yourOrderReference.trim() === '') {
+                        e.preventDefault();
+                        alert('Please fill in the "Your Order Reference" field before generating the invoice.');
+                        $('input[name="YourOrderReference"]').focus();
+                        return false;
+                    }
+                }
+
+                // Client-side validation passed, proceed with form submission
+                console.log('Form validation passed, submitting...'); // Debug log
+                return true;
             });
         });
     </script>

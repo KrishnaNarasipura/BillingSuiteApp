@@ -338,14 +338,16 @@
             let options = '<option value="">No Tax</option>';
             @foreach (var tax in taxSettings)
             {
-                            <text>
-                            options += '<option value="@tax.Id" data-percent="@tax.TaxPercent" data-taxtype="@tax.TaxType">@tax.TaxType (@tax.TaxPercent%)</option>';
-                            </text>
+                                <text>
+                                options += '<option value="@tax.Id" data-percent="@tax.TaxPercent" data-taxtype="@tax.TaxType">@tax.TaxType (@tax.TaxPercent%)</option>';
+                                </text>
             }
             return options;
         }
 
         $(document).ready(function () {
+            console.log('Order form loaded'); // Debug log
+
             recalculateTotals();
 
             $('#itemsTable').on('input change', '.qty, .unitprice, .tax-select', function () {
@@ -380,14 +382,42 @@
                 recalculateTotals();
             });
 
-            // Form submission validation
+            // Form submission validation with Your Order Reference check
             $('#orderForm').on('submit', function (e) {
+                console.log('Form submit event triggered'); // Debug log
+
+                // Get the clicked button
+                let submitButton = $(document.activeElement).val();
+                console.log('Submit button clicked:', submitButton); // Debug log
+
                 let hasItems = $('#itemsTable tbody tr').length > 0;
                 if (!hasItems) {
                     e.preventDefault();
                     alert('Please add at least one item to the order.');
                     return false;
                 }
+
+                let customerId = $('select[name="CustomerId"]').val();
+                if (!customerId || customerId === '') {
+                    e.preventDefault();
+                    alert('Please select a customer.');
+                    return false;
+                }
+
+                // Check Your Order Reference only when Confirm button is clicked
+                if (submitButton === 'Confirm') {
+                    let yourOrderReference = $('input[name="YourOrderReference"]').val();
+                    if (!yourOrderReference || yourOrderReference.trim() === '') {
+                        e.preventDefault();
+                        alert('Please fill in the "Your Order Reference" field before confirming the order.');
+                        $('input[name="YourOrderReference"]').focus();
+                        return false;
+                    }
+                }
+
+                // Client-side validation passed, proceed with form submission
+                console.log('Form validation passed, submitting...'); // Debug log
+                return true;
             });
         });
     </script>
