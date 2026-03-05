@@ -38,6 +38,12 @@ public class InvoicePdf
                             stack.Item().Text($"Phone: {_settings.Phone}").FontSize(10);
                         if (!string.IsNullOrWhiteSpace(_settings.Gstin))
                             stack.Item().Text($"GSTIN: {_settings.Gstin}").FontSize(10);
+
+                        // Add HSN Code and HSN Code Service below GSTIN
+                        if (!string.IsNullOrWhiteSpace(_settings.HsnCode))
+                            stack.Item().Text($"HSN Code: {_settings.HsnCode}").FontSize(10);
+                        if (!string.IsNullOrWhiteSpace(_settings.HsnCodeService))
+                            stack.Item().Text($"HSN Code Service: {_settings.HsnCodeService}").FontSize(10);
                     });
 
                     // Invoice Information
@@ -46,59 +52,82 @@ public class InvoicePdf
                         stack.Item().AlignRight().Text("INVOICE").FontSize(18).SemiBold().FontColor(Colors.Green.Medium);
                         stack.Item().AlignRight().Text($"Invoice #: {_invoice.InvoiceNumber}").FontSize(12).SemiBold();
                         stack.Item().AlignRight().Text($"Date: {_invoice.InvoiceDate:dd-MMM-yyyy}").FontSize(11);
+                        if (!string.IsNullOrWhiteSpace(_invoice.OurOrderReference))
+                            stack.Item().AlignRight().Text($"Our Order Ref: {_invoice.OurOrderReference}").FontSize(10);
+                        if (!string.IsNullOrWhiteSpace(_invoice.YourOrderReference))
+                            stack.Item().AlignRight().Text($"Your Order Ref: {_invoice.YourOrderReference}").FontSize(10);
                     });
                 });
 
                 page.Content().Column(stack =>
                 {
-                    // Customer Information Section
-                    stack.Item().PaddingTop(20).Row(row =>
+                    // Customer Information Section with Boxes
+                    stack.Item().PaddingTop(15).Row(row => // Reduced from 20 to 15
                     {
-                        // Billing Address
-                        row.RelativeItem().Column(billCol =>
+                        // Billing Address Box
+                        row.RelativeItem().Border(1).BorderColor(Colors.Grey.Medium).Padding(8).Column(billCol => // Reduced padding from 10 to 8
                         {
-                            billCol.Item().Text("Bill To:").FontSize(12).SemiBold().FontColor(Colors.Grey.Darken3);
-                            billCol.Item().PaddingTop(5).Column(billStack =>
+                            // Header with background
+                            billCol.Item().Background(Colors.Grey.Lighten4)
+                                    .PaddingVertical(4)
+                                    .PaddingHorizontal(2)
+                                    .Text("BILL TO").FontSize(12).SemiBold().FontColor(Colors.Blue.Medium);
+
+                            billCol.Item().PaddingTop(6).Column(billStack => // Reduced from 8 to 6
                             {
                                 billStack.Item().Text(_invoice.Customer.Name).FontSize(11).SemiBold();
                                 if (!string.IsNullOrWhiteSpace(_invoice.Customer.BillingAddress))
-                                    billStack.Item().Text(_invoice.Customer.BillingAddress).FontSize(10);
+                                {
+                                    var addressLines = _invoice.Customer.BillingAddress.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                                    foreach (var line in addressLines)
+                                    {
+                                        billStack.Item().Text(line.Trim()).FontSize(10);
+                                    }
+                                }
                                 if (!string.IsNullOrWhiteSpace(_invoice.Customer.Email))
                                     billStack.Item().Text($"Email: {_invoice.Customer.Email}").FontSize(10);
                                 if (!string.IsNullOrWhiteSpace(_invoice.Customer.Phone))
                                     billStack.Item().Text($"Phone: {_invoice.Customer.Phone}").FontSize(10);
                                 if (!string.IsNullOrWhiteSpace(_invoice.Customer.Gstin))
                                     billStack.Item().Text($"GSTIN: {_invoice.Customer.Gstin}").FontSize(10);
+
                             });
                         });
 
-                        // Shipping Address (if different from billing)
-                        if (!string.IsNullOrWhiteSpace(_invoice.Customer.ShippingAddress) &&
-                            _invoice.Customer.ShippingAddress != _invoice.Customer.BillingAddress)
+                        // Shipping Address Box
+                        row.RelativeItem().Border(1).BorderColor(Colors.Grey.Medium).Padding(8).Column(shipCol => // Reduced padding from 10 to 8
                         {
-                            row.RelativeItem().Column(shipCol =>
+                            // Header with background
+                            shipCol.Item().Background(Colors.Grey.Lighten4).PaddingVertical(4).PaddingHorizontal(2).Text("SHIP TO").FontSize(12).SemiBold().FontColor(Colors.Blue.Medium);
+
+                            shipCol.Item().PaddingTop(6).Column(shipStack => // Reduced from 8 to 6
                             {
-                                shipCol.Item().Text("Ship To:").FontSize(12).SemiBold().FontColor(Colors.Grey.Darken3);
-                                shipCol.Item().PaddingTop(5).Column(shipStack =>
+                                if (!string.IsNullOrWhiteSpace(_invoice.Customer.ShippingAddress) &&
+                                    _invoice.Customer.ShippingAddress != _invoice.Customer.BillingAddress)
                                 {
                                     shipStack.Item().Text(_invoice.Customer.Name).FontSize(11).SemiBold();
-                                    shipStack.Item().Text(_invoice.Customer.ShippingAddress).FontSize(10);
-                                });
+                                    var addressLines = _invoice.Customer.ShippingAddress.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                                    foreach (var line in addressLines)
+                                    {
+                                        shipStack.Item().Text(line.Trim()).FontSize(10);
+                                    }
+                                }
+                                else
+                                {
+                                    shipStack.Item().Text("Same as Billing Address").FontSize(10).Italic().FontColor(Colors.Grey.Medium);
+                                }
                             });
-                        }
-                        else
-                        {
-                            // Empty column to maintain layout balance
-                            row.RelativeItem().Text("");
-                        }
+                        });
                     });
 
                     // Invoice Items Table
-                    stack.Item().PaddingTop(30).Table(table =>
+                    stack.Item().PaddingTop(20).Table(table => // Reduced from 30 to 20
                     {
                         table.ColumnsDefinition(cols =>
                         {
+                            cols.RelativeColumn(0.7f); // S.No
                             cols.RelativeColumn(4); // Description
+                            //cols.RelativeColumn(1.5f); // HSN Code
                             cols.RelativeColumn(1); // Qty
                             cols.RelativeColumn(2); // Unit Price
                             cols.RelativeColumn(1.5f); // Tax Type
@@ -109,7 +138,9 @@ public class InvoicePdf
 
                         table.Header(h =>
                         {
+                            h.Cell().Element(CellHeader).AlignCenter().Text("Sl.No");
                             h.Cell().Element(CellHeader).Text("Description");
+                            //h.Cell().Element(CellHeader).AlignCenter().Text("HSN Code");
                             h.Cell().Element(CellHeader).AlignCenter().Text("Qty");
                             h.Cell().Element(CellHeader).AlignRight().Text("Unit Price");
                             h.Cell().Element(CellHeader).AlignCenter().Text("Tax Type");
@@ -118,6 +149,7 @@ public class InvoicePdf
                             h.Cell().Element(CellHeader).AlignRight().Text("Item Total");
                         });
 
+                        var serialNo = 1;
                         foreach (var item in _invoice.Items)
                         {
                             var itemTotal = item.LineTotal + item.TaxAmount;
@@ -125,18 +157,22 @@ public class InvoicePdf
                             var taxPercent = item.TaxSettings?.TaxPercent ?? 0;
                             var taxDisplay = !string.IsNullOrEmpty(taxType) ? $"{taxType} ({taxPercent}%)" : "No Tax";
 
+                            table.Cell().Element(Cell).AlignCenter().Text(serialNo.ToString());
                             table.Cell().Element(Cell).Text(item.Description);
+                            //table.Cell().Element(Cell).AlignCenter().Text(_settings.HsnCode ?? "N/A").FontSize(8);
                             table.Cell().Element(Cell).AlignCenter().Text(item.Quantity.ToString("0.##"));
-                            table.Cell().Element(Cell).AlignRight().Text(item.UnitPrice.ToString(""));
+                            table.Cell().Element(Cell).AlignRight().Text(item.UnitPrice.ToString("N2"));
                             table.Cell().Element(Cell).AlignCenter().Text(taxDisplay).FontSize(8);
-                            table.Cell().Element(Cell).AlignRight().Text(item.LineTotal.ToString(""));
-                            table.Cell().Element(Cell).AlignRight().Text(item.TaxAmount.ToString(""));
-                            table.Cell().Element(Cell).AlignRight().Text(itemTotal.ToString("")).SemiBold();
+                            table.Cell().Element(Cell).AlignRight().Text(item.LineTotal.ToString("N2"));
+                            table.Cell().Element(Cell).AlignRight().Text(item.TaxAmount.ToString("N2"));
+                            table.Cell().Element(Cell).AlignRight().Text(itemTotal.ToString("N2")).SemiBold();
+
+                            serialNo++;
                         }
                     });
 
                     // Summary Section
-                    stack.Item().PaddingTop(20).Row(row =>
+                    stack.Item().PaddingTop(15).Row(row => // Reduced from 20 to 15
                     {
                         // Left side - Tax Breakdown (if applicable)
                         row.RelativeItem().Column(leftCol =>
@@ -149,17 +185,22 @@ public class InvoicePdf
 
                             if (taxBreakdown.Any())
                             {
-                                leftCol.Item().Text("Tax Breakdown:").FontSize(10).SemiBold();
-                                foreach (var tax in taxBreakdown)
+                                leftCol.Item().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(10).Column(taxCol =>
                                 {
-                                    leftCol.Item().Row(taxRow =>
+                                    taxCol.Item().Text("Tax Breakdown:").FontSize(10).SemiBold();
+                                    foreach (var tax in taxBreakdown)
                                     {
-                                        taxRow.RelativeItem().Text($"{tax.TaxType} ({tax.TaxPercent}%):").FontSize(9);
-                                        taxRow.RelativeItem().AlignRight().Text(tax.Amount.ToString("")).FontSize(9);
-                                    });
-                                }
+                                        taxCol.Item().Row(taxRow =>
+                                        {
+                                            taxRow.RelativeItem().Text($"{tax.TaxType} ({tax.TaxPercent}%):").FontSize(9);
+                                            taxRow.RelativeItem().AlignRight().Text(tax.Amount.ToString("N2")).FontSize(9);
+                                        });
+                                    }
+                                });
                             }
                         });
+
+                        row.ConstantItem(20);
 
                         // Right side - Summary totals
                         row.RelativeItem().Column(rightCol =>
@@ -169,13 +210,13 @@ public class InvoicePdf
                                 summaryCol.Item().Row(r =>
                                 {
                                     r.RelativeItem().Text("Subtotal:").FontSize(11);
-                                    r.RelativeItem().AlignRight().Text(_invoice.Subtotal.ToString("")).FontSize(11);
+                                    r.RelativeItem().AlignRight().Text(_invoice.Subtotal.ToString("N2")).FontSize(11);
                                 });
 
                                 summaryCol.Item().Row(r =>
                                 {
                                     r.RelativeItem().Text("Total Tax:").FontSize(11);
-                                    r.RelativeItem().AlignRight().Text(_invoice.TaxAmount.ToString("")).FontSize(11);
+                                    r.RelativeItem().AlignRight().Text(_invoice.TaxAmount.ToString("N2")).FontSize(11);
                                 });
 
                                 if (_invoice.DiscountAmount > 0)
@@ -183,30 +224,33 @@ public class InvoicePdf
                                     summaryCol.Item().Row(r =>
                                     {
                                         r.RelativeItem().Text("Discount:").FontSize(11).FontColor(Colors.Red.Medium);
-                                        r.RelativeItem().AlignRight().Text($"-{_invoice.DiscountAmount}").FontSize(11).FontColor(Colors.Red.Medium);
+                                        r.RelativeItem().AlignRight().Text($"-{_invoice.DiscountAmount:N2}").FontSize(11).FontColor(Colors.Red.Medium);
                                     });
                                 }
+
+                                // Add space before Net Amount
+                                summaryCol.Item().PaddingTop(12);
 
                                 summaryCol.Item().BorderTop(1).BorderColor(Colors.Grey.Medium).PaddingTop(10).Row(r =>
                                 {
                                     r.RelativeItem().Text("Net Amount:").FontSize(14).SemiBold().FontColor(Colors.Blue.Medium);
-                                    r.RelativeItem().AlignRight().Text(_invoice.NetAmount.ToString("")).FontSize(14).SemiBold().FontColor(Colors.Blue.Medium);
+                                    r.RelativeItem().AlignRight().Text(_invoice.NetAmount.ToString("N2")).FontSize(14).SemiBold().FontColor(Colors.Blue.Medium);
                                 });
                             });
                         });
                     });
 
-                    // Amount in Words
-                    stack.Item().PaddingTop(20).Row(r =>
+                    // Amount in Words - Changed from Italic to SemiBold
+                    stack.Item().PaddingTop(15).Row(r => // Reduced from 20 to 15
                     {
                         r.RelativeItem().Text("Amount in Words: ").FontSize(10).SemiBold();
-                        r.RelativeItem(3).Text(ConvertAmountToWords(_invoice.NetAmount)).FontSize(10).Italic();
+                        r.RelativeItem(3).Text(ConvertAmountToWords(_invoice.NetAmount)).FontSize(10).SemiBold();
                     });
 
-                    // Terms and Conditions (Optional)
+                    // Terms and Conditions (Optional) - Reduced spacing
                     if (!string.IsNullOrWhiteSpace(_settings.TermsAndConditions))
                     {
-                        stack.Item().PaddingTop(20).Column(termsCol =>
+                        stack.Item().PaddingTop(15).Column(termsCol => // Reduced from 20 to 15
                         {
                             termsCol.Item().Text("Terms & Conditions:").FontSize(10).SemiBold();
 
@@ -214,7 +258,7 @@ public class InvoicePdf
                             var termsLines = _settings.TermsAndConditions
                                 .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-                            foreach (var line in termsLines)
+                            foreach (var line in termsLines.Take(3)) // Limit to 3 lines to save space
                             {
                                 if (!string.IsNullOrWhiteSpace(line))
                                 {
@@ -226,14 +270,35 @@ public class InvoicePdf
                     else
                     {
                         // Fallback to default terms if none are set in company settings
-                        stack.Item().PaddingTop(20).Column(termsCol =>
+                        stack.Item().PaddingTop(15).Column(termsCol => // Reduced from 20 to 15
                         {
                             termsCol.Item().Text("Terms & Conditions:").FontSize(10).SemiBold();
                             termsCol.Item().Text("1. Payment is due within 30 days of invoice date.").FontSize(9);
                             termsCol.Item().Text("2. Late payments may incur additional charges.").FontSize(9);
-                            termsCol.Item().Text("3. All disputes must be reported within 7 days.").FontSize(9);
                         });
                     }
+
+                    // Authorized Signatory Box at the bottom right - Reduced size and spacing
+                    stack.Item().PaddingTop(15).Row(sigRow => // Reduced from 30 to 15
+                    {
+                        sigRow.RelativeItem(2).Text(""); // Empty space on the left
+
+                        sigRow.RelativeItem().Border(1).BorderColor(Colors.Grey.Medium).Padding(12).MinHeight(90).Column(sigCol => // Reduced padding and height
+                        {
+                            sigCol.Item().AlignCenter().Text("For " + _settings.CompanyName).FontSize(10).SemiBold();
+                            sigCol.Item().PaddingTop(5).AlignCenter().Text("Authorized Signatory").FontSize(9).FontColor(Colors.Grey.Darken1);
+
+                            // Space for signature only (removed seal) - Reduced spacing
+                            sigCol.Item().PaddingTop(30).Column(signCol => // Reduced from 50 to 30
+                            {
+                                signCol.Item().AlignCenter().Text("Signature").FontSize(8).FontColor(Colors.Grey.Medium);
+                                signCol.Item().MinHeight(25); // Reduced from 40 to 25
+                            });
+
+                            sigCol.Item().PaddingTop(8).BorderTop(1).BorderColor(Colors.Grey.Lighten2) // Reduced from 10 to 8
+                                .AlignCenter().Text("Name & Date").FontSize(8).FontColor(Colors.Grey.Medium);
+                        });
+                    });
                 });
 
                 page.Footer().AlignCenter().Column(footerCol =>

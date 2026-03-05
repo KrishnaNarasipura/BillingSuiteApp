@@ -130,7 +130,7 @@
                         }
                         else
                         {
-                            <a class="btn btn-sm btn-outline-success" target="_blank" href="@Url.Action("Print", "Invoices", new { id = invoice.Id })">
+                            <a class="btn btn-sm btn-outline-success" target="_blank" href="@Url.Action("Print", "Invoices", new { id = invoice.Id, invoiceNumber = invoice.InvoiceNumber })">
                                 <i class="fas fa-print me-1"></i>Print
                             </a>
                             <button type="button" class="btn btn-sm btn-outline-info add-payment-btn" data-invoice-id="@invoice.Id" data-invoice-number="@invoice.InvoiceNumber" data-net-amount="@invoice.NetAmount" data-advance-received="@invoice.AdvanceReceived" data-our-order-reference="@invoice.OurOrderReference" data-bs-toggle="modal" data-bs-target="#paymentModal">

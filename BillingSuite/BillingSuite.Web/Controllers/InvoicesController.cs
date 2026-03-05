@@ -194,10 +194,10 @@ public class InvoicesController : Controller
         }
     }
 
-    public async Task<IActionResult> Print(int id)
+    public async Task<IActionResult> Print(int id, string invoiceNumber)
     {
         var pdf = await _svc.GeneratePdfAsync(id);
-        return File(pdf, "application/pdf", $"invoice-{id}.pdf");
+        return File(pdf, "application/pdf", $"invoice-{invoiceNumber}.pdf");
     }
 
     [HttpPost]
