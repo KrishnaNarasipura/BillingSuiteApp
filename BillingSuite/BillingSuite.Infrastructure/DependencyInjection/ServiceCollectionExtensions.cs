@@ -22,6 +22,7 @@ namespace BillingSuite.Infrastructure.DependencyInjection
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IInvoiceService, InvoiceService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<ICompanySettingsService, CompanySettingsService>();
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<ITaxSettingsService, TaxSettingsService>();

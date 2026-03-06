@@ -166,6 +166,9 @@ public class InvoiceService : IInvoiceService
         {
             InvoiceId = dto.Id,
             Amount = dto.Amount,
+            PaymentMode = dto.PaymentMode,
+            ChequeNumber = dto.ChequeNumber,
+            TransactionReference = dto.TransactionReference,
             PaymentDate = dto.PaymentDate,
             CreatedAt = DateTime.UtcNow
         };
@@ -406,5 +409,65 @@ public class InvoiceService : IInvoiceService
         _db.Invoices.Remove(existing);
 
         await _db.SaveChangesAsync(ct);
+    }
+
+    private (DateTime StartDate, DateTime EndDate) GetCurrentFinancialYear()
+    {
+        var currentDate = DateTime.UtcNow;
+        var currentYear = currentDate.Year;
+        
+        // Financial year starts from April 1st
+        DateTime startDate, endDate;
+        
+        if (currentDate.Month >= 4) // April to December - current FY
+        {
+            startDate = new DateTime(currentYear, 4, 1);
+            endDate = new DateTime(currentYear + 1, 3, 31, 23, 59, 59);
+        }
+        else // January to March - previous FY
+        {
+            startDate = new DateTime(currentYear - 1, 4, 1);
+            endDate = new DateTime(currentYear, 3, 31, 23, 59, 59);
+        }
+        
+        return (startDate, endDate);
+    }
+
+    public async Task<FinancialYearStatsDto> GetPaidInvoicesStatsForFinancialYearAsync(CancellationToken ct = default)
+    {
+        var (startDate, endDate) = GetCurrentFinancialYear();
+
+        var stats = await _db.Invoices
+            .Where(i => i.Status == InvoiceStatus.Paid && 
+                       i.InvoiceDate >= startDate && 
+                       i.InvoiceDate <= endDate)
+            .GroupBy(x => 1)
+            .Select(g => new FinancialYearStatsDto
+            {
+                TotalCount = g.Count(),
+                TotalAmount = g.Sum(i => i.NetAmount)
+            })
+            .FirstOrDefaultAsync(ct);
+
+        return stats ?? new FinancialYearStatsDto { TotalCount = 0, TotalAmount = 0 };
+    }
+
+    public async Task<FinancialYearStatsDto> GetIssuedInvoicesStatsForFinancialYearAsync(CancellationToken ct = default)
+    {
+        var (startDate, endDate) = GetCurrentFinancialYear();
+
+        var stats = await _db.Invoices
+            .Where(i => i.Status == InvoiceStatus.Issued && 
+                       i.InvoiceDate >= startDate && 
+                       i.InvoiceDate <= endDate)
+            .GroupBy(x => 1)
+            .Select(g => new FinancialYearStatsDto
+            {
+                TotalCount = g.Count(),
+                TotalAmount = g.Sum(i => i.NetAmount)
+            })
+            .FirstOrDefaultAsync(ct);
+
+        return stats ?? new FinancialYearStatsDto { TotalCount = 0, TotalAmount = 0 };
     }
 }

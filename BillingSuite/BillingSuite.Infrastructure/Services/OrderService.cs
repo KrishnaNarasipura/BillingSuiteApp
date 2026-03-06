@@ -11,14 +11,18 @@ namespace BillingSuite.Infrastructure.Services;
 public class OrderService : IOrderService
 {
     private readonly BillingDbContext _db;
-    public OrderService(BillingDbContext db) => _db = db;
+
+    public OrderService(BillingDbContext db)
+    {
+        _db = db;
+    }
 
     public async Task<int> CreateAsync(OrderCreateDto dto, CancellationToken ct = default)
     {
-        // Generate order number YYYYMM-#### (for demo)
+        // Generate order number based on current month and year
         var datePrefix = dto.OrderDate.ToString("yyyyMM");
         var countThisMonth = await _db.Orders.CountAsync(o => o.OrderDate.Year == dto.OrderDate.Year && o.OrderDate.Month == dto.OrderDate.Month, ct);
-        var orderNumber = $"VC-{datePrefix}-{countThisMonth + 1:0000}";
+        var orderNumber = $"ORD-{datePrefix}-{countThisMonth + 1:0000}";
 
         var items = dto.Items.Select(i => new OrderItem
         {
@@ -31,7 +35,7 @@ public class OrderService : IOrderService
             TaxAmount = i.TaxAmount
         }).ToList();
 
-        var subtotal = items.Sum(i => i.LineTotal); 
+        var subtotal = items.Sum(i => i.LineTotal);
         var totalTax = items.Sum(i => i.TaxAmount);
         var net = Math.Round(subtotal + totalTax - dto.DiscountAmount, 2);
 
@@ -42,11 +46,52 @@ public class OrderService : IOrderService
             OrderNumber = orderNumber,
             YourOrderReference = dto.YourOrderReference,
             Subtotal = subtotal,
-            Status = OrderStatus.Confirmed,
             TaxAmount = totalTax,
             DiscountAmount = dto.DiscountAmount,
             AdvanceReceived = dto.AdvanceReceived,
             NetAmount = net,
+            Status = OrderStatus.Confirmed, // Set to confirmed when created
+            Items = items
+        };
+
+        _db.Orders.Add(entity);
+        await _db.SaveChangesAsync(ct);
+        return entity.Id;
+    }
+
+    public async Task<int> CreateDraftAsync(OrderCreateDto dto, CancellationToken ct = default)
+    {
+        // Draft order number generator D-ORD-#### (sequential)
+        var draftCount = await _db.Orders.Where(o => o.Status == OrderStatus.Draft).CountAsync(ct);
+        var orderNumber = $"D-ORD-{draftCount + 1:0000}";
+
+        var items = dto.Items.Select(i => new OrderItem
+        {
+            Description = i.Description,
+            HsnCode = i.HsnCode,
+            Quantity = i.Quantity,
+            UnitPrice = i.UnitPrice,
+            LineTotal = Math.Round(i.Quantity * i.UnitPrice, 2),
+            TaxSettingsId = i.TaxSettingsId,
+            TaxAmount = i.TaxAmount
+        }).ToList();
+
+        var subtotal = items.Sum(i => i.LineTotal);
+        var totalTax = items.Sum(i => i.TaxAmount);
+        var net = Math.Round(subtotal + totalTax - dto.DiscountAmount, 2);
+
+        var entity = new Order
+        {
+            CustomerId = dto.CustomerId,
+            OrderDate = dto.OrderDate,
+            OrderNumber = orderNumber,
+            YourOrderReference = dto.YourOrderReference,
+            Subtotal = subtotal,
+            TaxAmount = totalTax,
+            DiscountAmount = dto.DiscountAmount,
+            AdvanceReceived = dto.AdvanceReceived,
+            NetAmount = net,
+            Status = OrderStatus.Draft,
             Items = items
         };
 
@@ -88,12 +133,12 @@ public class OrderService : IOrderService
 
         existing.CustomerId = dto.CustomerId;
         existing.OrderNumber = dto.OrderNumber;
+        existing.YourOrderReference = dto.YourOrderReference;
         existing.OrderDate = dto.OrderDate;
         existing.Subtotal = subtotal;
         existing.TaxAmount = totalTax;
         existing.DiscountAmount = dto.DiscountAmount;
         existing.AdvanceReceived = dto.AdvanceReceived;
-        existing.YourOrderReference = dto.YourOrderReference;
         existing.NetAmount = net;
 
         await _db.SaveChangesAsync(ct);
@@ -101,12 +146,32 @@ public class OrderService : IOrderService
 
     public async Task UpdateStatusAsync(OrderUpdateStatusDto dto, CancellationToken ct = default)
     {
+        var existing = await _db.Orders.FirstOrDefaultAsync(o => o.Id == dto.Id, ct);
+        if (existing is null) return;
+
+        existing.Status = (OrderStatus)dto.OrderStatus;
+        await _db.SaveChangesAsync(ct);
+    }
+
+    public async Task DeleteAsync(int id, CancellationToken ct = default)
+    {
         var existing = await _db.Orders
             .Include(o => o.Items)
-            .FirstOrDefaultAsync(o => o.Id == dto.Id, ct);
+            .FirstOrDefaultAsync(o => o.Id == id, ct);
 
         if (existing is null) return;
-        existing.Status = (OrderStatus)dto.OrderStatus;
+
+        // Only allow deletion of draft orders
+        if (existing.Status != OrderStatus.Draft)
+        {
+            throw new InvalidOperationException("Only draft orders can be deleted.");
+        }
+
+        // Remove items first
+        _db.OrderItems.RemoveRange(existing.Items);
+
+        // Remove the order
+        _db.Orders.Remove(existing);
 
         await _db.SaveChangesAsync(ct);
     }
@@ -125,6 +190,7 @@ public class OrderService : IOrderService
         {
             Id = order.Id,
             OrderNumber = order.OrderNumber,
+            YourOrderReference = order.YourOrderReference,
             OrderDate = order.OrderDate,
             Customer = new CustomerDto
             {
@@ -140,7 +206,6 @@ public class OrderService : IOrderService
             TaxAmount = order.TaxAmount,
             DiscountAmount = order.DiscountAmount,
             AdvanceReceived = order.AdvanceReceived,
-            YourOrderReference = order.YourOrderReference,
             NetAmount = order.NetAmount,
             Status = (int)order.Status,
             Items = order.Items.Select(x => new OrderItemDto
@@ -177,16 +242,18 @@ public class OrderService : IOrderService
             {
                 Id = order.Id,
                 OrderNumber = order.OrderNumber,
+                YourOrderReference = order.YourOrderReference,
                 OrderDate = order.OrderDate,
                 Customer = new CustomerDto { Id = order.Customer.Id, Name = order.Customer.Name },
                 Subtotal = order.Subtotal,
                 TaxAmount = order.TaxAmount,
                 DiscountAmount = order.DiscountAmount,
                 AdvanceReceived = order.AdvanceReceived,
-                YourOrderReference = order.YourOrderReference,
                 NetAmount = order.NetAmount,
                 Status = (int)order.Status
             })
+            .OrderByDescending(x => x.OrderDate)
+            .ThenBy(x => x.OrderNumber)
             .ToListAsync(ct);
 
         return new PagedResult<OrderDto> { Items = items, TotalCount = total, Page = page, PageSize = pageSize };
@@ -196,12 +263,13 @@ public class OrderService : IOrderService
     {
         var orders = await _db.Orders
             .Include(o => o.Customer)
-            .Where(o => o.Status == OrderStatus.Draft || o.Status == OrderStatus.Confirmed)
+            .Where(o => o.Status == OrderStatus.Confirmed || o.Status == OrderStatus.InvoiceIssued)
             .OrderBy(o => o.OrderDate)
             .Select(order => new OrderDto
             {
                 Id = order.Id,
                 OrderNumber = order.OrderNumber,
+                YourOrderReference = order.YourOrderReference,
                 OrderDate = order.OrderDate,
                 Customer = new CustomerDto { Id = order.Customer.Id, Name = order.Customer.Name },
                 Subtotal = order.Subtotal,
@@ -216,66 +284,63 @@ public class OrderService : IOrderService
         return orders;
     }
 
-    public async Task<int> CreateDraftAsync(OrderCreateDto dto, CancellationToken ct = default)
+    private (DateTime StartDate, DateTime EndDate) GetCurrentFinancialYear()
     {
-        // Draft order number generator D-#### (sequential)
-        var draftCount = await _db.Orders.Where(o => o.Status == OrderStatus.Draft).CountAsync(ct);
-        var orderNumber = $"DO-{draftCount + 1:0000}";
-
-        var items = dto.Items.Select(i => new OrderItem
+        var currentDate = DateTime.UtcNow;
+        var currentYear = currentDate.Year;
+        
+        // Financial year starts from April 1st
+        DateTime startDate, endDate;
+        
+        if (currentDate.Month >= 4) // April to December - current FY
         {
-            Description = i.Description,
-            HsnCode = i.HsnCode,
-            Quantity = i.Quantity,
-            UnitPrice = i.UnitPrice,
-            LineTotal = Math.Round(i.Quantity * i.UnitPrice, 2),
-            TaxSettingsId = i.TaxSettingsId,
-            TaxAmount = i.TaxAmount
-        }).ToList();
-
-        var subtotal = items.Sum(i => i.LineTotal);
-        var totalTax = items.Sum(i => i.TaxAmount);
-        var net = Math.Round(subtotal + totalTax - dto.DiscountAmount, 2);
-
-        var entity = new Order
+            startDate = new DateTime(currentYear, 4, 1);
+            endDate = new DateTime(currentYear + 1, 3, 31, 23, 59, 59);
+        }
+        else // January to March - previous FY
         {
-            CustomerId = dto.CustomerId,
-            OrderDate = dto.OrderDate,
-            OrderNumber = orderNumber,
-            Subtotal = subtotal,
-            TaxAmount = totalTax,
-            DiscountAmount = dto.DiscountAmount,
-            AdvanceReceived = dto.AdvanceReceived,
-            NetAmount = net,
-            Status = OrderStatus.Draft,
-            Items = items
-        };
-
-        _db.Orders.Add(entity);
-        await _db.SaveChangesAsync(ct);
-        return entity.Id;
+            startDate = new DateTime(currentYear - 1, 4, 1);
+            endDate = new DateTime(currentYear, 3, 31, 23, 59, 59);
+        }
+        
+        return (startDate, endDate);
     }
 
-    public async Task DeleteAsync(int id, CancellationToken ct = default)
+    public async Task<FinancialYearStatsDto> GetCompletedOrdersStatsForFinancialYearAsync(CancellationToken ct = default)
     {
-        var order = await _db.Orders
-            .Include(o => o.Items)
-            .FirstOrDefaultAsync(o => o.Id == id, ct);
+        var (startDate, endDate) = GetCurrentFinancialYear();
 
-        if (order is null) return;
+        var stats = await _db.Orders
+            .Where(o => o.Status == OrderStatus.Completed && 
+                       o.OrderDate >= startDate && 
+                       o.OrderDate <= endDate)
+            .GroupBy(x => 1)
+            .Select(g => new FinancialYearStatsDto
+            {
+                TotalCount = g.Count(),
+                TotalAmount = g.Sum(o => o.NetAmount)
+            })
+            .FirstOrDefaultAsync(ct);
 
-        // Only allow deletion of draft orders
-        if (order.Status != OrderStatus.Draft)
-        {
-            throw new InvalidOperationException("Only draft orders can be deleted.");
-        }
+        return stats ?? new FinancialYearStatsDto { TotalCount = 0, TotalAmount = 0 };
+    }
 
-        // Remove items first
-        _db.OrderItems.RemoveRange(order.Items);
+    public async Task<FinancialYearStatsDto> GetConfirmedOrdersStatsForFinancialYearAsync(CancellationToken ct = default)
+    {
+        var (startDate, endDate) = GetCurrentFinancialYear();
 
-        // Remove the order
-        _db.Orders.Remove(order);
+        var stats = await _db.Orders
+            .Where(o => o.Status == OrderStatus.Confirmed && 
+                       o.OrderDate >= startDate && 
+                       o.OrderDate <= endDate)
+            .GroupBy(x => 1)
+            .Select(g => new FinancialYearStatsDto
+            {
+                TotalCount = g.Count(),
+                TotalAmount = g.Sum(o => o.NetAmount)
+            })
+            .FirstOrDefaultAsync(ct);
 
-        await _db.SaveChangesAsync(ct);
+        return stats ?? new FinancialYearStatsDto { TotalCount = 0, TotalAmount = 0 };
     }
 }

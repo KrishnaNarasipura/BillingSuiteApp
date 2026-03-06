@@ -3,10 +3,12 @@ using BillingSuite.Application.Configuration;
 using BillingSuite.Application.DTOs;
 using BillingSuite.Application.Enums;
 using BillingSuite.Domain;
+using BillingSuite.Domain.Enums;
 using BillingSuite.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using InvoiceStatus = BillingSuite.Application.Enums.InvoiceStatus;
 
 namespace BillingSuite.Web.Controllers;
 
@@ -232,6 +234,17 @@ public class InvoicesController : Controller
         if (!ModelState.IsValid)
         {
             return Json(new { success = false, message = "Invalid data" });
+        }
+
+        // Validate payment mode specific fields
+        if (dto.PaymentMode == PaymentMode.Cheque && string.IsNullOrWhiteSpace(dto.ChequeNumber))
+        {
+            return Json(new { success = false, message = "Cheque number is required for cheque payments." });
+        }
+
+        if (dto.PaymentMode == PaymentMode.Online && string.IsNullOrWhiteSpace(dto.TransactionReference))
+        {
+            return Json(new { success = false, message = "Transaction reference is required for online payments." });
         }
 
         try

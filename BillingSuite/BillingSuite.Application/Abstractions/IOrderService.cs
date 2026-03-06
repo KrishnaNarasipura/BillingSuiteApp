@@ -13,5 +13,7 @@ namespace BillingSuite.Application.Abstractions
         Task<OrderDto?> GetAsync(int id, CancellationToken ct = default);
         Task<PagedResult<OrderDto>> SearchAsync(DateTime? from, DateTime? to, int? CustomerId, string? orderNumber, int? status, int page, int pageSize, CancellationToken ct = default);
         Task<List<OrderDto>> GetPendingOrdersAsync(CancellationToken ct = default);
+        Task<FinancialYearStatsDto> GetCompletedOrdersStatsForFinancialYearAsync(CancellationToken ct = default);
+        Task<FinancialYearStatsDto> GetConfirmedOrdersStatsForFinancialYearAsync(CancellationToken ct = default);
     }
 }

@@ -21,6 +21,8 @@ namespace BillingSuite.Application.Abstractions
         Task UpdateStatusAsync(InvoiceUpdateStatusDto dto, CancellationToken ct = default);
         Task AddPaymentAsync(InvoicePaymentDto dto, CancellationToken ct = default);
         Task DeleteAsync(int id, CancellationToken ct = default);
+        Task<FinancialYearStatsDto> GetPaidInvoicesStatsForFinancialYearAsync(CancellationToken ct = default);
+        Task<FinancialYearStatsDto> GetIssuedInvoicesStatsForFinancialYearAsync(CancellationToken ct = default);
     }
 
 }

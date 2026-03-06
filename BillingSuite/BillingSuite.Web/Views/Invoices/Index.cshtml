@@ -130,6 +130,9 @@
                         }
                         else
                         {
+                            <a class="btn btn-sm btn-outline-primary" href="@Url.Action("Preview", "Invoices", new { id = invoice.Id })">
+                                <i class="fas fa-edit me-1"></i>View
+                            </a>
                             <a class="btn btn-sm btn-outline-success" target="_blank" href="@Url.Action("Print", "Invoices", new { id = invoice.Id, invoiceNumber = invoice.InvoiceNumber })">
                                 <i class="fas fa-print me-1"></i>Print
                             </a>
@@ -150,49 +153,71 @@
     </tbody>
 </table>
 
-<!-- Payment Modal -->
+<!-- Compact Payment Modal with Two-Column Layout -->
 <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="paymentModalLabel">Add Payment</h5>
+                <h5 class="modal-title" id="paymentModalLabel">
+                    <i class="fas fa-credit-card me-2"></i>Add Payment
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <label for="paymentInvoiceNumber" class="form-label">Invoice Number:</label>
-                    <input type="text" class="form-control" id="paymentInvoiceNumber" readonly />
-                </div>
-                <div class="mb-3">
-                    <label for="paymentNetAmount" class="form-label">Invoice Amount:</label>
-                    <input type="text" class="form-control" id="paymentNetAmount" readonly />
-                </div>
-                <div class="mb-3">
-                    <label for="paymentAdvanceReceived" class="form-label">Already Paid:</label>
-                    <input type="text" class="form-control" id="paymentAdvanceReceived" readonly />
-                </div>
-                <div class="mb-3">
-                    <label for="paymentRemainingAmount" class="form-label">Remaining Balance:</label>
-                    <input type="text" class="form-control" id="paymentRemainingAmount" readonly />
-                </div>
-                <div class="mb-3">
-                    <label for="paymentAmount" class="form-label">Payment Amount:</label>
-                    <div class="input-group">
-                        <input type="number" class="form-control" id="paymentAmount" placeholder="Enter amount" step="0.01" min="0" />
-                        <button class="btn btn-outline-secondary" type="button" id="fillRemainingBtn" title="Fill the remaining balance">
-                            <i class="fas fa-fill me-1"></i>Fill Remaining
-                        </button>
+                <!-- Invoice Information Row -->
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label class="form-label">Invoice #</label>
+                        <input type="text" class="form-control form-control-sm" id="paymentInvoiceNumber" readonly />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Remaining</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-sm" id="paymentRemainingAmount" readonly />
+                            <button class="btn btn-outline-secondary btn-sm" type="button" id="fillRemainingBtn" title="Fill remaining amount">
+                                <i class="fas fa-arrow-down"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label for="paymentDate" class="form-label">Payment Date:</label>
-                    <input type="date" class="form-control" id="paymentDate" />
+
+                <!-- Payment Details Row -->
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label for="paymentAmount" class="form-label">Amount *</label>
+                        <input type="number" class="form-control form-control-sm" id="paymentAmount" placeholder="0.00" step="0.01" min="0" required />
+                    </div>
+                    <div class="col-6">
+                        <label for="paymentDate" class="form-label">Date *</label>
+                        <input type="date" class="form-control form-control-sm" id="paymentDate" required />
+                    </div>
                 </div>
+
+                <!-- Payment Mode Row -->
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label for="paymentMode" class="form-label">Payment Mode *</label>
+                        <select class="form-select form-select-sm" id="paymentMode" required>
+                            <option value="0">Cash</option>
+                            <option value="1">Cheque</option>
+                            <option value="2" selected>Online</option>
+                        </select>
+                    </div>
+                    <div class="col-6" id="referenceFieldContainer">
+                        <label class="form-label" id="referenceLabel">Transaction Ref</label>
+                        <input type="text" class="form-control form-control-sm" id="referenceField" maxlength="100">
+                    </div>
+                </div>
+
                 <input type="hidden" id="paymentInvoiceId" />
+                <input type="hidden" id="paymentNetAmount" />
+                <input type="hidden" id="paymentAdvanceReceived" />
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="addPaymentBtn">Add Payment</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm" id="addPaymentBtn">
+                    <i class="fas fa-save me-1"></i>Add Payment
+                </button>
             </div>
         </div>
     </div>
@@ -293,6 +318,33 @@
             const today = new Date().toISOString().split('T')[0];
             $('#paymentDate').val(today);
 
+            // Handle payment mode change to show/hide appropriate fields
+            $('#paymentMode').change(function () {
+                const selectedMode = $(this).val();
+                const referenceLabel = $('#referenceLabel');
+                const referenceField = $('#referenceField');
+                const referenceContainer = $('#referenceFieldContainer');
+
+                // Clear the input value
+                referenceField.val('');
+
+                // Update label and visibility based on selection
+                if (selectedMode === '0') { // Cash
+                    referenceContainer.hide();
+                } else if (selectedMode === '1') { // Cheque
+                    referenceLabel.text('Cheque Number');
+                    referenceField.attr('placeholder', 'Enter cheque number');
+                    referenceContainer.show();
+                } else if (selectedMode === '2') { // Online
+                    referenceLabel.text('Transaction Ref');
+                    referenceField.attr('placeholder', 'Enter transaction reference');
+                    referenceContainer.show();
+                }
+            });
+
+            // Initialize payment mode display
+            $('#paymentMode').trigger('change');
+
             // Handle Add Payment button click - populate modal with invoice data
             $(document).on('click', '.add-payment-btn', function () {
                 const invoiceId = $(this).data('invoice-id');
@@ -310,7 +362,13 @@
 
                 // Calculate remaining amount
                 const remainingAmount = netAmount - advanceReceived;
-                $('#paymentRemainingAmount').val(remainingAmount > 0 ? remainingAmount.toFixed(2) : 0);
+                $('#paymentRemainingAmount').val(remainingAmount > 0 ? remainingAmount.toFixed(2) : '0.00');
+
+                // Reset payment mode to Online and trigger change
+                $('#paymentMode').val('2').trigger('change');
+
+                // Focus on amount field
+                setTimeout(() => $('#paymentAmount').focus(), 500);
             });
 
             // Handle Fill Remaining button click
@@ -324,20 +382,32 @@
                 const invoiceId = $('#paymentInvoiceId').val();
                 const amount = $('#paymentAmount').val();
                 const paymentDate = $('#paymentDate').val();
+                const paymentMode = $('#paymentMode').val();
+                const referenceValue = $('#referenceField').val();
 
                 // Validation
                 if (!amount || parseFloat(amount) <= 0) {
                     alert('Please enter a valid payment amount');
+                    $('#paymentAmount').focus();
                     return;
                 }
 
                 if (!paymentDate) {
                     alert('Please select a payment date');
+                    $('#paymentDate').focus();
+                    return;
+                }
+
+                // Validate reference if payment mode requires it
+                if ((paymentMode === '1' || paymentMode === '2') && !referenceValue.trim()) {
+                    const fieldName = paymentMode === '1' ? 'cheque number' : 'transaction reference';
+                    alert(`Please enter a ${fieldName}`);
+                    $('#referenceField').focus();
                     return;
                 }
 
                 // Call AddPayment action
-                addPayment(invoiceId, parseFloat(amount), paymentDate,selectedOrderReference);
+                addPayment(invoiceId, parseFloat(amount), paymentDate, selectedOrderReference, paymentMode, referenceValue);
             });
 
             // Handle Delete button click
@@ -350,17 +420,30 @@
                 }
             });
 
-            function addPayment(invoiceId, amount, paymentDate,orderReference) {
+            function addPayment(invoiceId, amount, paymentDate, orderReference, paymentMode, referenceValue) {
+                const paymentData = {
+                    id: parseInt(invoiceId),
+                    amount: amount,
+                    paymentDate: paymentDate,
+                    ourOrderReference: orderReference,
+                    paymentMode: parseInt(paymentMode)
+                };
+
+                // Add appropriate reference field based on payment mode
+                if (paymentMode === '1') {
+                    paymentData.chequeNumber = referenceValue;
+                } else if (paymentMode === '2') {
+                    paymentData.transactionReference = referenceValue;
+                }
+
+                // Disable button to prevent double submission
+                $('#addPaymentBtn').prop('disabled', true).text('Adding...');
+
                 $.ajax({
                     type: 'POST',
                     url: '/Invoices/AddPayment',
                     contentType: 'application/json',
-                    data: JSON.stringify({
-                        id: parseInt(invoiceId),
-                        amount: amount,
-                        paymentDate: paymentDate,
-                        ourOrderReference: orderReference
-                    }),
+                    data: JSON.stringify(paymentData),
                     success: function (response) {
                         if (response.success) {
                             // Close modal
@@ -377,11 +460,13 @@
                             location.reload();
                         } else {
                             alert('Error: ' + (response.message || 'Failed to add payment'));
+                            $('#addPaymentBtn').prop('disabled', false).html('<i class="fas fa-save me-1"></i>Add Payment');
                         }
                     },
                     error: function (xhr, status, error) {
                         console.error('Error:', error);
                         alert('Error adding payment: ' + error);
+                        $('#addPaymentBtn').prop('disabled', false).html('<i class="fas fa-save me-1"></i>Add Payment');
                     }
                 });
             }

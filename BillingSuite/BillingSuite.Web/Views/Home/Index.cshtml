@@ -5,6 +5,18 @@
     var overdueInvoices = (List<InvoiceDto>)ViewBag.OverdueInvoices;
     var overdueCount = (int)ViewBag.OverdueCount;
     var overdueAmount = (decimal)ViewBag.OverdueAmount;
+
+    var completedOrdersCount = (int)ViewBag.CompletedOrdersCount;
+    var completedOrdersAmount = (decimal)ViewBag.CompletedOrdersAmount;
+    var paidInvoicesCount = (int)ViewBag.PaidInvoicesCount;
+    var paidInvoicesAmount = (decimal)ViewBag.PaidInvoicesAmount;
+
+    var confirmedOrdersCount = (int)ViewBag.ConfirmedOrdersCount;
+    var confirmedOrdersAmount = (decimal)ViewBag.ConfirmedOrdersAmount;
+    var issuedInvoicesCount = (int)ViewBag.IssuedInvoicesCount;
+    var issuedInvoicesAmount = (decimal)ViewBag.IssuedInvoicesAmount;
+
+    var financialYear = (string)ViewBag.FinancialYear;
 }
 
 <style>
@@ -17,16 +29,16 @@
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     }
 
-    .dashboard-header h1 {
-        font-size: 2.5rem;
-        margin-bottom: 10px;
-        font-weight: 700;
-    }
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
 
-    .dashboard-header p {
-        font-size: 1.1rem;
-        opacity: 0.9;
-    }
+        .dashboard-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
 
     .stat-card {
         background: white;
@@ -38,22 +50,26 @@
         transition: all 0.3s ease;
     }
 
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-    }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
 
-    .stat-card.danger {
-        border-left-color: #dc3545;
-    }
+        .stat-card.danger {
+            border-left-color: #dc3545;
+        }
 
-    .stat-card.success {
-        border-left-color: #28a745;
-    }
+        .stat-card.success {
+            border-left-color: #28a745;
+        }
 
-    .stat-card.warning {
-        border-left-color: #ffc107;
-    }
+        .stat-card.warning {
+            border-left-color: #ffc107;
+        }
+
+        .stat-card.info {
+            border-left-color: #17a2b8;
+        }
 
     .stat-card-label {
         font-size: 0.9rem;
@@ -70,10 +86,77 @@
         color: #2c3e50;
     }
 
+    .stat-card-secondary {
+        font-size: 1.1rem;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+
     .stat-card-icon {
         font-size: 2.5rem;
         margin-right: 15px;
         opacity: 0.3;
+    }
+
+    .financial-year-badge {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-left: 10px;
+    }
+
+    .fy-section {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+        .fy-section h3 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+    .dual-stat {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    .dual-stat-left {
+        flex: 1;
+    }
+
+    .dual-stat-right {
+        flex: 1;
+        text-align: right;
+    }
+
+    .dual-stat-title {
+        font-size: 0.9rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+
+    .dual-stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2c3e50;
     }
 
     .overdue-section {
@@ -83,14 +166,14 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
-    .overdue-section h2 {
-        color: #2c3e50;
-        margin-bottom: 25px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
+        .overdue-section h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
     .overdue-badge {
         background: #dc3545;
@@ -114,10 +197,10 @@
         border: 1px solid #ffe0e0;
     }
 
-    .overdue-invoice-item:hover {
-        background: #ffefef;
-        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.15);
-    }
+        .overdue-invoice-item:hover {
+            background: #ffefef;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.15);
+        }
 
     .overdue-invoice-info {
         flex: 1;
@@ -186,9 +269,68 @@
 <!-- Dashboard Header -->
 <div class="dashboard-header">
     <h1>
-        <i class="fas fa-chart-line me-3"></i>Dashboard
+        Dashboard
+        <span class="financial-year-badge">FY @financialYear</span>
     </h1>
     <p>Welcome to BillingSuite - Manage your invoices and payments efficiently</p>
+</div>
+
+<!-- Financial Year Statistics Section -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="fy-section">
+            <h3>
+                Completed Orders (FY @financialYear)
+            </h3>
+            <div class="dual-stat" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white;">
+                <div class="dual-stat-left">
+                    <div class="dual-stat-title" style="color: rgba(255, 255, 255, 0.8);">Completed Orders</div>
+                    <div class="dual-stat-value" style="color: white;">@completedOrdersCount</div>
+                </div>
+                <div class="dual-stat-right">
+                    <div class="dual-stat-title" style="color: rgba(255, 255, 255, 0.8);">Total Value</div>
+                    <div class="dual-stat-value" style="color: white;">₹@completedOrdersAmount.ToString("N2")</div>
+                </div>
+            </div>
+            <div class="dual-stat" style="background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%); color: white;">
+                <div class="dual-stat-left">
+                    <div class="dual-stat-title" style="color: rgba(255, 255, 255, 0.8);">Paid Invoices</div>
+                    <div class="dual-stat-value" style="color: white;">@paidInvoicesCount</div>
+                </div>
+                <div class="dual-stat-right">
+                    <div class="dual-stat-title" style="color: rgba(255, 255, 255, 0.8);">Total Value</div>
+                    <div class="dual-stat-value" style="color: white;">₹@paidInvoicesAmount.ToString("N2")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="fy-section">
+            <h3>
+                Pending Business (FY @financialYear)
+            </h3>
+            <div class="dual-stat" style="background: linear-gradient(135deg, #fd7e14 0%, #ffc107 100%); color: white;">
+                <div class="dual-stat-left">
+                    <div class="dual-stat-title" style="color: rgba(255, 255, 255, 0.8);">Confirmed Orders</div>
+                    <div class="dual-stat-value" style="color: white;">@confirmedOrdersCount</div>
+                </div>
+                <div class="dual-stat-right">
+                    <div class="dual-stat-title" style="color: rgba(255, 255, 255, 0.8);">Total Value</div>
+                    <div class="dual-stat-value" style="color: white;">₹@confirmedOrdersAmount.ToString("N2")</div>
+                </div>
+            </div>
+            <div class="dual-stat" style="background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%); color: white;">
+                <div class="dual-stat-left">
+                    <div class="dual-stat-title" style="color: rgba(255, 255, 255, 0.8);">Issued Invoices</div>
+                    <div class="dual-stat-value" style="color: white;">@issuedInvoicesCount</div>
+                </div>
+                <div class="dual-stat-right">
+                    <div class="dual-stat-title" style="color: rgba(255, 255, 255, 0.8);">Total Value</div>
+                    <div class="dual-stat-value" style="color: white;">₹@issuedInvoicesAmount.ToString("N2")</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Statistics Grid -->
@@ -196,9 +338,6 @@
     <!-- Overdue Invoices Stat -->
     <div class="stat-card danger">
         <div style="display: flex; align-items: center;">
-            <div class="stat-card-icon">
-                <i class="fas fa-exclamation-circle"></i>
-            </div>
             <div>
                 <div class="stat-card-label">Overdue Invoices</div>
                 <div class="stat-card-value">@overdueCount</div>
@@ -209,9 +348,6 @@
     <!-- Overdue Amount Stat -->
     <div class="stat-card danger">
         <div style="display: flex; align-items: center;">
-            <div class="stat-card-icon">
-                <i class="fas fa-money-bill-wave"></i>
-            </div>
             <div>
                 <div class="stat-card-label">Overdue Amount</div>
                 <div class="stat-card-value">₹@overdueAmount.ToString("0.00")</div>
@@ -225,7 +361,6 @@
 {
     <div class="overdue-section">
         <h2>
-            <i class="fas fa-exclamation-triangle"></i>
             Overdue Invoices <span class="overdue-badge">@overdueCount</span>
         </h2>
 

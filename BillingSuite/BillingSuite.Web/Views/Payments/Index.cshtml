@@ -1,0 +1,447 @@
+﻿@using BillingSuite.Application.DTOs
+@using BillingSuite.Application.Results
+@using BillingSuite.Domain.Enums
+@model PagedResult<PaymentViewDto>
+@{
+    Layout = "_Layout";
+    var currentPage = ViewContext.HttpContext.Request.Query["page"].ToString();
+    var currentFrom = ViewContext.HttpContext.Request.Query["from"].ToString();
+    var currentTo = ViewContext.HttpContext.Request.Query["to"].ToString();
+    var currentCustomerId = ViewContext.HttpContext.Request.Query["customerId"].ToString();
+    var currentInvoiceNumber = ViewContext.HttpContext.Request.Query["invoiceNumber"].ToString();
+    var currentOrderReference = ViewContext.HttpContext.Request.Query["orderReference"].ToString();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3>Payment Records</h3>
+</div>
+
+<!-- Filters Section -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Filters</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" action="/Payments" class="row g-3">
+            <div class="col-md-2">
+                <label for="invoiceNumber" class="form-label">Invoice Number</label>
+                <input type="text" class="form-control" id="invoiceNumber" name="invoiceNumber" value="@currentInvoiceNumber" />
+            </div>
+            <div class="col-md-2">
+                <label for="orderReference" class="form-label">Order Reference</label>
+                <input type="text" class="form-control" id="orderReference" name="orderReference" value="@currentOrderReference" />
+            </div>
+            <div class="col-md-2">
+                <label for="from" class="form-label">From Date</label>
+                <input type="date" class="form-control" id="from" name="from" value="@currentFrom" />
+            </div>
+            <div class="col-md-2">
+                <label for="to" class="form-label">To Date</label>
+                <input type="date" class="form-control" id="to" name="to" value="@currentTo" />
+            </div>
+            <div class="col-md-2">
+                <label for="customerId" class="form-label">Customer</label>
+                <select class="form-select" id="customerId" name="customerId">
+                    <option value="">All Customers</option>
+                    @if (ViewBag.Customers != null)
+                    {
+                        @foreach (var customer in (IEnumerable<CustomerDto>)ViewBag.Customers)
+                        {
+                            <option value="@customer.Id" selected="@(currentCustomerId == customer.Id.ToString())">@customer.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-outline-primary me-2">Filter</button>
+                <a href="/Payments" class="btn btn-outline-secondary">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results Summary -->
+@if (Model.TotalCount > 0)
+{
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <small class="text-muted">
+            Showing @((Model.Page - 1) * Model.PageSize + 1) to @Math.Min(Model.Page * Model.PageSize, Model.TotalCount) of @Model.TotalCount payments
+        </small>
+        <small class="text-muted">
+            Total Amount: @Model.Items.Sum(p => p.Amount).ToString("N2")
+        </small>
+    </div>
+}
+
+<!-- Payments Table -->
+<table class="table table-sm table-striped">
+    <thead>
+        <tr>
+            <th>Payment Date</th>
+            <th>Invoice #</th>
+            <th>Customer</th>
+            <th>Order Reference</th>
+            <th>Amount</th>
+            <th>Payment Mode</th>
+            <th>Reference</th>
+            <th>Created</th>
+            <th class="text-end">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Items.Any())
+        {
+            @foreach (var payment in Model.Items)
+            {
+                var paymentModeText = payment.PaymentMode.ToString();
+                var paymentModeBadgeColor = payment.PaymentMode switch
+                {
+                    PaymentMode.Cash => "success",
+                    PaymentMode.Cheque => "warning",
+                    PaymentMode.Online => "info",
+                    _ => "secondary"
+                };
+
+                var referenceValue = payment.PaymentMode switch
+                {
+                    PaymentMode.Cheque => payment.ChequeNumber,
+                    PaymentMode.Online => payment.TransactionReference,
+                    _ => "-"
+                };
+
+                <tr>
+                    <td>@payment.PaymentDate.ToString("dd-MM-yyyy")</td>
+                    <td>@payment.InvoiceNumber</td>
+                    <td>@payment.CustomerName</td>
+                    <td>@(payment.OurOrderReference ?? "-")</td>
+                    <td>@payment.Amount.ToString("N2")</td>
+                    <td>
+                        <span class="badge bg-@paymentModeBadgeColor">@paymentModeText</span>
+                    </td>
+                    <td>@(referenceValue ?? "-")</td>
+                    <td>
+                        <small class="text-muted">@payment.CreatedAt.ToString("dd-MM-yyyy HH:mm")</small>
+                    </td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-sm btn-outline-primary edit-payment-btn"
+                                data-payment-id="@payment.Id"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editPaymentModal">
+                            <i class="fas fa-edit me-1"></i>Edit
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="9" class="text-center text-muted py-4">No payment records found matching your criteria.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Edit Payment Modal -->
+<div class="modal fade" id="editPaymentModal" tabindex="-1" aria-labelledby="editPaymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPaymentModalLabel">
+                    <i class="fas fa-edit me-2"></i>Edit Payment
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Payment Information Row -->
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label class="form-label">Invoice #</label>
+                        <input type="text" class="form-control form-control-sm" id="editPaymentInvoiceNumber" readonly />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Customer</label>
+                        <input type="text" class="form-control form-control-sm" id="editPaymentCustomerName" readonly />
+                    </div>
+                </div>
+
+                <!-- Payment Details Row -->
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label for="editPaymentAmount" class="form-label">Amount *</label>
+                        <input type="number" class="form-control form-control-sm" id="editPaymentAmount" placeholder="0.00" step="0.01" min="0" required />
+                    </div>
+                    <div class="col-6">
+                        <label for="editPaymentDate" class="form-label">Date *</label>
+                        <input type="date" class="form-control form-control-sm" id="editPaymentDate" required />
+                    </div>
+                </div>
+
+                <!-- Payment Mode Row -->
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label for="editPaymentMode" class="form-label">Payment Mode *</label>
+                        <select class="form-select form-select-sm" id="editPaymentMode" required>
+                            <option value="0">Cash</option>
+                            <option value="1">Cheque</option>
+                            <option value="2">Online</option>
+                        </select>
+                    </div>
+                    <div class="col-6" id="editReferenceFieldContainer">
+                        <label class="form-label" id="editReferenceLabel">Transaction Ref</label>
+                        <input type="text" class="form-control form-control-sm" id="editReferenceField" maxlength="100">
+                    </div>
+                </div>
+
+                <input type="hidden" id="editPaymentId" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm" id="updatePaymentBtn">
+                    <i class="fas fa-save me-1"></i>Update Payment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+@if (Model.TotalCount > Model.PageSize)
+{
+    <nav aria-label="Payments pagination">
+        <ul class="pagination justify-content-center">
+            @{
+                var totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
+                var startPage = Math.Max(1, Model.Page - 2);
+                var endPage = Math.Min(totalPages, Model.Page + 2);
+
+                var routeValues = new Dictionary<string, string?>();
+                if (!string.IsNullOrEmpty(currentInvoiceNumber)) routeValues["invoiceNumber"] = currentInvoiceNumber;
+                if (!string.IsNullOrEmpty(currentOrderReference)) routeValues["orderReference"] = currentOrderReference;
+                if (!string.IsNullOrEmpty(currentFrom)) routeValues["from"] = currentFrom;
+                if (!string.IsNullOrEmpty(currentTo)) routeValues["to"] = currentTo;
+                if (!string.IsNullOrEmpty(currentCustomerId)) routeValues["customerId"] = currentCustomerId;
+            }
+
+            <!-- Previous Button -->
+            <li class="page-item @(Model.Page <= 1 ? "disabled" : "")">
+                @if (Model.Page > 1)
+                {
+                    routeValues["page"] = (Model.Page - 1).ToString();
+                    <a class="page-link" href="@Url.Action("Index", routeValues)">Previous</a>
+                }
+                else
+                {
+                    <span class="page-link">Previous</span>
+                }
+            </li>
+
+            <!-- First Page -->
+            @if (startPage > 1)
+            {
+                routeValues["page"] = "1";
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", routeValues)">1</a>
+                </li>
+                @if (startPage > 2)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+            }
+
+            <!-- Page Numbers -->
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                routeValues["page"] = i.ToString();
+                <li class="page-item @(i == Model.Page ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", routeValues)">@i</a>
+                </li>
+            }
+
+            <!-- Last Page -->
+            @if (endPage < totalPages)
+            {
+                @if (endPage < totalPages - 1)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+
+                routeValues["page"] = totalPages.ToString();
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", routeValues)">@totalPages</a>
+                </li>
+            }
+
+            <!-- Next Button -->
+            <li class="page-item @(Model.Page >= totalPages ? "disabled" : "")">
+                @if (Model.Page < totalPages)
+                {
+                    routeValues["page"] = (Model.Page + 1).ToString();
+                    <a class="page-link" href="@Url.Action("Index", routeValues)">Next</a>
+                }
+                else
+                {
+                    <span class="page-link">Next</span>
+                }
+            </li>
+        </ul>
+    </nav>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Handle payment mode change to show/hide appropriate fields
+            $('#editPaymentMode').change(function () {
+                const selectedMode = $(this).val();
+                const referenceLabel = $('#editReferenceLabel');
+                const referenceField = $('#editReferenceField');
+                const referenceContainer = $('#editReferenceFieldContainer');
+
+                // Clear the input value
+                referenceField.val('');
+
+                // Update label and visibility based on selection
+                if (selectedMode === '0') { // Cash
+                    referenceContainer.hide();
+                } else if (selectedMode === '1') { // Cheque
+                    referenceLabel.text('Cheque Number');
+                    referenceField.attr('placeholder', 'Enter cheque number');
+                    referenceContainer.show();
+                } else if (selectedMode === '2') { // Online
+                    referenceLabel.text('Transaction Ref');
+                    referenceField.attr('placeholder', 'Enter transaction reference');
+                    referenceContainer.show();
+                }
+            });
+
+            // Handle Edit Payment button click - populate modal with payment data
+            $(document).on('click', '.edit-payment-btn', function () {
+                const paymentId = $(this).data('payment-id');
+
+                // Fetch payment details via AJAX
+                $.ajax({
+                    type: 'GET',
+                    url: '/Payments/GetPayment/' + paymentId,
+                    success: function (response) {
+                        if (response.success) {
+                            const payment = response.payment;
+
+                            // Populate modal fields
+                            $('#editPaymentId').val(payment.id);
+                            $('#editPaymentInvoiceNumber').val(payment.invoiceNumber);
+                            $('#editPaymentCustomerName').val(payment.customerName);
+                            $('#editPaymentAmount').val(payment.amount);
+                            $('#editPaymentDate').val(payment.paymentDate);
+                            $('#editPaymentMode').val(payment.paymentMode).trigger('change');
+
+                            // Set reference field based on payment mode
+                            if (payment.paymentMode === 1) { // Cheque
+                                $('#editReferenceField').val(payment.chequeNumber || '');
+                            } else if (payment.paymentMode === 2) { // Online
+                                $('#editReferenceField').val(payment.transactionReference || '');
+                            }
+
+                            // Focus on amount field
+                            setTimeout(() => $('#editPaymentAmount').focus(), 500);
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                        alert('Error loading payment details: ' + error);
+                    }
+                });
+            });
+
+            // Handle Update Payment button click in modal
+            $('#updatePaymentBtn').click(function () {
+                const paymentId = $('#editPaymentId').val();
+                const amount = $('#editPaymentAmount').val();
+                const paymentDate = $('#editPaymentDate').val();
+                const paymentMode = $('#editPaymentMode').val();
+                const referenceValue = $('#editReferenceField').val();
+
+                // Validation
+                if (!amount || parseFloat(amount) <= 0) {
+                    alert('Please enter a valid payment amount');
+                    $('#editPaymentAmount').focus();
+                    return;
+                }
+
+                if (!paymentDate) {
+                    alert('Please select a payment date');
+                    $('#editPaymentDate').focus();
+                    return;
+                }
+
+                // Validate reference if payment mode requires it
+                if ((paymentMode === '1' || paymentMode === '2') && !referenceValue.trim()) {
+                    const fieldName = paymentMode === '1' ? 'cheque number' : 'transaction reference';
+                    alert(`Please enter a ${fieldName}`);
+                    $('#editReferenceField').focus();
+                    return;
+                }
+
+                // Call UpdatePayment action
+                updatePayment(paymentId, parseFloat(amount), paymentDate, paymentMode, referenceValue);
+            });
+
+            function updatePayment(paymentId, amount, paymentDate, paymentMode, referenceValue) {
+                const paymentData = {
+                    id: parseInt(paymentId),
+                    amount: amount,
+                    paymentDate: paymentDate,
+                    paymentMode: parseInt(paymentMode)
+                };
+
+                // Add appropriate reference field based on payment mode
+                if (paymentMode === '1') {
+                    paymentData.chequeNumber = referenceValue;
+                } else if (paymentMode === '2') {
+                    paymentData.transactionReference = referenceValue;
+                }
+
+                // Disable button to prevent double submission
+                $('#updatePaymentBtn').prop('disabled', true).text('Updating...');
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/Payments/UpdatePayment',
+                    contentType: 'application/json',
+                    data: JSON.stringify(paymentData),
+                    success: function (response) {
+                        if (response.success) {
+                            // Close modal
+                            const modalElement = document.getElementById('editPaymentModal');
+                            const modal = bootstrap.Modal.getInstance(modalElement);
+                            if (modal) {
+                                modal.hide();
+                            }
+
+                            // Show success message
+                            alert(response.message || 'Payment updated successfully');
+
+                            // Reload page to reflect changes
+                            location.reload();
+                        } else {
+                            alert('Error: ' + (response.message || 'Failed to update payment'));
+                            $('#updatePaymentBtn').prop('disabled', false).html('<i class="fas fa-save me-1"></i>Update Payment');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                        alert('Error updating payment: ' + error);
+                        $('#updatePaymentBtn').prop('disabled', false).html('<i class="fas fa-save me-1"></i>Update Payment');
+                    }
+                });
+            }
+        });
+    </script>
+}
