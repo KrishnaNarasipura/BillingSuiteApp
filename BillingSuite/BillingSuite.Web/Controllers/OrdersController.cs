@@ -243,5 +243,4 @@ public class OrdersController : Controller
             return Json(new { success = false, message = $"Error: {ex.Message}" });
         }
     }
-
 }

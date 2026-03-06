@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Invoice - {{INVOICE_NUMBER}}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .invoice-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 20px;
+        }
+
+        .company-info {
+            flex: 1;
+        }
+
+        .company-info h1 {
+            color: #007bff;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .company-info p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .invoice-info {
+            text-align: right;
+        }
+
+        .invoice-info h2 {
+            color: #28a745;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .invoice-info p {
+            margin: 5px 0;
+            font-size: 13px;
+        }
+
+        .invoice-info .label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .addresses-section {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .address-box {
+            flex: 1;
+            border: 1px solid #ddd;
+            padding: 15px;
+            background-color: #fafafa;
+        }
+
+        .address-box h3 {
+            background-color: #e9ecef;
+            color: #007bff;
+            padding: 8px;
+            margin: -15px -15px 10px -15px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .address-box p {
+            margin: 5px 0;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .items-section {
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table thead {
+            background-color: #e9ecef;
+        }
+
+        table th {
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            border-bottom: 2px solid #dee2e6;
+            color: #333;
+        }
+
+        table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 13px;
+        }
+
+        table td.text-center {
+            text-align: center;
+        }
+
+        table td.text-right {
+            text-align: right;
+        }
+
+        table tbody tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        .summary-section {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .tax-breakdown {
+            flex: 1;
+        }
+
+        .summary-box {
+            flex: 1;
+            border: 1px solid #ddd;
+            padding: 20px;
+            background-color: #fafafa;
+        }
+
+        .summary-box h4 {
+            margin-bottom: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .summary-row.total-row {
+            border-top: 2px solid #007bff;
+            border-bottom: 2px solid #007bff;
+            padding: 10px 0;
+            font-weight: bold;
+            font-size: 14px;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .amount-words {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #e7f3ff;
+            border-left: 4px solid #007bff;
+        }
+
+        .amount-words strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .terms-conditions {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            background-color: #fafafa;
+        }
+
+        .terms-conditions h4 {
+            margin-bottom: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .terms-conditions p {
+            margin-bottom: 5px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .signature-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 50px;
+        }
+
+        .signature-box {
+            width: 250px;
+            border: 1px solid #333;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .signature-box p {
+            margin: 10px 0;
+            font-size: 12px;
+        }
+
+        .signature-line {
+            border-top: 1px solid #333;
+            margin-top: 40px;
+            padding-top: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .footer p {
+            margin: 3px 0;
+        }
+
+        .print-button {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .print-button button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .print-button button:hover {
+            background-color: #218838;
+        }
+
+        .print-button button.secondary {
+            background-color: #6c757d;
+        }
+
+        .print-button button.secondary:hover {
+            background-color: #5a6268;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+
+            .invoice-container {
+                box-shadow: none;
+                max-width: 100%;
+                margin: 0;
+            }
+
+            .print-button {
+                display: none;
+            }
+
+            .summary-section {
+                display: block;
+            }
+
+            .tax-breakdown {
+                margin-bottom: 20px;
+            }
+
+            @page {
+                margin: 0.5in;
+            }
+        }
+
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 4px;
+        }
+
+        .text-muted {
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class='print-button'>
+        <button onclick='window.print()'>
+            <span>Print Invoice</span>
+        </button>
+        <button class='secondary' onclick='window.history.back()'>
+            <span>Back</span>
+        </button>
+    </div>
+
+    <div class='invoice-container'>
+        <div class='invoice-header'>
+            <div class='company-info'>
+                <h1>{{COMPANY_NAME}}</h1>
+                {{COMPANY_ADDRESS}}
+                {{COMPANY_PHONE}}
+                {{COMPANY_GSTIN}}
+                {{COMPANY_HSN_CODE}}
+                {{COMPANY_HSN_CODE_SERVICE}}
+            </div>
+            <div class='invoice-info'>
+                <h2>INVOICE</h2>
+                <p><span class='label'>Invoice #:</span> {{INVOICE_NUMBER}}</p>
+                <p><span class='label'>Date:</span> {{INVOICE_DATE}}</p>
+                {{INVOICE_OUR_ORDER_REF}}
+                {{INVOICE_YOUR_ORDER_REF}}
+            </div>
+        </div>
+
+        <div class='addresses-section'>
+            <div class='address-box'>
+                <h3>BILL TO</h3>
+                <p><strong>{{CUSTOMER_NAME}}</strong></p>
+                {{CUSTOMER_BILLING_ADDRESS}}
+                {{CUSTOMER_EMAIL}}
+                {{CUSTOMER_PHONE}}
+                {{CUSTOMER_GSTIN}}
+            </div>
+            <div class='address-box'>
+                <h3>SHIP TO</h3>
+                {{CUSTOMER_SHIPPING_ADDRESS}}
+            </div>
+        </div>
+
+        <div class='items-section'>
+            <table>
+                <thead>
+                    <tr>
+                        <th style='width: 5%;'>Sl.No</th>
+                        <th style='width: 35%;'>Description</th>
+                        <th style='width: 10%;' class='text-center'>HSN Code</th>
+                        <th style='width: 8%;' class='text-center'>Qty</th>
+                        <th style='width: 12%;' class='text-right'>Unit Price</th>
+                        <th style='width: 12%;' class='text-center'>Tax Type</th>
+                        <th style='width: 10%;' class='text-right'>Line Total</th>
+                        <th style='width: 10%;' class='text-right'>Tax Amount</th>
+                        <th style='width: 10%;' class='text-right'>Item Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{INVOICE_ITEMS}}
+                </tbody>
+            </table>
+        </div>
+
+        <div class='summary-section'>
+            {{TAX_BREAKDOWN}}
+            <div>
+                <div class='summary-box'>
+                    <h4>Invoice Summary</h4>
+                    <div class='summary-row'>
+                        <span>Subtotal:</span>
+                        <span>{{INVOICE_SUBTOTAL}}</span>
+                    </div>
+                    <div class='summary-row'>
+                        <span>Total Tax:</span>
+                        <span>{{INVOICE_TAX_AMOUNT}}</span>
+                    </div>
+                    {{INVOICE_DISCOUNT}}
+                    <div class='summary-row total-row'>
+                        <span>Net Amount:</span>
+                        <span>{{INVOICE_NET_AMOUNT}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class='amount-words'>
+            <strong>Amount in Words:</strong>
+            <span>{{AMOUNT_IN_WORDS}}</span>
+        </div>
+
+        {{TERMS_CONDITIONS}}
+
+        <div class='signature-section'>
+            <div class='signature-box'>
+                <p><strong>For {{COMPANY_NAME}}</strong></p>
+                <p>Authorized Signatory</p>
+                <div class='signature-line'>
+                    <p>Signature</p>
+                </div>
+            </div>
+        </div>
+
+        <div class='footer'>
+            <p>Thank you for your business!</p>
+            <p>Generated by BillingSuite</p>
+            <p>Generated on: {{GENERATED_DATE}}</p>
+        </div>
+    </div>
+</body>
+</html>

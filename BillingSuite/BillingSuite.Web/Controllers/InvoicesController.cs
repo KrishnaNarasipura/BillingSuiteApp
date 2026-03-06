@@ -5,6 +5,7 @@ using BillingSuite.Application.Enums;
 using BillingSuite.Domain;
 using BillingSuite.Domain.Enums;
 using BillingSuite.Infrastructure.Persistence;
+using BillingSuite.Infrastructure.Services.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -31,9 +32,7 @@ public class InvoicesController : Controller
 
     public async Task<IActionResult> Index(DateTime? from, DateTime? to, int? CustomerId, string? invoiceNumber, int? status, int page = 1, int pageSize = 20)
     {
-        // Get customers for the dropdown filter
         ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
-
         return View(await _svc.SearchAsync(from, to, CustomerId, invoiceNumber, status, page, pageSize));
     }
 
@@ -194,6 +193,24 @@ public class InvoicesController : Controller
             ModelState.AddModelError("", $"Error updating invoice: {ex.Message}");
             return View(dto);
         }
+    }
+
+    public async Task<IActionResult> PrintPreview(int id)
+    {
+        var inv = await _db.Invoices
+            .Include(i => i.Customer)
+            .Include(i => i.Items)
+                .ThenInclude(item => item.TaxSettings)
+            .FirstOrDefaultAsync(i => i.Id == id);
+
+        if (inv is null) return NotFound();
+
+        var settings = await _db.CompanySettings.FirstOrDefaultAsync() ?? new BillingSuite.Domain.Entities.CompanySettings { CompanyName = "My Company" };
+
+        var htmlInvoice = new InvoiceHtml(settings, inv);
+        var htmlContent = htmlInvoice.Render();
+
+        return Content(htmlContent, "text/html");
     }
 
     public async Task<IActionResult> Print(int id, string invoiceNumber)
