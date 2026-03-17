@@ -21,7 +21,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h2 class="text-primary">Order Preview</h2>
                 <div>
-                    @if (Model.Status == 0 || Model.Status == 1) // Draft or Confirmed
+                    @if (Model.Status == 1) // Confirmed - can generate invoice
                     {
                         <a class="btn btn-warning me-2" href="@Url.Action("GenerateInvoice", "Orders", new { id = Model.Id })">
                             <i class="fas fa-file-invoice"></i> Generate Invoice

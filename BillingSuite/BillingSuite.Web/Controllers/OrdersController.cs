@@ -45,6 +45,13 @@ public class OrdersController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(OrderCreateDto dto, string? submitButton)
     {
+        // Clear model state for dynamic items to avoid validation issues
+        // when items are added/removed dynamically via JavaScript
+        if (ModelState.ContainsKey("Items"))
+        {
+            ModelState.Remove("Items");
+        }
+
         if (!ModelState.IsValid)
         {
             ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
@@ -108,6 +115,13 @@ public class OrdersController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(OrderEditDto dto, string? submitButton)
     {
+        // Clear model state for dynamic items to avoid validation issues
+        // when items are added/removed dynamically via JavaScript
+        if (ModelState.ContainsKey("Items"))
+        {
+            ModelState.Remove("Items");
+        }
+
         if (!ModelState.IsValid)
         {
             ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;

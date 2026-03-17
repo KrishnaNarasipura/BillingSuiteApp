@@ -161,7 +161,7 @@
                                 <input class="form-control form-control-sm" name="Items[@i].HsnCode" value="@Model.Items[i].HsnCode" placeholder="HSN Code" />
                             </td>
                             <td>
-                                <input class="form-control form-control-sm qty" name="Items[@i].Quantity" type="number" step="0.01" value="@Model.Items[i].Quantity" />
+                                <input class="form-control form-control-sm qty" name="Items[@i].Quantity" type="number" step="1" value="@Model.Items[i].Quantity" />
                             </td>
                             <td>
                                 <input class="form-control form-control-sm unitprice" name="Items[@i].UnitPrice" type="number" step="0.01" value="@Model.Items[i].UnitPrice" />
@@ -387,7 +387,7 @@
                 let newRow = `<tr>
                     <td><input class="form-control form-control-sm" name="Items[${rowCount}].Description" /></td>
                     <td><input class="form-control form-control-sm" name="Items[${rowCount}].HsnCode" placeholder="HSN Code" /></td>
-                    <td><input class="form-control form-control-sm qty" name="Items[${rowCount}].Quantity" type="number" step="0.01" value="1" /></td>
+                    <td><input class="form-control form-control-sm qty" name="Items[${rowCount}].Quantity" type="number" step="1" value="1" /></td>
                     <td><input class="form-control form-control-sm unitprice" name="Items[${rowCount}].UnitPrice" type="number" step="0.01" value="0" /></td>
                     <td><select class="form-select form-select-sm tax-select" name="Items[${rowCount}].TaxSettingsId">${taxOptions}</select></td>
                     <td><input class="form-control form-control-sm linetotal" name="Items[${rowCount}].LineTotal" type="number" step="0.01" value="0" readonly /></td>
