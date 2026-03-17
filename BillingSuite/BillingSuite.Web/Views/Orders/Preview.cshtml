@@ -7,8 +7,9 @@
     {
         0 => "secondary",  // Draft
         1 => "info",       // Confirmed
-        2 => "danger",     // Cancelled
-        3 => "success",    // Completed
+        2 => "warning",    // InvoiceIssued
+        3 => "danger",     // Cancelled
+        4 => "success",    // Completed
         _ => "dark"
     };
     var statusText = ((BillingSuite.Domain.Enums.OrderStatus)Model.Status).ToString();

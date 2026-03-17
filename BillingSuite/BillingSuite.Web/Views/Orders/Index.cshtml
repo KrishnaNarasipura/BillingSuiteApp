@@ -41,8 +41,9 @@
                     <option value="">All Status</option>
                     <option value="0" selected="@(currentStatus == "0")">Draft</option>
                     <option value="1" selected="@(currentStatus == "1")">Confirmed</option>
-                    <option value="2" selected="@(currentStatus == "2")">Cancelled</option>
-                    <option value="3" selected="@(currentStatus == "3")">Completed</option>
+                    <option value="2" selected="@(currentStatus == "2")">Invoice Issued</option>
+                    <option value="3" selected="@(currentStatus == "3")">Cancelled</option>
+                    <option value="4" selected="@(currentStatus == "4")">Completed</option>
                 </select>
             </div>
             <div class="col-md-2">
@@ -99,8 +100,9 @@
                 {
                     0 => "secondary",  // Draft
                     1 => "info",       // Confirmed
-                    2 => "danger",     // Cancelled
-                    3 => "success",    // Completed
+                    2 => "warning",    // InvoiceIssued
+                    3 => "danger",     // Cancelled
+                    4 => "success",    // Completed
                     _ => "dark"
                 };
                 var statusText = ((OrderStatus)order.Status).ToString();
@@ -161,8 +163,9 @@
                         <option value="">-- Select Status --</option>
                         <option value="0">Draft</option>
                         <option value="1">Confirmed</option>
-                        <option value="2">Cancelled</option>
-                        <option value="3">Completed</option>
+                        <option value="2">Invoice Issued</option>
+                        <option value="3">Cancelled</option>
+                        <option value="4">Completed</option>
                     </select>
                 </div>
                 <input type="hidden" id="orderIdInput" />
