@@ -201,22 +201,24 @@ public class InvoiceHtml
 
     private string BuildCustomerShippingAddress()
     {
-        if (!string.IsNullOrWhiteSpace(_invoice.Customer.ShippingAddress) &&
-            _invoice.Customer.ShippingAddress != _invoice.Customer.BillingAddress)
+        // Determine which address to display: shipping if available, otherwise billing
+        var address = !string.IsNullOrWhiteSpace(_invoice.Customer.ShippingAddress)
+            ? _invoice.Customer.ShippingAddress
+            : _invoice.Customer.BillingAddress;
+
+        if (string.IsNullOrWhiteSpace(address))
+            return string.Empty;
+
+        var sb = new StringBuilder();
+        sb.Append($"<p><strong>{HtmlEncode(_invoice.Customer.Name)}</strong></p>");
+
+        var lines = address.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        foreach (var line in lines)
         {
-            var sb = new StringBuilder();
-            sb.Append($"<p><strong>{HtmlEncode(_invoice.Customer.Name)}</strong></p>");
-
-            var lines = _invoice.Customer.ShippingAddress.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var line in lines)
-            {
-                sb.Append($"<p>{HtmlEncode(line.Trim())}</p>");
-            }
-
-            return sb.ToString();
+            sb.Append($"<p>{HtmlEncode(line.Trim())}</p>");
         }
 
-        return "<p class='text-muted'>Same as Billing Address</p>";
+        return sb.ToString();
     }
 
     private string BuildInvoiceItems()

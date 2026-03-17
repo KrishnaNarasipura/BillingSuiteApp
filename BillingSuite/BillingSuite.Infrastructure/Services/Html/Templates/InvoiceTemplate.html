@@ -14,16 +14,18 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #333;
-            line-height: 1.6;
+            line-height: 1.3;
             background-color: #f5f5f5;
-            padding: 20px;
+            padding: 10px;
+            font-size: 11px;
         }
 
         .invoice-container {
-            max-width: 900px;
+            max-width: 210mm;
+            min-height: auto;
             margin: 0 auto;
             background-color: white;
-            padding: 40px;
+            padding: 20px 25px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
@@ -31,9 +33,9 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 30px;
+            margin-bottom: 12px;
             border-bottom: 2px solid #007bff;
-            padding-bottom: 20px;
+            padding-bottom: 10px;
         }
 
         .company-info {
@@ -42,13 +44,13 @@
 
         .company-info h1 {
             color: #007bff;
-            font-size: 28px;
-            margin-bottom: 10px;
+            font-size: 20px;
+            margin-bottom: 4px;
         }
 
         .company-info p {
-            margin: 5px 0;
-            font-size: 14px;
+            margin: 2px 0;
+            font-size: 11px;
             color: #666;
         }
 
@@ -58,13 +60,13 @@
 
         .invoice-info h2 {
             color: #28a745;
-            font-size: 24px;
-            margin-bottom: 10px;
+            font-size: 18px;
+            margin-bottom: 4px;
         }
 
         .invoice-info p {
-            margin: 5px 0;
-            font-size: 13px;
+            margin: 2px 0;
+            font-size: 11px;
         }
 
         .invoice-info .label {
@@ -74,40 +76,40 @@
 
         .addresses-section {
             display: flex;
-            gap: 30px;
-            margin-bottom: 30px;
+            gap: 15px;
+            margin-bottom: 12px;
         }
 
         .address-box {
             flex: 1;
             border: 1px solid #ddd;
-            padding: 15px;
+            padding: 8px;
             background-color: #fafafa;
         }
 
         .address-box h3 {
             background-color: #e9ecef;
             color: #007bff;
-            padding: 8px;
-            margin: -15px -15px 10px -15px;
-            font-size: 14px;
+            padding: 4px 8px;
+            margin: -8px -8px 6px -8px;
+            font-size: 11px;
             font-weight: 600;
         }
 
         .address-box p {
-            margin: 5px 0;
-            font-size: 13px;
-            line-height: 1.5;
+            margin: 2px 0;
+            font-size: 11px;
+            line-height: 1.3;
         }
 
         .items-section {
-            margin-bottom: 30px;
+            margin-bottom: 10px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 0;
         }
 
         table thead {
@@ -115,18 +117,18 @@
         }
 
         table th {
-            padding: 12px 8px;
+            padding: 5px 4px;
             text-align: left;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 10px;
             border-bottom: 2px solid #dee2e6;
             color: #333;
         }
 
         table td {
-            padding: 10px 8px;
+            padding: 4px 4px;
             border-bottom: 1px solid #dee2e6;
-            font-size: 13px;
+            font-size: 10px;
         }
 
         table td.text-center {
@@ -143,24 +145,28 @@
 
         .summary-section {
             display: flex;
-            gap: 30px;
-            margin-bottom: 30px;
+            gap: 15px;
+            margin-bottom: 10px;
         }
 
         .tax-breakdown {
-            flex: 1;
+            flex: 2;
+        }
+
+        .invoice-summary {
+            flex: 3;
         }
 
         .summary-box {
             flex: 1;
             border: 1px solid #ddd;
-            padding: 20px;
+            padding: 10px;
             background-color: #fafafa;
         }
 
         .summary-box h4 {
-            margin-bottom: 15px;
-            font-size: 14px;
+            margin-bottom: 6px;
+            font-size: 11px;
             font-weight: 600;
             color: #333;
         }
@@ -168,90 +174,89 @@
         .summary-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 13px;
+            margin-bottom: 4px;
+            font-size: 11px;
         }
 
         .summary-row.total-row {
             border-top: 2px solid #007bff;
             border-bottom: 2px solid #007bff;
-            padding: 10px 0;
+            padding: 5px 0;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 12px;
             color: #007bff;
-            margin-bottom: 10px;
+            margin-top: 4px;
+            margin-bottom: 0;
         }
 
         .amount-words {
-            margin-bottom: 30px;
-            padding: 15px;
+            margin-bottom: 8px;
+            padding: 8px 10px;
             background-color: #e7f3ff;
-            border-left: 4px solid #007bff;
+            border-left: 3px solid #007bff;
+            font-size: 10px;
         }
 
         .amount-words strong {
-            display: block;
-            margin-bottom: 5px;
+            display: inline;
+            margin-right: 4px;
         }
 
         .terms-conditions {
-            margin-bottom: 30px;
-            padding: 15px;
+            margin-bottom: 8px;
+            padding: 8px 10px;
             border: 1px solid #ddd;
             background-color: #fafafa;
         }
 
         .terms-conditions h4 {
-            margin-bottom: 10px;
-            font-size: 13px;
+            margin-bottom: 4px;
+            font-size: 10px;
             font-weight: 600;
         }
 
         .terms-conditions p {
-            margin-bottom: 5px;
-            font-size: 12px;
-            line-height: 1.4;
+            margin-bottom: 2px;
+            font-size: 9px;
+            line-height: 1.3;
         }
 
-        .signature-section {
+        .bottom-section {
             display: flex;
-            justify-content: flex-end;
-            margin-top: 50px;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 8px;
+        }
+
+        .footer-left {
+            font-size: 9px;
+            color: #666;
+        }
+
+        .footer-left p {
+            margin: 1px 0;
         }
 
         .signature-box {
-            width: 250px;
+            width: 200px;
             border: 1px solid #333;
-            padding: 20px;
+            padding: 10px;
             text-align: center;
         }
 
         .signature-box p {
-            margin: 10px 0;
-            font-size: 12px;
+            margin: 3px 0;
+            font-size: 10px;
         }
 
         .signature-line {
             border-top: 1px solid #333;
-            margin-top: 40px;
-            padding-top: 10px;
-        }
-
-        .footer {
-            text-align: center;
             margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-            font-size: 12px;
-            color: #666;
-        }
-
-        .footer p {
-            margin: 3px 0;
+            padding-top: 4px;
         }
 
         .print-button {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             text-align: center;
         }
 
@@ -259,52 +264,15 @@
             background-color: #28a745;
             color: white;
             border: none;
-            padding: 10px 30px;
-            font-size: 14px;
+            padding: 8px 24px;
+            font-size: 13px;
             border-radius: 4px;
             cursor: pointer;
-            margin-right: 10px;
+            margin-right: 8px;
         }
 
         .print-button button:hover {
             background-color: #218838;
-        }
-
-        .print-button button.secondary {
-            background-color: #6c757d;
-        }
-
-        .print-button button.secondary:hover {
-            background-color: #5a6268;
-        }
-
-        @media print {
-            body {
-                background-color: white;
-                padding: 0;
-            }
-
-            .invoice-container {
-                box-shadow: none;
-                max-width: 100%;
-                margin: 0;
-            }
-
-            .print-button {
-                display: none;
-            }
-
-            .summary-section {
-                display: block;
-            }
-
-            .tax-breakdown {
-                margin-bottom: 20px;
-            }
-
-            @page {
-                margin: 0.5in;
-            }
         }
 
         .highlight {
@@ -315,15 +283,36 @@
         .text-muted {
             color: #6c757d;
         }
+
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+                margin: 0;
+            }
+
+            .invoice-container {
+                box-shadow: none;
+                max-width: 100%;
+                margin: 0;
+                padding: 15px 20px;
+            }
+
+            .print-button {
+                display: none;
+            }
+
+            @page {
+                size: A4;
+                margin: 10mm;
+            }
+        }
     </style>
 </head>
 <body>
     <div class='print-button'>
         <button onclick='window.print()'>
             <span>Print Invoice</span>
-        </button>
-        <button class='secondary' onclick='window.history.back()'>
-            <span>Back</span>
         </button>
     </div>
 
@@ -365,15 +354,15 @@
             <table>
                 <thead>
                     <tr>
-                        <th style='width: 5%;'>Sl.No</th>
-                        <th style='width: 35%;'>Description</th>
-                        <th style='width: 10%;' class='text-center'>HSN Code</th>
-                        <th style='width: 8%;' class='text-center'>Qty</th>
-                        <th style='width: 12%;' class='text-right'>Unit Price</th>
+                        <th style='width: 4%;'>Sl.</th>
+                        <th style='width: 30%;'>Description</th>
+                        <th style='width: 9%;' class='text-center'>HSN</th>
+                        <th style='width: 6%;' class='text-center'>Qty</th>
+                        <th style='width: 11%;' class='text-right'>Unit Price</th>
                         <th style='width: 12%;' class='text-center'>Tax Type</th>
                         <th style='width: 10%;' class='text-right'>Line Total</th>
-                        <th style='width: 10%;' class='text-right'>Tax Amount</th>
-                        <th style='width: 10%;' class='text-right'>Item Total</th>
+                        <th style='width: 9%;' class='text-right'>Tax Amt</th>
+                        <th style='width: 9%;' class='text-right'>Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -384,7 +373,7 @@
 
         <div class='summary-section'>
             {{TAX_BREAKDOWN}}
-            <div>
+            <div class='invoice-summary'>
                 <div class='summary-box'>
                     <h4>Invoice Summary</h4>
                     <div class='summary-row'>
@@ -411,20 +400,18 @@
 
         {{TERMS_CONDITIONS}}
 
-        <div class='signature-section'>
+        <div class='bottom-section'>
+            <div class='footer-left'>
+                <p>Thank you for your business!</p>
+                <p>Generated by BillingSuite | {{GENERATED_DATE}}</p>
+            </div>
             <div class='signature-box'>
                 <p><strong>For {{COMPANY_NAME}}</strong></p>
                 <p>Authorized Signatory</p>
                 <div class='signature-line'>
-                    <p>Signature</p>
+                    <p>Signature / Date</p>
                 </div>
             </div>
-        </div>
-
-        <div class='footer'>
-            <p>Thank you for your business!</p>
-            <p>Generated by BillingSuite</p>
-            <p>Generated on: {{GENERATED_DATE}}</p>
         </div>
     </div>
 </body>

@@ -289,7 +289,7 @@
                 </div>
                 <div class="dual-stat-right">
                     <div class="dual-stat-title" style="color: rgba(255, 255, 255, 0.8);">Total Value</div>
-                    <div class="dual-stat-value" style="color: white;">₹@completedOrdersAmount.ToString("N2")</div>
+                    <div class="dual-stat-value" style="color: white;">&#x20B9;@completedOrdersAmount.ToString("N2")</div>
                 </div>
             </div>
             <div class="dual-stat" style="background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%); color: white;">
@@ -299,7 +299,7 @@
                 </div>
                 <div class="dual-stat-right">
                     <div class="dual-stat-title" style="color: rgba(255, 255, 255, 0.8);">Total Value</div>
-                    <div class="dual-stat-value" style="color: white;">₹@paidInvoicesAmount.ToString("N2")</div>
+                    <div class="dual-stat-value" style="color: white;">&#x20B9;@paidInvoicesAmount.ToString("N2")</div>
                 </div>
             </div>
         </div>
@@ -316,7 +316,7 @@
                 </div>
                 <div class="dual-stat-right">
                     <div class="dual-stat-title" style="color: rgba(255, 255, 255, 0.8);">Total Value</div>
-                    <div class="dual-stat-value" style="color: white;">₹@confirmedOrdersAmount.ToString("N2")</div>
+                    <div class="dual-stat-value" style="color: white;">&#x20B9;@confirmedOrdersAmount.ToString("N2")</div>
                 </div>
             </div>
             <div class="dual-stat" style="background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%); color: white;">
@@ -326,7 +326,7 @@
                 </div>
                 <div class="dual-stat-right">
                     <div class="dual-stat-title" style="color: rgba(255, 255, 255, 0.8);">Total Value</div>
-                    <div class="dual-stat-value" style="color: white;">₹@issuedInvoicesAmount.ToString("N2")</div>
+                    <div class="dual-stat-value" style="color: white;">&#x20B9;@issuedInvoicesAmount.ToString("N2")</div>
                 </div>
             </div>
         </div>
@@ -350,7 +350,7 @@
         <div style="display: flex; align-items: center;">
             <div>
                 <div class="stat-card-label">Overdue Amount</div>
-                <div class="stat-card-value">₹@overdueAmount.ToString("0.00")</div>
+                <div class="stat-card-value">&#x20B9;@overdueAmount.ToString("0.00")</div>
             </div>
         </div>
     </div>
@@ -383,7 +383,7 @@
                     </div>
                 </div>
                 <div class="overdue-invoice-amount">
-                    <div class="overdue-invoice-amount-value">₹@invoice.NetAmount.ToString("0.00")</div>
+                    <div class="overdue-invoice-amount-value">&#x20B9;@invoice.NetAmount.ToString("0.00")</div>
                     <div class="overdue-days-overdue">@daysOverdue days overdue</div>
                     <a href="@Url.Action("Preview", "Invoices", new { id = invoice.Id })" class="btn btn-sm btn-outline-danger mt-2">
                         <i class="fas fa-eye me-1"></i>View

@@ -102,19 +102,19 @@ public class InvoicePdf
 
                             shipCol.Item().PaddingTop(6).Column(shipStack => // Reduced from 8 to 6
                             {
-                                if (!string.IsNullOrWhiteSpace(_invoice.Customer.ShippingAddress) &&
-                                    _invoice.Customer.ShippingAddress != _invoice.Customer.BillingAddress)
+                                // Determine which address to display: shipping if available, otherwise billing
+                                var shippingAddress = !string.IsNullOrWhiteSpace(_invoice.Customer.ShippingAddress)
+                                    ? _invoice.Customer.ShippingAddress
+                                    : _invoice.Customer.BillingAddress;
+
+                                if (!string.IsNullOrWhiteSpace(shippingAddress))
                                 {
                                     shipStack.Item().Text(_invoice.Customer.Name).FontSize(11).SemiBold();
-                                    var addressLines = _invoice.Customer.ShippingAddress.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                                    var addressLines = shippingAddress.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
                                     foreach (var line in addressLines)
                                     {
                                         shipStack.Item().Text(line.Trim()).FontSize(10);
                                     }
-                                }
-                                else
-                                {
-                                    shipStack.Item().Text("Same as Billing Address").FontSize(10).Italic().FontColor(Colors.Grey.Medium);
                                 }
                             });
                         });
@@ -175,7 +175,7 @@ public class InvoicePdf
                     stack.Item().PaddingTop(15).Row(row => // Reduced from 20 to 15
                     {
                         // Left side - Tax Breakdown (if applicable)
-                        row.RelativeItem().Column(leftCol =>
+                        row.RelativeItem(2).Column(leftCol =>
                         {
                             var taxBreakdown = _invoice.Items
                                 .Where(item => item.TaxSettings != null && item.TaxAmount > 0)
@@ -203,7 +203,7 @@ public class InvoicePdf
                         row.ConstantItem(20);
 
                         // Right side - Summary totals
-                        row.RelativeItem().Column(rightCol =>
+                        row.RelativeItem(3).Column(rightCol =>
                         {
                             rightCol.Item().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(10).Column(summaryCol =>
                             {

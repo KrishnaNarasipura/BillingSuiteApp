@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BillingSuite.Application.DTOs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,9 @@ namespace BillingSuite.Application.Abstractions
     public interface IReportService
     {
         Task<List<SalesSummaryDto>> GetSalesSummaryAsync(DateTime from, DateTime to, int? CustomerId, CancellationToken ct = default);
-        Task<byte[]> SalesSummaryPdfAsync(DateTime from, DateTime to, int? CustomerId, CancellationToken ct = default);
+        Task<string> SalesSummaryHtmlAsync(DateTime from, DateTime to, int? CustomerId, CancellationToken ct = default);
+        Task<List<TaxSummaryDto>> GetTaxSummaryAsync(DateTime from, DateTime to, CancellationToken ct = default);
+        Task<string> TaxSummaryHtmlAsync(DateTime from, DateTime to, CancellationToken ct = default);
     }
 
     public class SalesSummaryDto
