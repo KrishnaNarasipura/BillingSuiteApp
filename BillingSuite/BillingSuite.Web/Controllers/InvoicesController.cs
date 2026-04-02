@@ -4,6 +4,7 @@ using BillingSuite.Application.DTOs;
 using BillingSuite.Application.Enums;
 using BillingSuite.Domain;
 using BillingSuite.Domain.Enums;
+using BillingSuite.Infrastructure.Logging;
 using BillingSuite.Infrastructure.Persistence;
 using BillingSuite.Infrastructure.Services.Html;
 using Microsoft.AspNetCore.Mvc;
@@ -20,86 +21,143 @@ public class InvoicesController : Controller
     private readonly ITaxSettingsService _taxSettings;
     private readonly BillingDbContext _db;
     private readonly InvoiceSettings _invoiceSettings;
+    private readonly ILogger<InvoicesController> _logger;
 
-    public InvoicesController(IInvoiceService svc, ICustomerService customers, ITaxSettingsService taxSettings, BillingDbContext db, IOptions<InvoiceSettings> invoiceSettings)
+    public InvoicesController(
+        IInvoiceService svc,
+        ICustomerService customers,
+        ITaxSettingsService taxSettings,
+        BillingDbContext db,
+        IOptions<InvoiceSettings> invoiceSettings,
+        ILogger<InvoicesController> logger)
     {
         _svc = svc;
         _customers = customers;
         _taxSettings = taxSettings;
         _db = db;
         _invoiceSettings = invoiceSettings.Value;
+        _logger = logger;
     }
 
     public async Task<IActionResult> Index(DateTime? from, DateTime? to, int? CustomerId, string? invoiceNumber, int? status, int page = 1, int pageSize = 20)
     {
-        ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
-        return View(await _svc.SearchAsync(from, to, CustomerId, invoiceNumber, status, page, pageSize));
+        try
+        {
+            _logger.LogUserAction("Accessed Invoices Index", data: new { from, to, CustomerId, invoiceNumber, status, page, pageSize });
+
+            ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
+            var result = await _svc.SearchAsync(from, to, CustomerId, invoiceNumber, status, page, pageSize);
+
+            _logger.LogDebug("Invoices search returned {Count} results", result.Items.Count);
+
+            return View(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogOperationError("Index - Search Invoices", ex, new { from, to, CustomerId, invoiceNumber, status });
+            return View(new BillingSuite.Application.Results.PagedResult<InvoiceDto>());
+        }
     }
 
     public async Task<IActionResult> Preview(int id)
     {
-        var dto = await _svc.GetAsync(id);
-        if (dto is null) return NotFound();
+        try
+        {
+            _logger.LogUserAction("Accessed Invoice Preview", data: new { InvoiceId = id });
 
-        ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
-        ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
-        return View(dto);
+            var dto = await _svc.GetAsync(id);
+            if (dto is null)
+            {
+                _logger.LogWarning("Invoice not found: {InvoiceId}", id);
+                return NotFound();
+            }
+
+            ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
+            ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
+
+            _logger.LogDebug("Invoice preview loaded successfully for {InvoiceId}", id);
+
+            return View(dto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogOperationError("Preview Invoice", ex, new { InvoiceId = id });
+            return NotFound();
+        }
     }
 
     public async Task<IActionResult> Create()
     {
-        ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
-        ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
-        ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
-        return View(new InvoiceCreateDto { Items = new List<InvoiceItemDto> { new() { Description = "Item 1", Quantity = 1, UnitPrice = 0 } } });
+        try
+        {
+            _logger.LogUserAction("Accessed Invoice Create Form");
+
+            ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
+            ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
+            ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
+
+            return View(new InvoiceCreateDto { Items = new List<InvoiceItemDto> { new() { Description = "Item 1", Quantity = 1, UnitPrice = 0 } } });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogOperationError("Create Invoice - Get Form", ex);
+            return View(new InvoiceCreateDto { Items = new List<InvoiceItemDto> { new() { Description = "Item 1", Quantity = 1, UnitPrice = 0 } } });
+        }
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(InvoiceCreateDto dto, string? submitButton)
     {
-        // Clear model state for dynamic items to avoid validation issues
-        // when items are added/removed dynamically via JavaScript
-        if (ModelState.ContainsKey("Items"))
-        {
-            ModelState.Remove("Items");
-        }
-
-        if (!ModelState.IsValid)
-        {
-            ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
-            ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
-            ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
-            return View(dto);
-        }
-
         try
         {
+            _logger.LogDebug("Invoice create form submitted with button: {SubmitButton}", submitButton);
+
+            // Clear model state for dynamic items to avoid validation issues
+            if (ModelState.ContainsKey("Items"))
+            {
+                ModelState.Remove("Items");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogValidationError("Invoice", "Invalid model state", new { CustomerId = dto.CustomerId, ItemCount = dto.Items?.Count ?? 0 });
+
+                ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
+                ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
+                ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
+                return View(dto);
+            }
+
             int id;
 
             // Check which button was clicked
             if (submitButton == "SaveDraft")
             {
-                // Save as draft with D- prefix
                 id = await _svc.CreateDraftAsync(dto);
+                _logger.LogBusinessEvent("Invoice Draft Created", new { InvoiceId = id, CustomerId = dto.CustomerId, Amount = dto.Items?.Sum(x => x.LineTotal) ?? 0 });
             }
             else
             {
-                // Save as issued invoice (default Generate button)
                 id = await _svc.CreateAsync(dto);
+                _logger.LogBusinessEvent("Invoice Created", new { InvoiceId = id, CustomerId = dto.CustomerId, Amount = dto.Items?.Sum(x => x.LineTotal) ?? 0 });
             }
 
             // If saved as draft, redirect to invoice list; otherwise to preview
             if (submitButton == "SaveDraft")
             {
+                _logger.LogInformation("Redirecting to Invoice Index after draft save");
                 return RedirectToAction(nameof(Index));
             }
             else
             {
+                _logger.LogInformation("Redirecting to Invoice Preview for ID: {InvoiceId}", id);
                 return RedirectToAction(nameof(Preview), new { id });
             }
         }
         catch (Exception ex)
         {
+            _logger.LogOperationError("Create Invoice", ex, new { CustomerId = dto.CustomerId, ItemCount = dto.Items?.Count ?? 0, SubmitButton = submitButton });
+
             ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
             ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
             ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
@@ -110,83 +168,111 @@ public class InvoicesController : Controller
 
     public async Task<IActionResult> Edit(int id)
     {
-        var invoice = await _svc.GetAsync(id);
-        if (invoice == null) return NotFound();
-
-        // Convert InvoiceDto to InvoiceEditDto
-        var editDto = new InvoiceEditDto
+        try
         {
-            Id = invoice.Id,
-            InvoiceNumber = invoice.InvoiceNumber,
-            OurOrderReference = invoice.OurOrderReference,
-            YourOrderReference = invoice.YourOrderReference,
-            CustomerId = invoice.Customer.Id,
-            InvoiceDate = invoice.InvoiceDate,
-            AdvanceReceived = invoice.AdvanceReceived,
-            DiscountAmount = invoice.DiscountAmount,
-            Items = invoice.Items
-        };
+            _logger.LogUserAction("Accessed Invoice Edit", data: new { InvoiceId = id });
 
-        ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
-        ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
-        ViewBag.IsDraft = invoice.Status == 0; // Draft status is 0
-        ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
-        
-        return View(editDto);
+            var invoice = await _svc.GetAsync(id);
+            if (invoice == null)
+            {
+                _logger.LogWarning("Invoice not found for edit: {InvoiceId}", id);
+                return NotFound();
+            }
+
+            var editDto = new InvoiceEditDto
+            {
+                Id = invoice.Id,
+                InvoiceNumber = invoice.InvoiceNumber,
+                OurOrderReference = invoice.OurOrderReference,
+                YourOrderReference = invoice.YourOrderReference,
+                CustomerId = invoice.Customer.Id,
+                InvoiceDate = invoice.InvoiceDate,
+                AdvanceReceived = invoice.AdvanceReceived,
+                DiscountAmount = invoice.DiscountAmount,
+                Items = invoice.Items
+            };
+
+            ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
+            ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
+            ViewBag.IsDraft = invoice.Status == 0;
+            ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
+
+            _logger.LogDebug("Invoice edit form loaded for {InvoiceId}, Status: {Status}", id, invoice.Status);
+
+            return View(editDto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogOperationError("Edit Invoice - Get Form", ex, new { InvoiceId = id });
+            return NotFound();
+        }
     }
 
     [HttpPost]
     public async Task<IActionResult> Edit(InvoiceEditDto dto, string? submitButton)
     {
-        // Clear model state for dynamic items to avoid validation issues
-        // when items are added/removed dynamically via JavaScript
-        if (ModelState.ContainsKey("Items"))
-        {
-            ModelState.Remove("Items");
-        }
-
-        if (!ModelState.IsValid)
-        {
-            ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
-            ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
-            ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
-            return View(dto);
-        }
-
         try
         {
-            // Check which button was clicked
-            if (submitButton == "UpdateAndGenerate")
+            _logger.LogDebug("Invoice edit form submitted with button: {SubmitButton}", submitButton);
+
+            // Clear model state for dynamic items
+            if (ModelState.ContainsKey("Items"))
             {
-                // Generate new invoice number for this draft (same logic as CreateAsync)
-                var datePrefix = DateTime.UtcNow.ToString("yyyyMM");
-                var countThisMonth = await _db.Invoices.CountAsync(i => 
-                    i.InvoiceDate.Year == DateTime.UtcNow.Year && 
-                    i.InvoiceDate.Month == DateTime.UtcNow.Month &&
-                    (int)i.Status != 0); // Status != Draft (0)
-                var newInvoiceNumber = $"{datePrefix}-{countThisMonth + 1:0000}";
-                
-                dto.InvoiceNumber = newInvoiceNumber;
-                
+                ModelState.Remove("Items");
             }
 
-            await _svc.UpdateAsync(dto);
-
-            // If UpdateAndGenerate, also update status to Issued
-            if (submitButton == "UpdateAndGenerate")
+            if (!ModelState.IsValid)
             {
-                await _svc.UpdateStatusAsync(new InvoiceUpdateStatusDto 
-                { 
-                    Id = dto.Id, 
-                    InvoiceStatus = InvoiceStatus.Issued
-                });
-                return RedirectToAction(nameof(Preview), new { id = dto.Id });
+                _logger.LogValidationError("Invoice Edit", "Invalid model state", new { InvoiceId = dto.Id, ItemCount = dto.Items?.Count ?? 0 });
+
+                ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
+                ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
+                ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
+                return View(dto);
             }
 
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                if (submitButton == "UpdateAndGenerate")
+                {
+                    var datePrefix = DateTime.UtcNow.ToString("yyyyMM");
+                    var countThisMonth = await _db.Invoices.CountAsync(i =>
+                        i.InvoiceDate.Year == DateTime.UtcNow.Year &&
+                        i.InvoiceDate.Month == DateTime.UtcNow.Month &&
+                        (int)i.Status != 0);
+                    var newInvoiceNumber = $"{datePrefix}-{countThisMonth + 1:0000}";
+
+                    dto.InvoiceNumber = newInvoiceNumber;
+                    _logger.LogDebug("Generated new invoice number: {InvoiceNumber}", newInvoiceNumber);
+                }
+
+                await _svc.UpdateAsync(dto);
+                _logger.LogBusinessEvent("Invoice Updated", new { InvoiceId = dto.Id, InvoiceNumber = dto.InvoiceNumber, SubmitButton = submitButton });
+
+                if (submitButton == "UpdateAndGenerate")
+                {
+                    await _svc.UpdateStatusAsync(new InvoiceUpdateStatusDto
+                    {
+                        Id = dto.Id,
+                        InvoiceStatus = InvoiceStatus.Issued
+                    });
+                    _logger.LogBusinessEvent("Invoice Status Changed", new { InvoiceId = dto.Id, NewStatus = "Issued" });
+
+                    return RedirectToAction(nameof(Preview), new { id = dto.Id });
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogOperationError("Update Invoice", ex, new { InvoiceId = dto.Id, SubmitButton = submitButton });
+                throw;
+            }
         }
         catch (Exception ex)
         {
+            _logger.LogOperationError("Edit Invoice", ex, new { InvoiceId = dto.Id, ItemCount = dto.Items?.Count ?? 0 });
+
             ViewBag.Customers = (await _customers.GetCustomersAsync(null, 1, 500)).Items;
             ViewBag.TaxSettings = (await _taxSettings.GetAsync()).Items;
             ViewBag.ShowDiscountAndAdvance = _invoiceSettings.ShowDiscountAndAdvance;
@@ -197,50 +283,97 @@ public class InvoicesController : Controller
 
     public async Task<IActionResult> PrintPreview(int id)
     {
-        var inv = await _db.Invoices
-            .Include(i => i.Customer)
-            .Include(i => i.Items)
-                .ThenInclude(item => item.TaxSettings)
-            .FirstOrDefaultAsync(i => i.Id == id);
+        try
+        {
+            _logger.LogUserAction("Accessed Invoice Print Preview", data: new { InvoiceId = id });
 
-        if (inv is null) return NotFound();
+            var inv = await _db.Invoices
+                .Include(i => i.Customer)
+                .Include(i => i.Items)
+                    .ThenInclude(item => item.TaxSettings)
+                .FirstOrDefaultAsync(i => i.Id == id);
 
-        var settings = await _db.CompanySettings.FirstOrDefaultAsync() ?? new BillingSuite.Domain.Entities.CompanySettings { CompanyName = "My Company" };
+            if (inv is null)
+            {
+                _logger.LogWarning("Invoice not found for print preview: {InvoiceId}", id);
+                return NotFound();
+            }
 
-        var htmlInvoice = new InvoiceHtml(settings, inv);
-        var htmlContent = htmlInvoice.Render();
+            var settings = await _db.CompanySettings.FirstOrDefaultAsync() ?? new BillingSuite.Domain.Entities.CompanySettings { CompanyName = "My Company" };
 
-        return Content(htmlContent, "text/html");
+            var htmlInvoice = new InvoiceHtml(settings, inv);
+            var htmlContent = htmlInvoice.Render();
+
+            _logger.LogDebug("Invoice HTML generated successfully for {InvoiceId}", id);
+
+            return Content(htmlContent, "text/html");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogOperationError("Print Preview Invoice", ex, new { InvoiceId = id });
+            return NotFound();
+        }
     }
 
     public async Task<IActionResult> Print(int id, string invoiceNumber)
     {
-        var pdf = await _svc.GeneratePdfAsync(id);
-        return File(pdf, "application/pdf", $"invoice-{invoiceNumber}.pdf");
+        try
+        {
+            _logger.LogUserAction("Accessed Invoice PDF Download", data: new { InvoiceId = id, InvoiceNumber = invoiceNumber });
+
+            var pdf = await _svc.GeneratePdfAsync(id);
+
+            _logger.LogBusinessEvent("Invoice PDF Generated", new { InvoiceId = id, InvoiceNumber = invoiceNumber });
+
+            return File(pdf, "application/pdf", $"invoice-{invoiceNumber}.pdf");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogOperationError("Print Invoice PDF", ex, new { InvoiceId = id, InvoiceNumber = invoiceNumber });
+            throw;
+        }
     }
 
     [HttpPost]
     public IActionResult ConvertNumberToWords([FromBody] decimal amount)
     {
-        var words = Utility.ConvertNumberToWords(amount);
-        return Json(new { words });
+        try
+        {
+            _logger.LogDebug("Converting amount to words: {Amount}", amount);
+
+            var words = Utility.ConvertNumberToWords(amount);
+
+            return Json(new { words });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogOperationError("Convert Number to Words", ex, new { Amount = amount });
+            return Json(new { error = ex.Message });
+        }
     }
 
     [HttpPost]
     public async Task<IActionResult> UpdateStatus([FromBody] InvoiceUpdateStatusDto dto)
     {
-        if (!ModelState.IsValid)
-        {
-            return Json(new { success = false, message = "Invalid data" });
-        }
-
         try
         {
+            _logger.LogDebug("Updating invoice status via API");
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogValidationError("Invoice Status Update", "Invalid model state", dto);
+                return Json(new { success = false, message = "Invalid data" });
+            }
+
             await _svc.UpdateStatusAsync(dto);
+
+            _logger.LogBusinessEvent("Invoice Status Updated", new { InvoiceId = dto.Id, NewStatus = dto.InvoiceStatus });
+
             return Json(new { success = true, message = "Invoice status updated successfully." });
         }
         catch (Exception ex)
         {
+            _logger.LogOperationError("Update Invoice Status", ex, dto);
             return Json(new { success = false, message = $"Error: {ex.Message}" });
         }
     }
@@ -248,47 +381,67 @@ public class InvoicesController : Controller
     [HttpPost]
     public async Task<IActionResult> AddPayment([FromBody] InvoicePaymentDto dto)
     {
-        if (!ModelState.IsValid)
-        {
-            return Json(new { success = false, message = "Invalid data" });
-        }
-
-        // Validate payment mode specific fields
-        if (dto.PaymentMode == PaymentMode.Cheque && string.IsNullOrWhiteSpace(dto.ChequeNumber))
-        {
-            return Json(new { success = false, message = "Cheque number is required for cheque payments." });
-        }
-
-        if (dto.PaymentMode == PaymentMode.Online && string.IsNullOrWhiteSpace(dto.TransactionReference))
-        {
-            return Json(new { success = false, message = "Transaction reference is required for online payments." });
-        }
-
         try
         {
+            _logger.LogDebug("Adding payment via API");
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogValidationError("Invoice Payment", "Invalid model state", dto);
+                return Json(new { success = false, message = "Invalid data" });
+            }
+
+            // Validate payment mode specific fields
+            if (dto.PaymentMode == PaymentMode.Cheque && string.IsNullOrWhiteSpace(dto.ChequeNumber))
+            {
+                _logger.LogValidationError("Invoice Payment", "Cheque number missing for cheque payment", dto);
+                return Json(new { success = false, message = "Cheque number is required for cheque payments." });
+            }
+
+            if (dto.PaymentMode == PaymentMode.Online && string.IsNullOrWhiteSpace(dto.TransactionReference))
+            {
+                _logger.LogValidationError("Invoice Payment", "Transaction reference missing for online payment", dto);
+                return Json(new { success = false, message = "Transaction reference is required for online payments." });
+            }
+
             await _svc.AddPaymentAsync(dto);
+
+            _logger.LogBusinessEvent("Payment Added", new {
+                InvoiceId = dto.Id,
+                Amount = dto.Amount,
+                PaymentMode = dto.PaymentMode
+            });
+
             return Json(new { success = true, message = "Payment added successfully." });
         }
         catch (Exception ex)
         {
+            _logger.LogOperationError("Add Payment", ex, new { InvoiceId = dto.Id, Amount = dto.Amount });
             return Json(new { success = false, message = $"Error: {ex.Message}" });
         }
     }
 
     [HttpPost]
-    public async Task<IActionResult> Delete([FromRoute] int id) 
+    public async Task<IActionResult> Delete([FromRoute] int id)
     {
         try
         {
+            _logger.LogUserAction("Requesting Invoice Delete", data: new { InvoiceId = id });
+
             await _svc.DeleteAsync(id);
+
+            _logger.LogBusinessEvent("Invoice Deleted", new { InvoiceId = id });
+
             return Json(new { success = true, message = "Invoice deleted successfully." });
         }
         catch (InvalidOperationException ex)
         {
+            _logger.LogWarning(ex, "Invalid operation on invoice delete: {InvoiceId}", id);
             return Json(new { success = false, message = ex.Message });
         }
         catch (Exception ex)
         {
+            _logger.LogOperationError("Delete Invoice", ex, new { InvoiceId = id });
             return Json(new { success = false, message = $"Error: {ex.Message}" });
         }
     }

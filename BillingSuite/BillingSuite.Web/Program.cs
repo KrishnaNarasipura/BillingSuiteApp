@@ -1,7 +1,11 @@
 using BillingSuite.Infrastructure.DependencyInjection;
+using BillingSuite.Infrastructure.Logging;
 using BillingSuite.Application.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Serilog
+builder.ConfigureSerilog();
 
 // Register InvoiceSettings from configuration
 builder.Services.Configure<InvoiceSettings>(builder.Configuration.GetSection("InvoiceSettings"));
@@ -16,6 +20,9 @@ builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
+// Log application startup
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("Application starting in {Environment} environment", app.Environment.EnvironmentName);
 
 if (!app.Environment.IsDevelopment())
 {
@@ -35,4 +42,18 @@ app.MapControllerRoute(
 
 app.MapGet("/", () => Results.Redirect("/Home"));
 
-app.Run();
+logger.LogInformation("Application started successfully");
+
+try
+{
+    app.Run();
+}
+catch (Exception ex)
+{
+    logger.LogCritical(ex, "Application terminated unexpectedly");
+    throw;
+}
+finally
+{
+    logger.LogInformation("Application shutting down");
+}
