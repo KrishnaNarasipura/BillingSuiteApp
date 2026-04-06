@@ -6,6 +6,7 @@ using BillingSuite.Domain;
 using BillingSuite.Domain.Enums;
 using BillingSuite.Infrastructure.Logging;
 using BillingSuite.Infrastructure.Persistence;
+using BillingSuite.Infrastructure.Services;
 using BillingSuite.Infrastructure.Services.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,9 @@ public class InvoicesController : Controller
     private readonly BillingDbContext _db;
     private readonly InvoiceSettings _invoiceSettings;
     private readonly ILogger<InvoicesController> _logger;
+    private readonly IPrintHistoryService _printHistoryService;
+    private readonly PdfSaveService _pdfSaveService;
+    private readonly HtmlToPdfService _htmlToPdfService;
 
     public InvoicesController(
         IInvoiceService svc,
@@ -29,7 +33,10 @@ public class InvoicesController : Controller
         ITaxSettingsService taxSettings,
         BillingDbContext db,
         IOptions<InvoiceSettings> invoiceSettings,
-        ILogger<InvoicesController> logger)
+        ILogger<InvoicesController> logger,
+        IPrintHistoryService printHistoryService,
+        PdfSaveService pdfSaveService,
+        HtmlToPdfService htmlToPdfService)
     {
         _svc = svc;
         _customers = customers;
@@ -37,6 +44,9 @@ public class InvoicesController : Controller
         _db = db;
         _invoiceSettings = invoiceSettings.Value;
         _logger = logger;
+        _printHistoryService = printHistoryService;
+        _pdfSaveService = pdfSaveService;
+        _htmlToPdfService = htmlToPdfService;
     }
 
     public async Task<IActionResult> Index(DateTime? from, DateTime? to, int? CustomerId, string? invoiceNumber, int? status, int page = 1, int pageSize = 20)
@@ -319,19 +329,98 @@ public class InvoicesController : Controller
     {
         try
         {
-            _logger.LogUserAction("Accessed Invoice PDF Download", data: new { InvoiceId = id, InvoiceNumber = invoiceNumber });
+            _logger.LogUserAction("Accessed Invoice PDF Generation", 
+                data: new { InvoiceId = id, InvoiceNumber = invoiceNumber });
 
-            var pdf = await _svc.GeneratePdfAsync(id);
+            // Get invoice data (same as PrintPreview)
+            var inv = await _db.Invoices
+                .Include(i => i.Customer)
+                .Include(i => i.Items)
+                    .ThenInclude(item => item.TaxSettings)
+                .FirstOrDefaultAsync(i => i.Id == id);
 
-            _logger.LogBusinessEvent("Invoice PDF Generated", new { InvoiceId = id, InvoiceNumber = invoiceNumber });
+            if (inv is null)
+            {
+                _logger.LogWarning("Invoice not found: {InvoiceId}", id);
+                return NotFound();
+            }
 
-            return File(pdf, "application/pdf", $"invoice-{invoiceNumber}.pdf");
+            // Get company settings
+            var settings = await _db.CompanySettings.FirstOrDefaultAsync() 
+                ?? new BillingSuite.Domain.Entities.CompanySettings { CompanyName = "My Company" };
+
+            // Generate HTML using existing InvoiceHtml class (same as PrintPreview)
+            var htmlInvoice = new InvoiceHtml(settings, inv);
+            var singlePageHtml = htmlInvoice.Render();
+
+            // Create multi-page HTML with two copies: Original and Office Copy
+            var multiPageHtml = CreateMultiPageInvoiceHtml(singlePageHtml);
+
+            _logger.LogDebug("Multi-page invoice HTML generated successfully for {InvoiceId}", id);
+
+            // Convert HTML to PDF using HtmlToPdfService
+            var pdfBytes = _htmlToPdfService.ConvertHtmlToPdf(multiPageHtml, invoiceNumber);
+
+             _logger.LogDebug("PDF conversion completed, size: {SizeKB}KB", pdfBytes.Length / 1024);
+
+            // Save PDF to disk
+            var pdfPath = await _pdfSaveService.SavePdfAsync(pdfBytes, invoiceNumber);
+
+            // Record print in database
+            //await _printHistoryService.RecordPrintAsync(new RecordPrintDto
+            //{
+            //    InvoiceId = id,
+            //    InvoiceNumber = invoiceNumber,
+            //    PdfPath = pdfPath,
+            //    PrintedTime = DateTime.UtcNow
+            //});
+
+            _logger.LogBusinessEvent("Invoice PDF Generated and Saved", new { 
+                InvoiceId = id, 
+                InvoiceNumber = invoiceNumber, 
+                PdfPath = pdfPath 
+            });
+
+            // Return file for download
+            return File(pdfBytes, "application/pdf", $"invoice-{invoiceNumber}.pdf");
         }
         catch (Exception ex)
         {
             _logger.LogOperationError("Print Invoice PDF", ex, new { InvoiceId = id, InvoiceNumber = invoiceNumber });
             throw;
         }
+    }
+
+    /// <summary>
+    /// Creates a PDF-optimized version by removing print buttons
+    /// The template already includes two pages with labels, so we just clean up the HTML
+    /// </summary>
+    private string CreatePdfOptimizedHtml(string invoiceHtml)
+    {
+        // Remove the print buttons - don't need them in PDF
+        var printButtonStartIndex = invoiceHtml.IndexOf("<div class='print-button'", StringComparison.OrdinalIgnoreCase);
+        if (printButtonStartIndex >= 0)
+        {
+            var printButtonEndIndex = invoiceHtml.IndexOf("</div>", printButtonStartIndex, StringComparison.OrdinalIgnoreCase);
+            if (printButtonEndIndex >= 0)
+            {
+                invoiceHtml = invoiceHtml.Substring(0, printButtonStartIndex) + 
+                              invoiceHtml.Substring(printButtonEndIndex + 6);
+            }
+        }
+
+        return invoiceHtml;
+    }
+
+    /// <summary>
+    /// Creates a multi-page HTML document for PDF
+    /// The template already includes both pages with labels, so just return the optimized HTML
+    /// </summary>
+    private string CreateMultiPageInvoiceHtml(string invoiceHtml)
+    {
+        // Just return the PDF-optimized version
+        // The template already contains both pages with "ORIGINAL FOR RECIPIENT" and "FOR OFFICE COPY" labels
+        return CreatePdfOptimizedHtml(invoiceHtml);
     }
 
     [HttpPost]

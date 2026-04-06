@@ -14,6 +14,7 @@ public class BillingDbContext : DbContext
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<InvoiceItem> InvoiceItems => Set<InvoiceItem>();
     public DbSet<InvoicePayment> InvoicePayments => Set<InvoicePayment>();
+    public DbSet<InvoicePrintHistory> InvoicePrintHistories => Set<InvoicePrintHistory>();
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<CompanySettings> CompanySettings => Set<CompanySettings>();
@@ -67,6 +68,16 @@ public class BillingDbContext : DbContext
             b.Property(x => x.PaymentDate).HasColumnType("datetime2");
             b.Property(x => x.CreatedAt).HasColumnType("datetime2");
             b.HasOne(x => x.Invoice).WithMany(i => i.Payments).HasForeignKey(x => x.InvoiceId);
+        });
+
+        modelBuilder.Entity<InvoicePrintHistory>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.InvoiceNumber).HasMaxLength(30).IsRequired();
+            b.Property(x => x.PdfPath).HasMaxLength(500).IsRequired();
+            b.Property(x => x.PrintedTime).HasColumnType("datetime2");
+            b.Property(x => x.CreatedAt).HasColumnType("datetime2");
+            b.HasOne(x => x.Invoice).WithMany().HasForeignKey(x => x.InvoiceId);
         });
 
         modelBuilder.Entity<Order>(b =>

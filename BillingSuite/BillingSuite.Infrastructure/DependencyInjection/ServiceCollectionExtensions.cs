@@ -1,6 +1,7 @@
 ﻿using BillingSuite.Application.Abstractions;
 using BillingSuite.Infrastructure.Persistence;
 using BillingSuite.Infrastructure.Services;
+using BillingSuite.Infrastructure.Services.Html;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -26,6 +27,9 @@ namespace BillingSuite.Infrastructure.DependencyInjection
             services.AddScoped<ICompanySettingsService, CompanySettingsService>();
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<ITaxSettingsService, TaxSettingsService>();
+            services.AddScoped<IPrintHistoryService, PrintHistoryService>();
+            services.AddScoped<PdfSaveService>();
+            services.AddScoped<HtmlToPdfService>();
 
             return services;
         }

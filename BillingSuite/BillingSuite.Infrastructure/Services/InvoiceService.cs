@@ -6,7 +6,7 @@ using BillingSuite.Domain.Entities;
 using BillingSuite.Domain.Enums;
 using BillingSuite.Infrastructure.Logging;
 using BillingSuite.Infrastructure.Persistence;
-using BillingSuite.Infrastructure.Services.Pdf;
+using BillingSuite.Infrastructure.Services.Html;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -17,12 +17,18 @@ public class InvoiceService : IInvoiceService
     private readonly BillingDbContext _db;
     private readonly IOrderService _orderService;
     private readonly ILogger<InvoiceService> _logger;
+    private readonly HtmlToPdfService _htmlToPdfService;
 
-    public InvoiceService(BillingDbContext db, IOrderService orderService, ILogger<InvoiceService> logger)
+    public InvoiceService(
+        BillingDbContext db, 
+        IOrderService orderService, 
+        ILogger<InvoiceService> logger,
+        HtmlToPdfService htmlToPdfService)
     {
         _db = db;
         _orderService = orderService;
         _logger = logger;
+        _htmlToPdfService = htmlToPdfService;
     }
 
     public async Task<int> CreateAsync(InvoiceCreateDto dto, CancellationToken ct = default)
@@ -414,18 +420,31 @@ public class InvoiceService : IInvoiceService
         {
             _logger.LogDebug("Generating PDF for invoice {InvoiceId}", id);
             
+            // Get invoice data
             var inv = await _db.Invoices
                 .Include(i => i.Customer)
                 .Include(i => i.Items)
                     .ThenInclude(item => item.TaxSettings)
-                .FirstOrDefaultAsync(i => i.Id == id, ct) ?? throw new KeyNotFoundException("Invoice not found");
+                .FirstOrDefaultAsync(i => i.Id == id, ct) 
+                ?? throw new KeyNotFoundException("Invoice not found");
 
-            var settings = await _db.CompanySettings.FirstOrDefaultAsync(ct) ?? new CompanySettings { CompanyName = "My Company" };
+            // Get company settings
+            var settings = await _db.CompanySettings.FirstOrDefaultAsync(ct) 
+                ?? new CompanySettings { CompanyName = "My Company" };
 
-            var doc = new InvoicePdf(settings, inv);
-            var pdfBytes = doc.Render();
+            // Generate HTML using existing InvoiceHtml class
+            var htmlInvoice = new InvoiceHtml(settings, inv);
+            var htmlContent = htmlInvoice.Render();
+
+            _logger.LogDebug("Invoice HTML generated successfully for {InvoiceId}", id);
+
+            // Convert HTML to PDF using HtmlToPdfService
+            var pdfBytes = _htmlToPdfService.ConvertHtmlToPdf(htmlContent, inv.InvoiceNumber);
             
-            _logger.LogBusinessEvent("Invoice PDF Generated", new { InvoiceId = id, FileSizeBytes = pdfBytes.Length });
+            _logger.LogBusinessEvent("Invoice PDF Generated", new { 
+                InvoiceId = id, 
+                FileSizeBytes = pdfBytes.Length 
+            });
 
             return pdfBytes;
         }

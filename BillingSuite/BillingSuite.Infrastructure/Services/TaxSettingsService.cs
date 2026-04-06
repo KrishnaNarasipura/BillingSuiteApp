@@ -6,9 +6,6 @@ using BillingSuite.Domain.Entities;
 using BillingSuite.Domain.Enums;
 using BillingSuite.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
-using static QuestPDF.Helpers.Colors;
 
 namespace BillingSuite.Infrastructure.Services;
 

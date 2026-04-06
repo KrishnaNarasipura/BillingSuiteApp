@@ -9,6 +9,7 @@ builder.ConfigureSerilog();
 
 // Register InvoiceSettings from configuration
 builder.Services.Configure<InvoiceSettings>(builder.Configuration.GetSection("InvoiceSettings"));
+builder.Services.Configure<PdfSettings>(builder.Configuration.GetSection("PdfSettings"));
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? "Server=(localdb)\\MSSQLLocalDB;Database=BillingSuiteDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True";

@@ -25,7 +25,7 @@ public class InvoiceHtml
         // Build all the placeholder values
         var placeholders = BuildPlaceholders();
 
-        // Replace all placeholders in the template
+        // Replace all placeholders in the template and clean up whitespace
         string html = ReplacePlaceholders(template, placeholders);
 
         return html;
@@ -52,6 +52,9 @@ public class InvoiceHtml
     {
         var placeholders = new Dictionary<string, string>
         {
+            // Invoice ID (for download functionality)
+            { "{{INVOICE_ID}}", _invoice.Id.ToString() },
+
             // Company Information
             { "{{COMPANY_NAME}}", HtmlEncode(_settings.CompanyName) },
             { "{{COMPANY_ADDRESS}}", BuildCompanyAddress() },
@@ -100,6 +103,17 @@ public class InvoiceHtml
         {
             result = result.Replace(kvp.Key, kvp.Value);
         }
+
+        // Clean up empty placeholder lines and extra whitespace
+        // Remove lines that only contain whitespace (left behind by empty placeholders)
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"^\s*$\n", "", System.Text.RegularExpressions.RegexOptions.Multiline);
+        
+        // Remove multiple consecutive blank lines
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\n\s*\n\s*\n+", "\n");
+        
+        // Remove spaces between > and <
+        result = System.Text.RegularExpressions.Regex.Replace(result, @">\s+<", "><");
+
         return result;
     }
 

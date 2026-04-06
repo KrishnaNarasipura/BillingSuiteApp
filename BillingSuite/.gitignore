@@ -75,6 +75,10 @@ launchSettings.json
 # Logs
 *.log
 
+# Documentation and PDF files
+*.md
+*.pdf
+
 # OS files
 .DS_Store
 .DS_Store?
